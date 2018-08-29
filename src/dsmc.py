@@ -1,1 +1,2 @@
-import plasma
+from plasma.particle import Particle
+
