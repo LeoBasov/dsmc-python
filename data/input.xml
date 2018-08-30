@@ -1,12 +1,12 @@
 <simulation version="0.1.0">
 
 <module name="time">
-	<values dt="1e-6" itters="10"/>
+	<values dt="1e-6" itters="1"/>
 </module>
 
 <module name="plasma">
 	<set name="Test">
-		<number value = "100"/>
+		<number value = "10000"/>
 		<weight value="1.0"/>
 		<mass value="2.0"/>
 		<temperature x_coord="300" y_coord="300" z_coord="300"/>
