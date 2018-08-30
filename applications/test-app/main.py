@@ -17,9 +17,13 @@ def print_footer():
 	print('Execution finished')
 	print(40*"=")
 
-def loop(dt,itters,particles,file_name):
+def loop(dt,itters,particles,file_name,domain):
 	for i in range(itters):
 		pusher.push(particles,dt)
+
+		for particle_set in particles:
+			for particle in particle_set:
+				domain.exec_boundary(particle.position)
 
 		nameString = "{}_".format(i + 1)
 		nameString = nameString + file_name
@@ -44,7 +48,7 @@ def main():
 	input_values = read_xml(sys.argv[1])
 	particles = generate_particles(input_values)
 
-	loop(input_values.time.dt,input_values.time.itters,particles,input_values.file_name)
+	loop(input_values.time.dt,input_values.time.itters,particles,input_values.file_name,input_values.domain)
 
 	print_footer()
 
