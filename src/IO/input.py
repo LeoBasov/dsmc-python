@@ -28,12 +28,14 @@ def read_plasma(node):
 	for set in sets:
 		val = Empty()
 
+		number_node = set.find("number")
 		weight_node = set.find("weight")
 		mass_node = set.find("mass")
 		temperatur_node = set.find("temperature")
 		drift_velocity_node = set.find("drift_velocity")
 		domain_node = set.find("domain")
 
+		val.number = int(number_node.get('value'))
 		val.weight = float(weight_node.get('value'))
 		val.mass = float(mass_node.get('value'))
 		val.temperature = [float(temperatur_node.get('x_coord')),float(temperatur_node.get('y_coord')),float(temperatur_node.get('z_coord'))]

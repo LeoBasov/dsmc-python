@@ -20,7 +20,7 @@ def main():
 	particles = []
 
 	for set in inputValues.plasma:
-		particle_loc = generator.generate_particles(1,set,set.domain)
+		particle_loc = generator.generate_particles(set.number,set,set.domain)
 
 		particles.append(particle_loc)
 

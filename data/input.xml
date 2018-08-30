@@ -6,6 +6,7 @@
 
 <module name="plasma">
 	<set name="Test">
+		<number value = "100"/>
 		<weight value="1.0"/>
 		<mass value="2.0"/>
 		<temperature x_coord="300" y_coord="300" z_coord="300"/>
