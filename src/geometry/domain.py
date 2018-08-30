@@ -58,17 +58,27 @@ class Cuboid:
 		if not self.check_if_inside(position):
 			self.reposition(position)
 
-	def exec_mirrow_boundary(self,position):
-		while not self.check_if_inside(position):
-			if position[0] < self.xmin:
-				position[0] = self.xmin + self.xmin - position[0]
-			elif position[1] < self.ymin:
-				position[1] = self.ymin + self.ymin - position[1]
-			elif position[2] < self.zmin:
-				position[2] = self.zmin + self.zmin - position[2]
-			elif position[0] > self.xmax:
-				position[0] = self.xmax - (position[0] - self.xmax)
-			elif position[1] > self.ymax:
-				position[1] = self.ymax - (position[1] - self.ymax)
-			elif position[2] > self.zmax:
-				position[2] = self.zmax - (position[2] - self.zmax)
+	def exec_mirrow_boundary(self,position,velocity):
+		if position[0] < self.xmin:
+			position[0] = 2*self.xmin - position[0]
+			velocity[0] = (-1)*velocity[0]
+
+		if position[1] < self.ymin:
+			position[1] = 2*self.ymin - position[1]
+			velocity[1] = (-1)*velocity[1]
+
+		if position[2] < self.zmin:
+			position[2] = 2*self.zmin - position[2]
+			velocity[2] = (-1)*velocity[2]
+
+		if position[0] > self.xmax:
+			position[0] = 2*self.xmax - position[0]
+			velocity[0] = (-1)*velocity[0]
+
+		if position[1] > self.ymax:
+			position[1] = 2*self.ymax - position[1]
+			velocity[1] = (-1)*velocity[1]
+
+		if position[2] > self.zmax:
+			position[2] = 2*self.zmax - position[2]
+			velocity[2] = (-1)*velocity[2]
