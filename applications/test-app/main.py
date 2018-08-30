@@ -18,7 +18,10 @@ def print_footer():
 
 def loop(dt,itters,particles,file_name):
 	for i in range(itters):
-		write_particles_pos(file_name,particles)
+		nameString = "{}_".format(i + 1)
+		nameString = nameString + file_name
+
+		write_particles_pos(nameString,particles)
 
 		print('Itterartion {} complete'.format(i + 1))
 
