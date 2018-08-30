@@ -5,17 +5,19 @@
 </module>
 
 <module name="plasma">
-	<set name="">
-		<weight value=""/>
-		<mass vaue=""/>
-		<temperature x_coord="" y_coord="" z_coord=""/>
-		<drift_velocity x_coord="" y_coord="" z_coord=""/>
-		<domain x_min="" x_max="" y_min="" y_max="" z_min="" z_max=""/>
+	<set name="Test">
+		<weight value="1.0"/>
+		<mass value="2.0"/>
+		<temperature x_coord="300" y_coord="300" z_coord="300"/>
+		<drift_velocity x_coord="0" y_coord="0" z_coord="0"/>
+		<domain>
+			<geometry x_min="0" x_max="1" y_min="0" y_max="1" z_min="0" z_max="1"/>
+		</domain>
 	</set>
 </module>
 
 <module name="domain">
-	<geometry x_min="" x_max="" y_min="" y_max="" z_min="" z_max=""/>
+	<geometry x_min="0" x_max="1" y_min="0" y_max="1" z_min="0" z_max="1"/>
 </module>
 
 
