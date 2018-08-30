@@ -56,6 +56,9 @@ def read_time(node):
 
 	return val
 
+def read_filemane(node):
+	return node.find('file').get('name')
+
 
 def read_xml(file_name):
 	retVals = Empty()
@@ -71,6 +74,8 @@ def read_xml(file_name):
 				retVals.plasma  = read_plasma(child)
 			elif child.attrib['name'] == 'time':
 				retVals.time = read_time(child)
+			elif child.attrib['name'] == 'output':
+				retVals.file_name = read_filemane(child)
 	except:
 		raise
 	else:
