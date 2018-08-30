@@ -2,6 +2,7 @@ import sys
 sys.path.append('../../src')
 
 import dsmc
+import pusher
 from plasma import generator
 from IO.input import read_xml
 from IO.output import write_particles_pos
@@ -18,6 +19,8 @@ def print_footer():
 
 def loop(dt,itters,particles,file_name):
 	for i in range(itters):
+		pusher.push(particles,dt)
+
 		nameString = "{}_".format(i + 1)
 		nameString = nameString + file_name
 
