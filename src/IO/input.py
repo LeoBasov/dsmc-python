@@ -46,6 +46,16 @@ def read_plasma(node):
 
 	return retValls
 
+def read_time(node):
+	val = Empty()
+
+	sub_node = node.find("values")
+
+	val.dt = float(sub_node.get('dt'))
+	val.itters = int(sub_node.get('itters'))
+
+	return val
+
 
 def read_xml(file_name):
 	retVals = Empty()
@@ -59,7 +69,8 @@ def read_xml(file_name):
 				retVals.domain  = read_domain(child)
 			elif child.attrib['name'] == 'plasma':
 				retVals.plasma  = read_plasma(child)
-
+			elif child.attrib['name'] == 'time':
+				retVals.time = read_time(child)
 	except:
 		raise
 	else:
