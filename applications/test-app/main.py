@@ -17,19 +17,23 @@ def print_footer():
 	print('Execution finished')
 	print(40*"=")
 
+def print_praView_file(file_name,iter,particles):
+	name_string = "{}_".format(iter + 1)
+	name_string = name_string + file_name
+
+	write_particles_pos(name_string,particles)
+
+def execute_mirrow_boundary(particles,domain):
+	for particle_set in particles:
+		for particle in particle_set:
+			domain.exec_mirrow_boundary(particle.position,particle.velocity)
+
 def loop(dt,itters,particles,file_name,domain):
 	for i in range(itters):
 		pusher.push(particles,dt)
+		execute_mirrow_boundary(particles,domain)
 
-		for particle_set in particles:
-			for particle in particle_set:
-				domain.exec_mirrow_boundary(particle.position,particle.velocity)
-
-		name_string = "{}_".format(i + 1)
-		name_string = name_string + file_name
-
-		write_particles_pos(name_string,particles)
-
+		print_praView_file(file_name,i,particles)
 		print('Itterartion {} complete'.format(i + 1))
 
 def generate_particles(input_values):
