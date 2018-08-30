@@ -1,14 +1,14 @@
 <simulation version="0.1.0">
 
 <module name="time">
-	<values dt="1e-6" itters="5"/>
+	<values dt="1e-5" itters="50"/>
 </module>
 
 <module name="plasma">
 	<set name="Test">
 		<number value = "10000"/>
 		<weight value="1.0"/>
-		<mass value="2.0"/>
+		<mass value="1e-26"/>
 		<temperature x_coord="300" y_coord="300" z_coord="300"/>
 		<drift_velocity x_coord="0" y_coord="0" z_coord="0"/>
 		<domain>
