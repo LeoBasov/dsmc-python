@@ -19,18 +19,23 @@ def loop(dt,itters,particles):
 	for i in range(itters):
 		print('Itterartion {} complete'.format(i + 1))
 
-def main():
-	print_header()
-	
-	inputValues = read_xml(sys.argv[1])
+def generate_particles(input_values):
 	particles = []
 
-	for set in inputValues.plasma:
+	for set in input_values.plasma:
 		particle_loc = generator.generate_particles(set.number,set,set.domain)
 
 		particles.append(particle_loc)
 
-	loop(inputValues.time.dt,inputValues.time.itters,particles)
+	return particles
+
+def main():
+	print_header()
+	
+	input_values = read_xml(sys.argv[1])
+	particles = generate_particles(input_values)
+
+	loop(input_values.time.dt,input_values.time.itters,particles)
 
 	print_footer()
 
