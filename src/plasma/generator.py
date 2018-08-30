@@ -2,10 +2,15 @@ from plasma import particle
 from geometry import domain
 import random
 
-def generate_particles(number):
-	test = []
+def generate_particles(number,values):
+	particles = []
 
 	for i in range(number):
-		pass
+		part = particle.Particle()
 
-	return [0,1,2]
+		part.weight = values.weight
+		part.mass = values.mass
+
+		particles.append(part)
+
+	return particles
