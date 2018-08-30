@@ -1,0 +1,22 @@
+<simulation version="0.1.0">
+
+<module name="time">
+	<values dt="1e-6" itters="10"/>
+</module>
+
+<module name="plasma">
+	<set name="">
+		<weight value=""/>
+		<mass vaue=""/>
+		<temperature x_coord="" y_coord="" z_coord=""/>
+		<drift_velocity x_coord="" y_coord="" z_coord=""/>
+		<domain x_min="" x_max="" y_min="" y_max="" z_min="" z_max=""/>
+	</set>
+</module>
+
+<module name="domain">
+	<geometry x_min="" x_max="" y_min="" y_max="" z_min="" z_max=""/>
+</module>
+
+
+</simulation>
