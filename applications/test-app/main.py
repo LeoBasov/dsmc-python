@@ -16,7 +16,13 @@ def print_footer():
 def main():
 	print_header()
 	
-	read_xml(sys.argv[1])
+	inputValues = read_xml(sys.argv[1])
+	particles = []
+
+	for set in inputValues.plasma:
+		particle_loc = generator.generate_particles(1,set,set.domain)
+
+		particles.append(particle_loc)
 
 	print_footer()
 

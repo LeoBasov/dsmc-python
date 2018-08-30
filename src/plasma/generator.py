@@ -2,14 +2,6 @@ from plasma import particle
 import random
 import math
 
-class Values:
-	"""Transport class for particle generations"""
-	def __init__(self, weight, mass, temperature, drift_velocity):
-		self.weight = weight
-		self.mass = mass
-		self.temperature = temperature
-		self.drift_velocity = drift_velocity
-
 def generate_particles(number, values, domain):
 	"""Function used to generate particles"""
 	particles = []

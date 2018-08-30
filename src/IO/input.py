@@ -64,3 +64,5 @@ def read_xml(file_name):
 		pass
 	finally:
 		pass
+
+	return retVals
