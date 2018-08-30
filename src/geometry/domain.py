@@ -54,6 +54,21 @@ class Cuboid:
 		self.calc_new_y(position,self.ymin,self.ymax)
 		self.calc_new_z(position,self.zmin,self.zmax)
 
-	def exec_boundary(self,position):
+	def exec_periodic_boundary(self,position):
 		if not self.check_if_inside(position):
 			self.reposition(position)
+
+	def exec_mirrow_boundary(self,position):
+		while not self.check_if_inside(position):
+			if position[0] < self.xmin:
+				position[0] = self.xmin + self.xmin - position[0]
+			elif position[1] < self.ymin:
+				position[1] = self.ymin + self.ymin - position[1]
+			elif position[2] < self.zmin:
+				position[2] = self.zmin + self.zmin - position[2]
+			elif position[0] > self.xmax:
+				position[0] = self.xmax - (position[0] - self.xmax)
+			elif position[1] > self.ymax:
+				position[1] = self.ymax - (position[1] - self.ymax)
+			elif position[2] > self.zmax:
+				position[2] = self.zmax - (position[2] - self.zmax)

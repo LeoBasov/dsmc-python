@@ -23,7 +23,7 @@ def loop(dt,itters,particles,file_name,domain):
 
 		for particle_set in particles:
 			for particle in particle_set:
-				domain.exec_boundary(particle.position)
+				domain.exec_mirrow_boundary(particle.position)
 
 		nameString = "{}_".format(i + 1)
 		nameString = nameString + file_name
