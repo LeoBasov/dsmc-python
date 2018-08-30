@@ -25,10 +25,10 @@ def loop(dt,itters,particles,file_name,domain):
 			for particle in particle_set:
 				domain.exec_mirrow_boundary(particle.position,particle.velocity)
 
-		nameString = "{}_".format(i + 1)
-		nameString = nameString + file_name
+		name_string = "{}_".format(i + 1)
+		name_string = name_string + file_name
 
-		write_particles_pos(nameString,particles)
+		write_particles_pos(name_string,particles)
 
 		print('Itterartion {} complete'.format(i + 1))
 
