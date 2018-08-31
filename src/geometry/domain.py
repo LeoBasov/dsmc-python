@@ -12,6 +12,7 @@ class Cuboid:
 		self.zmax = zmax
 
 		self.volume = (self.xmax - self.xmin)*(self.ymax - self.ymin)*(self.zmax - self.zmin)
+		self.diagonal = math.sqrt((self.xmax - self.xmin)**2 + (self.ymax - self.ymin)**2 + (self.zmax - self.zmin)**2)
 
 	def check_if_inside(self, position):
 		"""Function used to check if position lies inside of domain"""
@@ -84,4 +85,3 @@ class Cuboid:
 		if position[2] > self.zmax:
 			position[2] = 2*self.zmax - position[2]
 			velocity[2] = (-1)*velocity[2]
-	
