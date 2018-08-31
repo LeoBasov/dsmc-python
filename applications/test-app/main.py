@@ -74,9 +74,10 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 	dsmc = DSMC(cross_sections)
 
 	for i in range(itters):
-		print('Started dsmc')
+		print('Started building octree')
 		leafs = create_leafs(particles,domain)
 
+		print('Started dsmc')
 		for leaf in leafs:
 			dsmc.interact(leaf.particles, leaf.domain.volume, dt)
 

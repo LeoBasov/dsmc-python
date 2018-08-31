@@ -6,8 +6,8 @@
 
 <module name="plasma">
 	<set name="high_pressure">
-		<number value = "100000"/>
-		<weight value="2.4134e+8"/>
+		<number value = "1000000"/>
+		<weight value="2.4134e+7"/>
 		<mass value="6.6422e-26"/>
 		<temperature x_coord="300" y_coord="300" z_coord="300"/>
 		<drift_velocity x_coord="0" y_coord="0" z_coord="0"/>
@@ -16,8 +16,8 @@
 		</domain>
 	</set>
 	<set name="low_pressure">
-		<number value = "10000"/>
-		<weight value="2.4134e+8"/>
+		<number value = "100000"/>
+		<weight value="2.4134e+7"/>
 		<mass value="6.6422e-26"/>
 		<temperature x_coord="300" y_coord="300" z_coord="300"/>
 		<drift_velocity x_coord="0" y_coord="0" z_coord="0"/>
