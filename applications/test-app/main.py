@@ -95,7 +95,7 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 
 		file.write('\n')
 
-		print_praView_file(file_name,i,particles)
+		#print_praView_file(file_name,i,particles)
 
 		print('Itterartion {} complete'.format(i + 1))
 		print(40*"-")
