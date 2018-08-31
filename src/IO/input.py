@@ -59,6 +59,18 @@ def read_time(node):
 def read_filemane(node):
 	return node.find('file').get('name')
 
+def read_dsmc(node):
+	ret_vals = {}
+	pairs = node.findall('pair')
+
+	for pair in pairs:
+		energy = float(pair.get('collision_energy'))
+		cross_section = float(pair.get('cross_section'))
+
+		ret_vals[energy] = cross_section
+
+	return ret_vals
+
 
 def read_xml(file_name):
 	retVals = Empty()
@@ -76,6 +88,8 @@ def read_xml(file_name):
 				retVals.time = read_time(child)
 			elif child.attrib['name'] == 'output':
 				retVals.file_name = read_filemane(child)
+			elif child.attrib['name'] == 'output':
+				retVals.cross_sections = read_dsmc(child)
 	except:
 		raise
 	else:
