@@ -37,7 +37,7 @@ class DSMC:
 		return cross_section
 
 	def _calc_collision_probability(self, number, cross_section, dt, volume, number_pairs, rel_vel, weight):
-		return 0.5*number*number*cross_section*weight*dt/(number_pairs*volume)
+		return rel_vel*0.5*number*number*cross_section*weight*dt/(number_pairs*volume)
 
 	def _calc_and_set_new_vels(self, particle1, particle2, rel_vel):
 		v_cm = [0,0,0]
