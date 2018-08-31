@@ -1,6 +1,7 @@
 """Octree class for pair selection for dsmc."""
 
 from geometry.domain import Cuboid
+import math
 
 class Leaf:
 	"""Info"""
@@ -30,10 +31,15 @@ class Leaf:
 		return tot_particle_number/self.domain.volume
 
 	def _calc_mean_free_path(self):
-		return 1.0/(self._calc_number_dens()*self.maximum_cross_section)
+		number_dens = self._calc_number_dens()
+
+		if number_dens > 0.0:
+			return 1.0/(number_dens*self.maximum_cross_section)
+		else:
+			return math.inf
 
 	def check_resultion_criterion(self):
-		if (len(self.particles) <= self.min_number_particls) and (self.domain.diagonal > 0.3*_calc_mean_free_path()):
+		if (len(self.particles) > self.min_number_particls) and (self.domain.diagonal > 0.3*self._calc_mean_free_path()):
 			return True
 		else:
 			return False
@@ -45,9 +51,6 @@ class Octree:
 	def __init__(self):
 		self.leafs = []
 		self.buttom_leafs = []
-
-	def build(self, particles, domain):
-		pass
 
 	def _subdivide(self, domain):
 		new_leafs = []
@@ -77,3 +80,31 @@ class Octree:
 		new_leafs.append(Leaf(child_geo8))
 
 		return new_leafs
+
+	def _build_next_level(self, leaf):
+		loc_leafs = self._subdivide(leaf.domain)
+		particles = leaf.particles
+
+		for loc_leaf in loc_leafs:
+			self.leafs.append(loc_leaf)
+
+			particles = loc_leaf.sort(particles)
+
+			if loc_leaf.check_resultion_criterion():
+				self._build_next_level(loc_leaf)
+			else:
+				self.buttom_leafs.append(loc_leaf)
+
+	def build(self, particles, domain):
+		self.leafs = []
+		self.buttom_leafs = []
+
+		main_leaf = Leaf(domain)
+		main_leaf.sort(particles)
+
+		self.leafs.append(main_leaf)
+
+		if main_leaf.check_resultion_criterion():
+			self._build_next_level(main_leaf)
+		else:
+			self.buttom_leafs.append(main_leaf)
