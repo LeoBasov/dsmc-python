@@ -49,7 +49,7 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 		leafs = create_leafs(particles,domain)
 
 		for leaf in leafs:
-			dsmc.interact(leaf.particles)
+			dsmc.interact(leaf.particles, leaf.domain.volume, dt)
 
 		pusher.push(particles,dt)
 		execute_mirrow_boundary(particles,domain)
