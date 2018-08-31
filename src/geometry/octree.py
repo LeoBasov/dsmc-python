@@ -4,7 +4,7 @@ from geometry.domain import Cuboid
 
 class Leaf:
 	"""Info"""
-	def __init__(self,domain):
+	def __init__(self, domain):
 		self.domain = domain
 		self.particles = []
 
@@ -18,6 +18,14 @@ class Leaf:
 				retParticles.append(particle)
 
 		return retParticles
+
+	def _calc_number_dens(self):
+		tot_particle_number = 0.0
+
+		for particle in self.particles:
+			tot_particle_number += particle.weight
+
+		return tot_particle_number/self.domain.volume
 
 
 
