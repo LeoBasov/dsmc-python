@@ -9,15 +9,16 @@ from IO.output import write_particles_pos
 from geometry.octree import Octree
 
 def diagnose(number_bins, z_min, z_max, particles,area):
+	print('Started shock_tube diagnostic')
 	dict_part = {}
 	bin_size = (z_max - z_min)/number_bins
 	pos = z_min
-	weight = particles[0].weight
+	weight = particles[0][0].weight
 	volume = area*bin_size
 
 	denisties = []
 
-	for particle in particles:
+	for particle_set in particles:
 		for particle in particle_set:
 			dict_part[particle.position[2]] = particle
 
@@ -40,7 +41,6 @@ def print_header():
 	print(40*"-")
 
 def print_footer():
-	print(40*"-")
 	print('Execution finished')
 	print(40*"=")
 
@@ -69,19 +69,38 @@ def create_leafs(particles,domain):
 
 
 def loop(dt,itters,particles,file_name,domain,cross_sections):
+	file = open("number_densities.csv",'w+')
+
 	dsmc = DSMC(cross_sections)
 
 	for i in range(itters):
+		print('Started dsmc')
 		leafs = create_leafs(particles,domain)
 
 		for leaf in leafs:
 			dsmc.interact(leaf.particles, leaf.domain.volume, dt)
 
+		print('Started pusher')
 		pusher.push(particles,dt)
+
+		print('Started mirror boundary')
 		execute_mirrow_boundary(particles,domain)
 
+		number_densities = diagnose(100, domain.zmin, domain.zmax,particles,(domain.xmax - domain.xmin)*(domain.ymax - domain.ymin))
+
+		print('stared writing number deinsities')
+
+		for density in number_densities:
+			file.write('{},'.format(density))
+
+		file.write('\n')
+
 		print_praView_file(file_name,i,particles)
+
 		print('Itterartion {} complete'.format(i + 1))
+		print(40*"-")
+
+	file.close()
 
 def generate_particles(input_values):
 	particles = []
@@ -96,8 +115,15 @@ def generate_particles(input_values):
 def main():
 	print_header()
 	
+	print("Reading input file")
 	input_values = read_xml(sys.argv[1])
+	print("Finished reading")
+	print(40*"-")
+
+	print('Generating particles')
 	particles = generate_particles(input_values)
+	print("Finished generating")
+	print(40*"-")
 
 	loop(input_values.time.dt,input_values.time.itters,particles,input_values.file_name,input_values.domain,input_values.cross_sections)
 
