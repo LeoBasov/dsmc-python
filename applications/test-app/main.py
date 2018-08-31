@@ -8,6 +8,32 @@ from IO.input import read_xml
 from IO.output import write_particles_pos
 from geometry.octree import Octree
 
+def diagnose(number_bins, z_min, z_max, particles,area):
+	dict_part = {}
+	bin_size = (z_max - z_min)/number_bins
+	pos = z_min
+	weight = particles[0].weight
+	volume = area*bin_size
+
+	denisties = []
+
+	for particle in particles:
+		for particle in particle_set:
+			dict_part[particle.position[2]] = particle
+
+	sorted_list = sorted(list(dict_part))
+	added = 0
+
+	for part_pos in sorted_list:
+		if part_pos < pos + bin_size:
+			added += weight
+		else:
+			denisties.append(added/volume)
+			added = 0
+			pos += bin_size
+
+	return denisties
+
 def print_header():
 	print(40*"=")
 	print('DSMC python test')
