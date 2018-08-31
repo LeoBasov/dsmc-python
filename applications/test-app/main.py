@@ -1,7 +1,7 @@
 import sys
 sys.path.append('../../src')
 
-import dsmc
+from dsmc import DSMC
 import pusher
 from plasma import generator
 from IO.input import read_xml
@@ -42,9 +42,14 @@ def create_leafs(particles,domain):
 	return tree.buttom_leafs
 
 
-def loop(dt,itters,particles,file_name,domain):
+def loop(dt,itters,particles,file_name,domain,cross_sections):
+	dsmc = DSMC(cross_sections)
+
 	for i in range(itters):
 		leafs = create_leafs(particles,domain)
+
+		for leaf in leafs:
+			dsmc.interact(leaf.particles)
 
 		pusher.push(particles,dt)
 		execute_mirrow_boundary(particles,domain)
@@ -68,7 +73,7 @@ def main():
 	input_values = read_xml(sys.argv[1])
 	particles = generate_particles(input_values)
 
-	loop(input_values.time.dt,input_values.time.itters,particles,input_values.file_name,input_values.domain)
+	loop(input_values.time.dt,input_values.time.itters,particles,input_values.file_name,input_values.domain,input_values.cross_sections)
 
 	print_footer()
 

@@ -88,7 +88,7 @@ def read_xml(file_name):
 				retVals.time = read_time(child)
 			elif child.attrib['name'] == 'output':
 				retVals.file_name = read_filemane(child)
-			elif child.attrib['name'] == 'output':
+			elif child.attrib['name'] == 'dsmc':
 				retVals.cross_sections = read_dsmc(child)
 	except:
 		raise
