@@ -7,6 +7,8 @@ class Leaf:
 	def __init__(self, domain):
 		self.domain = domain
 		self.particles = []
+		self.maximum_cross_section = 3.30606633873877e-19
+		self.min_number_particls = 20
 
 	def sort(self,particles):
 		retParticles = []
@@ -26,6 +28,15 @@ class Leaf:
 			tot_particle_number += particle.weight
 
 		return tot_particle_number/self.domain.volume
+
+	def _calc_mean_free_path(self):
+		return 1.0/(self._calc_number_dens()*self.maximum_cross_section)
+
+	def check_resultion_criterion(self):
+		if (len(self.particles) <= self.min_number_particls) and (self.domain.diagonal > 0.3*_calc_mean_free_path()):
+			return True
+		else:
+			return False
 
 
 
