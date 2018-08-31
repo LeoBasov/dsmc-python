@@ -86,7 +86,7 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 		print('Started mirror boundary')
 		execute_mirrow_boundary(particles,domain)
 
-		number_densities = diagnose(100, domain.zmin, domain.zmax,particles,(domain.xmax - domain.xmin)*(domain.ymax - domain.ymin))
+		number_densities = diagnose(1000, domain.zmin, domain.zmax,particles,(domain.xmax - domain.xmin)*(domain.ymax - domain.ymin))
 
 		print('stared writing number deinsities')
 
