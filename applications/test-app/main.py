@@ -6,6 +6,7 @@ import pusher
 from plasma import generator
 from IO.input import read_xml
 from IO.output import write_particles_pos
+from geometry.octree import Octree
 
 def print_header():
 	print(40*"=")
@@ -28,8 +29,23 @@ def execute_mirrow_boundary(particles,domain):
 		for particle in particle_set:
 			domain.exec_mirrow_boundary(particle.position,particle.velocity)
 
+def create_leafs(particles,domain):
+	particles_loc = []
+	tree = Octree()
+
+	for particle_set in particles:
+		for particle in particle_set:
+			particles_loc.append(particle)
+
+	tree.build(particles_loc,domain)
+
+	return tree.buttom_leafs
+
+
 def loop(dt,itters,particles,file_name,domain):
 	for i in range(itters):
+		leafs = create_leafs(particles,domain)
+
 		pusher.push(particles,dt)
 		execute_mirrow_boundary(particles,domain)
 
