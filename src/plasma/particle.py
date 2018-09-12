@@ -10,5 +10,6 @@ class Particle:
 	def __init__(self):
 		self.mass = 1.0
 		self.weight = 1.0
-		self.velocity = [0.0,0.0,0.0]
-		self.position = [0.0,0.0,0.0]
+		self.velocity = [0.0, 0.0, 0.0]
+		self.position = [0.0, 0.0, 0.0]
+		self.position_old = [0.0, 0.0, 0.0]
