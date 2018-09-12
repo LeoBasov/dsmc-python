@@ -61,8 +61,10 @@ class Cuboid:
 		if not self.check_if_inside(position):
 			self.reposition(position)
 
-	def exec_mirrow_boundary(self,position,velocity):
+	def exec_mirrow_boundary(self, position_old, position, velocity):
 		while not self.check_if_inside(position):
+			intersection_point = self._find_intersection_point(position_old, position)
+
 			if position[0] < self.xmin:
 				position[0] = 2*self.xmin - position[0]
 				velocity[0] = (-1)*velocity[0]
@@ -86,3 +88,27 @@ class Cuboid:
 			if position[2] > self.zmax:
 				position[2] = 2*self.zmax - position[2]
 				velocity[2] = (-1)*velocity[2]
+
+	def _find_intersection_point(self, position_old, position):
+		if (self.check_if_inside(position_old) != self.check_if_inside(position)):
+			line_factor = [None]*6
+			intersection_point = [None]*3
+
+			line_factor[0] = (self.xmin - position_old[0])/(position[0] - position_old[0])
+			line_factor[1] = (self.xmax - position_old[0])/(position[0] - position_old[0])
+
+			line_factor[2] = (self.ymin - position_old[1])/(position[1] - position_old[1])
+			line_factor[3] = (self.ymax - position_old[1])/(position[1] - position_old[1])
+
+			line_factor[4] = (self.zmin - position_old[2])/(position[2] - position_old[2])
+			line_factor[5] = (self.zmax - position_old[2])/(position[2] - position_old[2])
+
+			factor = min(line_factor)
+
+			intersection_point[0] = position_old[0] + factor*(position[0] - position_old[0])
+			intersection_point[1] = position_old[1] + factor*(position[1] - position_old[1])
+			intersection_point[2] = position_old[2] + factor*(position[2] - position_old[2])
+
+			return intersection_point
+		else:
+			raise Exception('Both positions are either in or out',position_old,position)

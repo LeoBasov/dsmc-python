@@ -53,7 +53,7 @@ def print_praView_file(file_name,iter,particles):
 def execute_mirrow_boundary(particles,domain):
 	for particle_set in particles:
 		for particle in particle_set:
-			domain.exec_mirrow_boundary(particle.position,particle.velocity)
+			domain.exec_mirrow_boundary(particle.position_old, particle.position, particle.velocity)
 
 def create_leafs(particles,domain):
 	particles_loc = []
