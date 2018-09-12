@@ -103,6 +103,9 @@ class Cuboid:
 			line_factor[4] = (self.zmin - position_old[2])/(position[2] - position_old[2])
 			line_factor[5] = (self.zmax - position_old[2])/(position[2] - position_old[2])
 
+			for i in range(len(line_factor)):
+				line_factor[i] = abs(line_factor[i])
+
 			factor = min(line_factor)
 
 			intersection_point[0] = position_old[0] + factor*(position[0] - position_old[0])
