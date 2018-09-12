@@ -89,7 +89,7 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 
 		number_densities = diagnose(1000, domain.zmin, domain.zmax,particles,(domain.xmax - domain.xmin)*(domain.ymax - domain.ymin))
 
-		print('stared writing number deinsities')
+		print('Stared writing number deinsities')
 
 		for density in number_densities:
 			file.write('{},'.format(density))
