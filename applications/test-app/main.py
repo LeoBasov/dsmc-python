@@ -66,7 +66,7 @@ def execute_diffuse_boundary(particles,domain):
 	print('Started diffuse boundary')
 	for particle_set in particles:
 		for particle in particle_set:
-			domain.exec_diffuse_scattering(particle.position_old, particle.position, particle.velocity)
+			domain.exec_diffuse_scattering(particle.position_old, particle.position, particle.velocity, particle.mass)
 
 def create_leafs(particles,domain):
 	particles_loc = []
