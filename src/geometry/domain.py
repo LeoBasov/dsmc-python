@@ -135,43 +135,85 @@ class Cuboid:
 					velocity[1] =     new_velocity[1]
 					velocity[2] =     new_velocity[2]
 
-					position = self._new_pos(intersection_point, velocity, diff)
-					position_old = intersection_point
+					position_new = self._new_pos(intersection_point, velocity, diff)
+
+					position[0] = position_new[0]
+					position[1] = position_new[1]
+					position[2] = position_new[2]
+
+					position_old[0] = intersection_point[0]
+					position_old[1] = intersection_point[1]
+					position_old[2] = intersection_point[2]
 				elif intersection_point[0] == self.xmax:
 					velocity[0] = abs(new_velocity[0])*(-1.0)
 					velocity[1] =     new_velocity[1]
 					velocity[2] =     new_velocity[2]
 
-					position = self._new_pos(intersection_point, velocity, diff)
-					position_old = intersection_point
+					position_new = self._new_pos(intersection_point, velocity, diff)
+
+					position[0] = position_new[0]
+					position[1] = position_new[1]
+					position[2] = position_new[2]
+
+					position_old[0] = intersection_point[0]
+					position_old[1] = intersection_point[1]
+					position_old[2] = intersection_point[2]
 				elif intersection_point[1] == self.ymin:
 					velocity[0] =     new_velocity[0]
 					velocity[1] = abs(new_velocity[1])
 					velocity[2] =     new_velocity[2]
 
-					position = self._new_pos(intersection_point, velocity, diff)
-					position_old = intersection_point
+					position_new = self._new_pos(intersection_point, velocity, diff)
+
+					position[0] = position_new[0]
+					position[1] = position_new[1]
+					position[2] = position_new[2]
+
+					position_old[0] = intersection_point[0]
+					position_old[1] = intersection_point[1]
+					position_old[2] = intersection_point[2]
 				elif intersection_point[1] == self.ymax:
 					velocity[0] =     new_velocity[0]
 					velocity[1] = abs(new_velocity[1])*(-1.0)
 					velocity[2] =     new_velocity[2]
 
-					position = self._new_pos(intersection_point, velocity, diff)
-					position_old = intersection_point
+					position_new = self._new_pos(intersection_point, velocity, diff)
+
+					position[0] = position_new[0]
+					position[1] = position_new[1]
+					position[2] = position_new[2]
+
+					position_old[0] = intersection_point[0]
+					position_old[1] = intersection_point[1]
+					position_old[2] = intersection_point[2]
 				elif intersection_point[2] == self.zmin:
 					velocity[0] =     new_velocity[0]
 					velocity[1] =     new_velocity[1]
 					velocity[2] = abs(new_velocity[2])
 
-					position = self._new_pos(intersection_point, velocity, diff)
-					position_old = intersection_point
+					position_new = self._new_pos(intersection_point, velocity, diff)
+
+					position[0] = position_new[0]
+					position[1] = position_new[1]
+					position[2] = position_new[2]
+
+					position_old[0] = intersection_point[0]
+					position_old[1] = intersection_point[1]
+					position_old[2] = intersection_point[2]
 				elif intersection_point[2] == self.zmax:
 					velocity[0] =     new_velocity[0]
 					velocity[1] =     new_velocity[1]
 					velocity[2] = abs(new_velocity[2])*(-1.0)
 
-					position = self._new_pos(intersection_point, velocity, diff)
-					position_old = intersection_point
+					position_new = self._new_pos(intersection_point, velocity, diff)
+
+					position[0] = position_new[0]
+					position[1] = position_new[1]
+					position[2] = position_new[2]
+
+					position_old[0] = intersection_point[0]
+					position_old[1] = intersection_point[1]
+					position_old[2] = intersection_point[2]
 				else:
 					self.exec_mirrow_boundary(position_old, position, velocity)
 			else:
