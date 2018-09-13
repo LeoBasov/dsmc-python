@@ -120,8 +120,8 @@ class Cuboid:
 		else:
 			raise Exception('Both positions are either in or out',position_old,position)
 
-	def exec_diffuse_scattering(self, position_old, position, velocity, accommodation_factor):
-		if uniform(0.0,1.0) <= accommodation_factor:
+	def exec_diffuse_scattering(self, position_old, position, velocity):
+		if (not self.check_if_inside(position)) and (uniform(0.0,1.0) <= self.accommodation_factor):
 			intersection_point = self._find_intersection_point(position_old, position)
 
 			if intersection_point[0] == self.xmin:
