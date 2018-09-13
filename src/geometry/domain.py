@@ -137,6 +137,6 @@ class Cuboid:
 			elif intersection_point[2] == self.zmax:
 				pass
 			else:
-				raise Exception('Intersection point not correct', intersection_point)
+				self.exec_mirrow_boundary(position_old, position, velocity)
 		else:
 			self.exec_mirrow_boundary(position_old, position, velocity)
