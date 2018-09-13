@@ -50,10 +50,23 @@ def print_praView_file(file_name,iter,particles):
 
 	write_particles_pos(name_string,particles)
 
+def execute_boundary(particles, domain):
+	if domain.type == 'specular_scattering':
+		execute_mirrow_boundary(particles, domain)
+	elif domain.type == 'diffuse_scattering':
+		execute_diffuse_boundary(particles, domain)
+
 def execute_mirrow_boundary(particles,domain):
+	print('Started mirror boundary')
 	for particle_set in particles:
 		for particle in particle_set:
 			domain.exec_mirrow_boundary(particle.position_old, particle.position, particle.velocity)
+
+def execute_diffuse_boundary(particles,domain):
+	print('Started diffuse boundary')
+	for particle_set in particles:
+		for particle in particle_set:
+			domain.exec_diffuse_scattering(particle.position_old, particle.position, particle.velocity)
 
 def create_leafs(particles,domain):
 	particles_loc = []
@@ -84,8 +97,7 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 		print('Started pusher')
 		pusher.push(particles,dt)
 
-		print('Started mirror boundary')
-		execute_mirrow_boundary(particles,domain)
+		execute_boundary(particles,domain)
 
 		number_densities = diagnose(1000, domain.zmin, domain.zmax,particles,(domain.xmax - domain.xmin)*(domain.ymax - domain.ymin))
 
