@@ -122,26 +122,60 @@ class Cuboid:
 			raise Exception('Both positions are either in or out',position_old,position)
 
 	def exec_diffuse_scattering(self, position_old, position, velocity, mass):
-		if (not self.check_if_inside(position)) and (uniform(0.0,1.0) <= self.accommodation_factor):
-			intersection_point = self._find_intersection_point(position_old, position)
-			new_velocity = self._generate_velocity(mass)
+		while not self.check_if_inside(position):
+			if uniform(0.0,1.0) <= self.accommodation_factor:
+				intersection_point = self._find_intersection_point(position_old, position)
+				new_velocity = self._generate_velocity(mass)
+				dist_pos = self._distance(position_old, position)
+				dist_inter = self._distance(position_old, intersection_point)
+				diff = dist_pos - dist_inter
 
-			if intersection_point[0] == self.xmin:
-				pass
-			elif intersection_point[0] == self.xmax:
-				pass
-			elif intersection_point[1] == self.ymin:
-				pass
-			elif intersection_point[1] == self.ymax:
-				pass
-			elif intersection_point[2] == self.zmin:
-				pass
-			elif intersection_point[2] == self.zmax:
-				pass
+				if intersection_point[0] == self.xmin:
+					velocity[0] = abs(new_velocity[0])
+					velocity[1] =     new_velocity[1]
+					velocity[2] =     new_velocity[2]
+
+					position = self._new_pos(intersection_point, velocity, diff)
+					position_old = intersection_point
+				elif intersection_point[0] == self.xmax:
+					velocity[0] = abs(new_velocity[0])*(-1.0)
+					velocity[1] =     new_velocity[1]
+					velocity[2] =     new_velocity[2]
+
+					position = self._new_pos(intersection_point, velocity, diff)
+					position_old = intersection_point
+				elif intersection_point[1] == self.ymin:
+					velocity[0] =     new_velocity[0]
+					velocity[1] = abs(new_velocity[1])
+					velocity[2] =     new_velocity[2]
+
+					position = self._new_pos(intersection_point, velocity, diff)
+					position_old = intersection_point
+				elif intersection_point[1] == self.ymax:
+					velocity[0] =     new_velocity[0]
+					velocity[1] = abs(new_velocity[1])*(-1.0)
+					velocity[2] =     new_velocity[2]
+
+					position = self._new_pos(intersection_point, velocity, diff)
+					position_old = intersection_point
+				elif intersection_point[2] == self.zmin:
+					velocity[0] =     new_velocity[0]
+					velocity[1] =     new_velocity[1]
+					velocity[2] = abs(new_velocity[2])
+
+					position = self._new_pos(intersection_point, velocity, diff)
+					position_old = intersection_point
+				elif intersection_point[2] == self.zmax:
+					velocity[0] =     new_velocity[0]
+					velocity[1] =     new_velocity[1]
+					velocity[2] = abs(new_velocity[2])*(-1.0)
+
+					position = self._new_pos(intersection_point, velocity, diff)
+					position_old = intersection_point
+				else:
+					self.exec_mirrow_boundary(position_old, position, velocity)
 			else:
 				self.exec_mirrow_boundary(position_old, position, velocity)
-		else:
-			self.exec_mirrow_boundary(position_old, position, velocity)
 
 	def _generate_velocity(self, mass):
 		boltzmann_const = 1.38064852e-23
@@ -152,3 +186,28 @@ class Cuboid:
 		velocity[2] = gauss(0.0, math.sqrt(boltzmann_const * self.temperature/mass))
 
 		return velocity
+
+	def _distance(self, vec1, vec2):
+		vec_new = [0.0]*3
+
+		vec_new[0] = vec2[0] - vec1[0]
+		vec_new[1] = vec2[1] - vec1[1]
+		vec_new[2] = vec2[2] - vec1[2]
+
+		return self._mod(vec_new)
+
+	def _mod(self, vec):
+		return math.sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2])
+
+	def _new_pos(self, intersection_point, velocity, dist):
+		position = [0.0]*3
+		mod = self._mod(velocity)
+
+		if dist < 0.0:
+			raise Exception('Dist smaller 0', dist)
+
+		position[0] = intersection_point[0] + velocity[0]*(dist/mod)
+		position[1] = intersection_point[1] + velocity[1]*(dist/mod)
+		position[2] = intersection_point[2] + velocity[2]*(dist/mod)
+
+		return position
