@@ -1,5 +1,5 @@
 import math
-
+from random import uniform
 
 class Cuboid:
 	"""Cuboid shaped domain"""
@@ -52,14 +52,14 @@ class Cuboid:
 		elif position[2] < min:
 			position[2] = self.calc_new_value(position[2],min,max,max - min,False)
 
-	def reposition(self,position):
+	def _reposition(self,position):
 		self.calc_new_x(position,self.xmin,self.xmax)
 		self.calc_new_y(position,self.ymin,self.ymax)
 		self.calc_new_z(position,self.zmin,self.zmax)
 
 	def exec_periodic_boundary(self,position):
 		if not self.check_if_inside(position):
-			self.reposition(position)
+			self._reposition(position)
 
 	def exec_mirrow_boundary(self, position_old, position, velocity):
 		while not self.check_if_inside(position):
@@ -115,3 +115,24 @@ class Cuboid:
 			return intersection_point
 		else:
 			raise Exception('Both positions are either in or out',position_old,position)
+
+	def exec_diffuse_scattering(self, position_old, position, velocity, accommodation_factor):
+		if uniform(0.0,1.0) <= accommodation_factor:
+			intersection_point = self._find_intersection_point(position_old, position)
+
+			if intersection_point[0] == self.xmin:
+				pass
+			elif intersection_point[0] == self.xmax:
+				pass
+			elif intersection_point[1] == self.ymin:
+				pass
+			elif intersection_point[1] == self.ymax:
+				pass
+			elif intersection_point[2] == self.zmin:
+				pass
+			elif intersection_point[2] == self.zmax:
+				pass
+			else:
+				raise Exception('Intersection point not correct', intersection_point)
+		else:
+			self.exec_mirrow_boundary(position_old, position, velocity)
