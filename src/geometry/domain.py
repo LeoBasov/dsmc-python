@@ -11,6 +11,10 @@ class Cuboid:
 		self.zmin = zmin
 		self.zmax = zmax
 
+		self.type = ''
+		self.temperature = 0.0
+		self.accommodation_factor = 1.0
+
 		self.volume = (self.xmax - self.xmin)*(self.ymax - self.ymin)*(self.zmax - self.zmin)
 		self.diagonal = math.sqrt((self.xmax - self.xmin)**2 + (self.ymax - self.ymin)**2 + (self.zmax - self.zmin)**2)
 

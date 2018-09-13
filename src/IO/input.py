@@ -9,6 +9,7 @@ class Empty:
 
 def read_domain(node):
 	geometry = node.find("geometry")
+	boundary = node.find("boundary")
 
 	x_min = float(geometry.get('x_min'))
 	x_max = float(geometry.get('x_max'))
@@ -19,7 +20,14 @@ def read_domain(node):
 	z_min = float(geometry.get('z_min'))
 	z_max = float(geometry.get('z_max'))
 
-	return Cuboid(x_min, x_max, y_min, y_max, z_min, z_max)
+	domain = Cuboid(x_min, x_max, y_min, y_max, z_min, z_max)
+
+	if type(boundary) != type(None):
+		domain.type = boundary.get('type')
+		domain.temperature = float(boundary.get('temperature'))
+		domain.accommodation_factor = float(boundary.get('accommodation_factor'))
+
+	return domain
 
 def read_plasma(node):
 	retValls = []
