@@ -1,5 +1,6 @@
 import math
 from random import uniform
+from random import gauss
 
 class Cuboid:
 	"""Cuboid shaped domain"""
@@ -120,9 +121,10 @@ class Cuboid:
 		else:
 			raise Exception('Both positions are either in or out',position_old,position)
 
-	def exec_diffuse_scattering(self, position_old, position, velocity):
+	def exec_diffuse_scattering(self, position_old, position, velocity, mass):
 		if (not self.check_if_inside(position)) and (uniform(0.0,1.0) <= self.accommodation_factor):
 			intersection_point = self._find_intersection_point(position_old, position)
+			new_velocity = self._generate_velocity(mass)
 
 			if intersection_point[0] == self.xmin:
 				pass
@@ -140,3 +142,13 @@ class Cuboid:
 				self.exec_mirrow_boundary(position_old, position, velocity)
 		else:
 			self.exec_mirrow_boundary(position_old, position, velocity)
+
+	def _generate_velocity(self, mass):
+		boltzmann_const = 1.38064852e-23
+		velocity = [0.0]*3
+
+		velocity[0] = gauss(0.0, math.sqrt(boltzmann_const * self.temperature/mass))
+		velocity[1] = gauss(0.0, math.sqrt(boltzmann_const * self.temperature/mass))
+		velocity[2] = gauss(0.0, math.sqrt(boltzmann_const * self.temperature/mass))
+
+		return velocity
