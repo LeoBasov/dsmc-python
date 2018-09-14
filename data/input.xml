@@ -1,7 +1,7 @@
 <simulation version="0.1.0">
 
 <module name="time">
-	<values dt="1e-7" itters="500"/>
+	<values dt="1e-7" itters="300"/>
 </module>
 
 <module name="plasma">
