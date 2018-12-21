@@ -78,7 +78,7 @@ def create_leafs(particles,domain):
 
 	tree.build(particles_loc,domain)
 
-	return tree.buttom_leafs
+	return tree
 
 
 def loop(dt,itters,particles,file_name,domain,cross_sections):
@@ -87,17 +87,18 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 	dsmc = DSMC(cross_sections)
 
 	for i in range(itters):
-		print('Started building octree')
-		leafs = create_leafs(particles,domain)
-
-		print('Started dsmc')
-		for leaf in leafs:
-			dsmc.interact(leaf.particles, leaf.domain.volume, dt)
-
 		print('Started pusher')
 		pusher.push(particles,dt)
 
 		execute_boundary(particles,domain)
+
+		print('Started building octree')
+		tree = create_leafs(particles,domain)
+
+		print('Started dsmc')
+		first_leaf = tree.leafs[0]
+
+		_execute_next_level(first_leaf, dt, dsmc)
 
 		number_densities = diagnose(1000, domain.zmin, domain.zmax,particles,(domain.xmax - domain.xmin)*(domain.ymax - domain.ymin))
 
@@ -114,6 +115,24 @@ def loop(dt,itters,particles,file_name,domain,cross_sections):
 		print(40*"-")
 
 	file.close()
+
+def _execute_next_level(leaf, dt, dsmc):
+	particles = []
+	volume = 0.0
+
+	if not leaf.has_children():
+		return
+
+	for child in leaf:
+		if len(child.particles) == 1:
+			particles += child.particles
+			volume += child.domain.volume
+
+	dsmc.interact(particles, volume, dt)
+
+	for child in leaf:
+		if len(child.particles) > 1:
+			_execute_next_level(child, dt, dsmc)
 
 def generate_particles(input_values):
 	particles = []

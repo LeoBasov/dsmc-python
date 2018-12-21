@@ -9,7 +9,12 @@ class Leaf:
 		self.domain = domain
 		self.particles = []
 		self.maximum_cross_section = 3.30606633873877e-19
-		self.min_number_particls = 20
+
+		self.parent = None
+		self.children = 8*[None]
+
+	def __iter__(self):
+		return self.children.__iter__()
 
 	def sort(self,particles):
 		retParticles = []
@@ -39,10 +44,13 @@ class Leaf:
 			return math.inf
 
 	def check_resultion_criterion(self):
-		if (len(self.particles) > self.min_number_particls) and (self.domain.diagonal > 0.3*self._calc_mean_free_path()):
+		if len(self.particles) > 1:
 			return True
 		else:
 			return False
+
+	def has_children(self):
+		return not (self.children[0] == None)
 
 
 
@@ -52,7 +60,7 @@ class Octree:
 		self.leafs = []
 		self.buttom_leafs = []
 
-	def _subdivide(self, domain):
+	def _subdivide(self, domain, parent):
 		new_leafs = []
 
 		x_half = 0.5*(domain.xmin + domain.xmax)
@@ -79,10 +87,12 @@ class Octree:
 		new_leafs.append(Leaf(child_geo7))
 		new_leafs.append(Leaf(child_geo8))
 
+		parent.children = new_leafs
+
 		return new_leafs
 
 	def _build_next_level(self, leaf):
-		loc_leafs = self._subdivide(leaf.domain)
+		loc_leafs = self._subdivide(leaf.domain, leaf)
 		particles = leaf.particles
 
 		for loc_leaf in loc_leafs:
