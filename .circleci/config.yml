@@ -1,0 +1,38 @@
+version: 2.1
+
+commands:
+  set_up_build_environment:
+    steps:
+      - checkout
+      - run:
+          name: Installing SUDO
+          command: 'apt-get update && apt install -y sudo && rm -rf /var/lib/apt/lists/*'
+      - run:
+          name: Run INSTALL DEPENDENCIES
+          command: bash install_dependencies.sh
+      - run:
+          name: Install DSMC
+          command: pip3 install .
+
+  run_unit_tests:
+    steps:
+      - run:
+          name: Run UNIT TESTS
+          command: cd tests/unit/ && python3 main.py -v
+
+executors:
+  docker-jammy:
+    docker:
+      - image: "ubuntu:jammy"
+
+jobs:
+  unit_tests:
+    executor: docker-jammy
+    steps:
+      - set_up_build_environment
+      - run_unit_tests
+
+workflows:
+  build-and-run-tests:
+    jobs:
+      - unit_tests
