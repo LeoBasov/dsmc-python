@@ -10,6 +10,9 @@ commands:
       - run:
           name: Run INSTALL DEPENDENCIES
           command: bash install_dependencies.sh
+      - run:
+          name: Install DSMC
+          command: pip3 install .
 
   run_unit_tests:
     steps:
