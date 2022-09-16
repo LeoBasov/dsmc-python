@@ -63,7 +63,7 @@ def get_velocities(T, mass, N):
         velocities[i] = get_vel(T, mass)
 
     return velocities
-    
+
 @njit
 def calc_temperature(velocities, mass):
     tot_e = 0.0
@@ -75,6 +75,27 @@ def calc_temperature(velocities, mass):
         tot_e += 0.5 * mass * np.dot(velocities[i], velocities[i])
 
     return tot_e / ((3.0/2.0) * len(velocities) * kb)
+
+@njit
+def calc_positions(x, y, z, N):
+    """
+    Parameters
+    ----------
+    x : tuple(2), dtype = float
+        xmin, xmax
+    y : tuple(2), dtype = float
+        ymin, ymax
+    z : tuple(2), dtype = float
+        zmin, zmax
+    """
+    positions = np.empty((N, 3), dtype=float)
+
+    for i in range(N):
+        positions[i][0] = x[0] + np.random.random() * (x[1] - x[0])
+        positions[i][1] = y[0] + np.random.random() * (y[1] - y[0])
+        positions[i][2] = z[0] + np.random.random() * (z[1] - z[0])
+
+    return positions
 
 class Particles:
     def __init__(self):
