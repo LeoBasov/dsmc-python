@@ -1,5 +1,5 @@
 import math
-import numpy
+import numpy as np
 from numba import njit
 
 kb = 1.380649e-23
@@ -54,6 +54,12 @@ def get_vel(T, mass):
     velocity : np.array, shape = (3, 1)
     """
     return np.array([(-1)**(int(2*np.random.random())) * x2velocity(box_muller(T), mass) for _ in range(3)])
+
+@njit
+def get_velocities(T, mass, N):
+    velocities = np.empty((N, 3), dtype=float)
+
+    return velocities
 
 class Particles:
     def __init__(self):
