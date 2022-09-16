@@ -54,3 +54,9 @@ def get_vel(T, mass):
     velocity : np.array, shape = (3, 1)
     """
     return np.array([(-1)**(int(2*np.random.random())) * x2velocity(box_muller(T), mass) for _ in range(3)])
+
+class Particles:
+    def __init__(self):
+        self.velocities = None
+        self.positions = None
+        self.N = 0 # number of particles
