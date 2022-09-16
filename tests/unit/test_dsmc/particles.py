@@ -15,3 +15,11 @@ class TestParticles(unittest.TestCase):
         T = 300
         mass = 1.0e-26
         result = pa.get_vel(T, mass)
+
+    def test_get_velocities(self):
+        T = 300
+        mass = 1.0e-26
+        N = 1000
+        velocities = pa.get_velocities(T, mass, N)
+
+        self.assertEqual(N , len(velocities))

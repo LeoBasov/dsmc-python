@@ -59,6 +59,9 @@ def get_vel(T, mass):
 def get_velocities(T, mass, N):
     velocities = np.empty((N, 3), dtype=float)
 
+    for i in range(N):
+        velocities[i] = get_vel(T, mass)
+
     return velocities
 
 class Particles:
