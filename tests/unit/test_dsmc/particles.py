@@ -23,7 +23,7 @@ class TestParticles(unittest.TestCase):
         velocities = pa.get_velocities(T, mass, N)
 
         self.assertEqual(N , len(velocities))
-        
+
     def test_calc_temperature(self):
         T = 300
         mass = 1.0e-26
@@ -33,3 +33,12 @@ class TestParticles(unittest.TestCase):
         diff = abs((T_new - T)/T)
 
         self.assertTrue(diff < 0.1)
+
+    def test_calc_positions(self):
+        x = (-1.0, 1.0)
+        y = (2.0, 3.0)
+        z = (-2.0, -1.0)
+        N = 1000
+        positions = pa.calc_positions(x, y, z, N)
+
+        self.assertEqual(N , len(positions))
