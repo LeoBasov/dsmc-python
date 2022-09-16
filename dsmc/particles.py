@@ -63,6 +63,18 @@ def get_velocities(T, mass, N):
         velocities[i] = get_vel(T, mass)
 
     return velocities
+    
+@njit
+def calc_temperature(velocities, mass):
+    tot_e = 0.0
+
+    if not len(velocities):
+        return 0.0
+
+    for i in range(len(velocities)):
+        tot_e += 0.5 * mass * np.dot(velocities[i], velocities[i])
+
+    return tot_e / ((3.0/2.0) * len(velocities) * kb)
 
 class Particles:
     def __init__(self):

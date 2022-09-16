@@ -23,3 +23,13 @@ class TestParticles(unittest.TestCase):
         velocities = pa.get_velocities(T, mass, N)
 
         self.assertEqual(N , len(velocities))
+        
+    def test_calc_temperature(self):
+        T = 300
+        mass = 1.0e-26
+        N = 10000
+        velocities = pa.get_velocities(T, mass, N)
+        T_new = pa.calc_temperature(velocities, mass)
+        diff = abs((T_new - T)/T)
+
+        self.assertTrue(diff < 0.1)
