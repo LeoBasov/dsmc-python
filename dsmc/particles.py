@@ -99,11 +99,36 @@ def calc_positions(x, y, z, N):
 
 class Particles:
     def __init__(self):
-        self.velocities = None
-        self.positions = None
-        self.N = 0 # number of particles
+        self._velocities = None
+        self._positions = None
+        self._N = 0 # number of particles
+
+    @property
+    def Vel(self):
+        return self._velocities
+
+    @property
+    def Pos(self):
+        return self._positions
+
+    @property
+    def N(self):
+        return self._N
+
+    @property
+    def VelPos(self):
+        return (self._velocities, self._positions)
+
+    @VelPos.setter
+    def VelPos(self, vel_pos):
+        assert vel_pos[0] == vel_pos[1]
+        assert isinstance(vel_pos[0], np.array)
+        assert isinstance(vel_pos[1], np.array)
+        self._velocities = vel_pos[0]
+        self._positions = vel_pos[1]
+        self._N = len(self._positions)
 
     def create_particles(self, X, mass, T, N):
-        self.velocities = get_velocities(T, mass, N)
-        self.positions = calc_positions(X[0], X[1], X[2], N)
-        self.N  = N
+        self._velocities = get_velocities(T, mass, N)
+        self._positions = calc_positions(X[0], X[1], X[2], N)
+        self._N  = N

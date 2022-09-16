@@ -55,6 +55,6 @@ class TestParticles(unittest.TestCase):
 
         particles.create_particles(X, mass, T, N)
 
-        self.assertEqual(N, len(particles.positions))
-        self.assertEqual(N, len(particles.velocities))
+        self.assertEqual(N, len(particles.Pos))
+        self.assertEqual(N, len(particles.Vel))
         self.assertEqual(N, particles.N)
