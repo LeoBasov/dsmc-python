@@ -102,3 +102,8 @@ class Particles:
         self.velocities = None
         self.positions = None
         self.N = 0 # number of particles
+
+    def create_particles(self, X, mass, T, N):
+        self.velocities = get_velocities(T, mass, N)
+        self.positions = calc_positions(X[0], X[1], X[2], N)
+        self.N  = N
