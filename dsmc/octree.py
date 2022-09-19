@@ -32,6 +32,24 @@ def _calc_N_res(w, sigma_T, n):
     """
 
     return int(round(np.sqrt(2.0) / (32.0 * w * sigma_T**3 * n**2)))
+
+@njit  
+def _calc_n(box, N, w):
+    """
+    Parameters
+    ----------
+    box : np.array(3, 3)
+          cell
+    N : int
+        number of particles in cell
+    w : float
+        particle weight
+        
+    Returns
+    -------
+    number density : float
+    """
+    return np.prod(np.array([box[i][1] - box[i][0] for i in range(3)])) * N / w
     
 class Leafs:
     def __init__(self):

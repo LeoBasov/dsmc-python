@@ -26,6 +26,14 @@ class TestOctree(unittest.TestCase):
         
         self.assertEqual(ref, N)
         
+    def test__calc_n(self):
+        box = ((0, 1), (2, 4), (4, 7))
+        N = 300
+        w = 100
+        res = oc._calc_n(box, N, w)
+        
+        self.assertEqual(18.0, res)
+        
     def test_build(self):
         particles = part.Particles()
         tree = oc.Octree()
