@@ -17,7 +17,8 @@ def _find_bounding_box(positions):
                 box[i][1] = pos[i]
     
     return box
-    
+
+@njit    
 def _calc_N_res(w, sigma_T, n):
     """
     Parameters
