@@ -18,6 +18,20 @@ def _find_bounding_box(positions):
     
     return box
     
+def _calc_N_res(w, sigma_T, n):
+    """
+    Parameters
+    ----------
+    w : float
+        particle weight
+    sigma_t : float
+              total cross section [m^2]
+    n : float
+        number density [1/m^3]
+    """
+
+    return int(round(np.sqrt(2.0) / (32.0 * w * sigma_T**3 * n**2)))
+    
 class Leafs:
     def __init__(self):
         self.level = []

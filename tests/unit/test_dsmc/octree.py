@@ -17,6 +17,15 @@ class TestOctree(unittest.TestCase):
         self.assertEqual(-1.0, box[2][0])
         self.assertEqual(0.0, box[2][1])
         
+    def test__calc_N_res(self):
+        w = 1.0e+9
+        sigma_T = 1.0e-16
+        n = 1.0e+17
+        ref = int(round(np.sqrt(2) / (32.0 * w * sigma_T**3 * n**2)))
+        N = oc._calc_N_res(w, sigma_T, n)
+        
+        self.assertEqual(ref, N)
+        
     def test_build(self):
         particles = part.Particles()
         tree = oc.Octree()
