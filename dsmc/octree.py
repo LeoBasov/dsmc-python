@@ -8,7 +8,7 @@ fmax = np.finfo(float).max
 
 @njit
 def _find_bounding_box(positions : npt.NDArray) -> npt.NDArray:
-    box = np.array([[fmax, fmin], [fmax, fmin], [fmax, fmin]], dtype=float)
+    box = np.array([[fmax, fmin], [fmax, fmin], [fmax, fmin]])
     
     for pos in positions:
         for i in range(3):
