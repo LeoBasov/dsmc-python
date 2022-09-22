@@ -55,10 +55,13 @@ def _calc_n(box : npt.NDArray, N : float, w : float) -> float:
 
 @njit  
 def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : int, Nmax : int) -> bool:
+    if N == 0:
+        return False
+
     n = _calc_n(box, N, w)
-    N = _calc_N_res(w, sigma_T, n)
+    Nres = _calc_N_res(w, sigma_T, n)
     
-    return N > 2 * min(Nmin, max(Nmin, N))
+    return N > 2 * min(Nmin, max(Nmin, Nres))
 
 @njit
 def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
@@ -131,17 +134,20 @@ class Octree:
         self.max_level = 10
         self.permutations = []
         self.cell_offsets = []
+        self.level = 0
         
     def build(self, positions):
         self._create_root(positions)
         self.permutations = np.array([i for i in range(len(positions))])
         
         for level in range(self.max_level):
+            self.level += 1
+            self.cell_offsets.append(self.cell_offsets[-1])
             for i in range(self.cell_offsets[level], self.cell_offsets[level + 1]):
-                self._progress(i)
-                
-            if self.cell_offsets[level] == self.cell_offsets[level + 1]:
-                break
+                self._progress(i, positions)
+   
+            if self.cell_offsets[level + 1] == self.cell_offsets[level + 2]:
+                break            
         
     def _create_root(self, positions):
         box = _find_bounding_box(positions)
@@ -152,15 +158,15 @@ class Octree:
         self.leafs.append(leaf)
         self.cell_boxes.append(box)
         
-    def _progress(self, leaf_id):
+    def _progress(self, leaf_id, positions):
         leaf = self.leafs[leaf_id]
         if _is_resolved(self.cell_boxes[leaf_id], leaf.number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
             leaf.number_children = 8
             leaf.id_first_child = leaf_id + 1
-            self.cell_offsets.append(self.cell_offsets[-1] + 8)
+            self.cell_offsets[-1] += 8
             self._add_boxes(self.cell_boxes[leaf_id])
         else:
-            self.cell_offsets.append(self.cell_offsets[-1])
+            pass
             
         offset = 0
             
@@ -169,7 +175,7 @@ class Octree:
             new_leaf.level = leaf.level + 1
             new_leaf.id_parent = leaf_id
 
-            self.permutations, N = _sort(self.permutations, self.cell_boxes[self.cell_offsets[leaf_id] + i], positions, leaf.offset, leaf.number_elements)
+            self.permutations, N = _sort(self.permutations, self.cell_boxes[leaf_id + 1 + i], positions, leaf.elem_offset, leaf.number_elements)
             
             new_leaf.number_elements = N
             new_leaf.elem_offset = leaf.elem_offset + offset

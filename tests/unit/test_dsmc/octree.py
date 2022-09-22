@@ -91,6 +91,7 @@ class TestOctreeOctree(unittest.TestCase):
     def test_build(self):
         positions = np.random.random((1000, 3))*2.0 - np.ones((1000, 3))
         octree = oc.Octree()
+        octree.w = 1e+18
         
         octree.build(positions)
         
