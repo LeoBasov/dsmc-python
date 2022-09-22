@@ -59,6 +59,45 @@ def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : 
     N = _calc_N_res(w, sigma_T, n)
     
     return N > 2 * min(Nmin, max(Nmin, N))
+
+@njit
+def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
+    a = position[0] > box[0][0] and position[0] <= box[0][1]
+    b = position[1] > box[1][0] and position[1] <= box[1][1]
+    c = position[2] > box[2][0] and position[2] <= box[2][1]
+
+    return a and b and c
+    
+def _sort(box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> int:
+    '''sort particles in cell
+    
+    Parameters
+    ----------
+    box : np.ndarray
+          cell
+    positions : ndarray((3, ))
+        particle positions
+    offset : int
+        number offset
+    N : int
+        number of particles to be considered
+        
+    Returns
+    -------
+    N : int
+        number of found positions
+    '''
+    temp = np.empty((3,))
+    runner = offset
+    Nnew = 0
+    for i in range(offset, offset + N):
+        if _is_inside(box, positions[i]):
+            temp = positions[runner]
+            positions[runner] = positions[i]
+            positions[i] = temp
+            Nnew += 1
+            
+    return N
     
 class Leaf:
 	"""Info"""
