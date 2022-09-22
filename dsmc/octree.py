@@ -60,6 +60,39 @@ def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : 
     
     return N > 2 * min(Nmin, max(Nmin, N))
     
+class Leaf:
+	"""Info"""
+	def __init__(self, domain):
+		self.domain = domain
+		self.particle_ids = []
+		self.maximum_cross_section = 3.30606633873877e-19
+
+		self.parent = None
+		self.children = 8*[None]
+
+	def __iter__(self):
+		return self.children.__iter__()
+
+	def sort(self,positions, offset, N):
+		retParticles = []
+
+		for particle in particles:
+			if self.domain.check_if_inside(particle.position):
+				self.particles.append(particle)
+			else:
+				retParticles.append(particle)
+
+		return retParticles
+
+	def check_resultion_criterion(self):
+		if len(self.particles) > 1:
+			return True
+		else:
+			return False
+
+	def has_children(self):
+		return not (self.children[0] == None)
+    
 class Leafs:
     def __init__(self):
         self.clear()
