@@ -128,7 +128,7 @@ class Particles:
         self._positions = vel_pos[1]
         self._N = len(self._positions)
         
-    def create_particles(self, X, mass, T, N):
+    def create_particles(self, X, mass, T, N):    
         if self._N == 0:
             self._velocities = get_velocities(T, mass, N)
             self._positions = calc_positions(X[0], X[1], X[2], N)
