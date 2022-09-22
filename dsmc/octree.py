@@ -127,7 +127,7 @@ class Octree:
     def clear(self):
         self.cell_boxes = []
         self.leafs = []
-        self.sigma_T = 1e-19
+        self.sigma_T = 3.631681e-19
         self.w = 1.0
         self.Nmin = 8
         self.Nmax = 64
