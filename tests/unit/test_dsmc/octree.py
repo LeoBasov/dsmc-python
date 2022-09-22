@@ -49,9 +49,11 @@ class TestOctree(unittest.TestCase):
         box = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
         positions1 = np.random.random((100, 3))
         positions2 = np.random.random((200, 3)) - np.ones((200, 3))*2
-        positions_subs = np.concatenate((positions1, positions2))
-        np.random.shuffle(positions_subs)
-        positions = np.concatenate((positions2, positions_subs))
+        positions = np.concatenate((positions2, positions1, positions2))
+        permutations1 = np.array([i for i in range(len(positions2))])
+        permutations2 = np.array([i for i in range(len(positions2), len(positions))])
+        np.random.shuffle(permutations2)
+        permutations = np.concatenate((permutations1, permutations2))
         offset = len(positions2)
         N = len(positions1) + len(positions2)
         count = 0
@@ -68,13 +70,18 @@ class TestOctree(unittest.TestCase):
                 
         self.assertEqual(len(positions1), count)
         
-        Nnew = oc._sort(box, positions, offset, N)
+        self.assertEqual(len(positions2), len(permutations1))
+        self.assertEqual(len(positions1) + len(positions2), len(permutations2))
+        self.assertEqual(len(positions), len(permutations))
+        
+        permutations, Nnew = oc._sort(permutations, box, positions, offset, N)
         
         self.assertEqual(Nnew, len(positions1))
         
         for i in range(offset, offset + Nnew):
-            self.assertTrue(oc._is_inside(positions[i], box))
+            p = permutations[i]
+            self.assertTrue(oc._is_inside(positions[p], box))
             
-        for i in range(offset + Nnew, len(positions)):
-            #print(offset, Nnew, i)
-            self.assertFalse(oc._is_inside(positions[i], box))
+        for i in range(offset + Nnew, len(permutations)):
+            p = permutations[i]
+            self.assertFalse(oc._is_inside(positions[p], box))

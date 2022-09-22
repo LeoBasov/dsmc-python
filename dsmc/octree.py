@@ -75,7 +75,7 @@ def _swap(arr, pos1, pos2):
     arr[pos1] = temp
     
 @njit
-def _sort(box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> int:
+def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> int:
     '''sort particles in cell
     
     Parameters
@@ -91,16 +91,19 @@ def _sort(box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> 
         
     Returns
     -------
+    new_permutations : ndarray[int]
     N : int
         number of found positions
     '''
+    new_permutations = np.copy(permutations)
     temp = np.empty((3,))
     runner = offset
     Nnew = 0
     for i in range(offset, offset + N):
-        if _is_inside(positions[i], box):
-            _swap(positions, i, runner)
+        p = permutations[i]
+        if _is_inside(positions[p], box):
+            _swap(new_permutations, i, runner)
             runner += 1
             Nnew += 1
             
-    return Nnew
+    return new_permutations, Nnew
