@@ -85,3 +85,19 @@ class TestOctree(unittest.TestCase):
         for i in range(offset + Nnew, len(permutations)):
             p = permutations[i]
             self.assertFalse(oc._is_inside(positions[p], box))
+            
+            
+class TestOctreeOctree(unittest.TestCase):
+    def test_build(self):
+        positions = np.random.random((1000, 3))*2.0 - np.ones((1000, 3))
+        octree = oc.Octree()
+        
+        octree.build(positions)
+        
+    def test__add_boxes(self):
+        octree = oc.Octree()
+        box = np.array([[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]])
+        
+        octree._add_boxes(box)
+        
+        self.assertEqual(8, len(octree.cell_boxes))

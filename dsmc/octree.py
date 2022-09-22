@@ -75,7 +75,7 @@ def _swap(arr, pos1, pos2):
     arr[pos1] = temp
     
 @njit
-def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> int:
+def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> tuple[npt.NDArray, int]:
     '''sort particles in cell
     
     Parameters
@@ -107,3 +107,96 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
             Nnew += 1
             
     return new_permutations, Nnew
+    
+class Leaf:
+    def __init__(self):
+        self.level = 0
+        self.elem_offset = 0
+        self.number_elements = 0
+        self.id_parent = None
+        self.id_first_child = None
+        self.number_children = 0
+    
+class Octree:
+    def __init__(self):
+        self.clear()
+        
+    def clear(self):
+        self.cell_boxes = []
+        self.leafs = []
+        self.sigma_T = 1e-19
+        self.w = 1.0
+        self.Nmin = 8
+        self.Nmax = 64
+        self.max_level = 10
+        self.permutations = []
+        self.cell_offsets = []
+        
+    def build(self, positions):
+        self._create_root(positions)
+        self.permutations = np.array([i for i in range(len(positions))])
+        
+        for level in range(self.max_level):
+            for i in range(self.cell_offsets[level], self.cell_offsets[level + 1]):
+                self._progress(i)
+                
+            if self.cell_offsets[level] == self.cell_offsets[level + 1]:
+                break
+        
+    def _create_root(self, positions):
+        box = _find_bounding_box(positions)
+        leaf = Leaf()
+        leaf.number_elements = len(positions)
+        
+        self.cell_offsets += [0, 1]
+        self.leafs.append(leaf)
+        self.cell_boxes.append(box)
+        
+    def _progress(self, leaf_id):
+        leaf = self.leafs[leaf_id]
+        if _is_resolved(box, leaf.number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
+            leaf.number_children = 8
+            leaf.id_first_child = leaf_id + 1
+            self.cell_offsets.append(self.cell_offsets[-1] + 8)
+        else:
+            self.cell_offsets.append(self.cell_offsets[-1])
+            
+        offset = 0
+            
+        for i in range(leaf.number_children):
+            new_leaf = Leaf()
+            new_leaf.level = leaf.level + 1
+            new_leaf.id_parent = leaf_id
+            
+            # add boxes
+            
+            self.permutations, N = _sort(self.permutations, box, positions, leaf.offset, leaf.number_elements)
+            
+            new_leaf.number_elements = N
+            new_leaf.elem_offset = leaf.elem_offset + offset
+            offset += N
+
+            self.leafs.append(new_leaf)
+       
+    def _add_boxes(self, box):
+        half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
+        
+        child_geo1 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (half[2], box[2][1])))
+        child_geo2 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (half[2], box[2][1])))
+        child_geo3 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (half[2], box[2][1])))
+        child_geo4 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (half[2], box[2][1])))
+        
+        child_geo5 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (box[2][0], half[2])))
+        child_geo6 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (box[2][0], half[2])))
+        child_geo7 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (box[2][0], half[2])))
+        child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
+        
+        self.cell_boxes.append(child_geo1)
+        self.cell_boxes.append(child_geo2)
+        self.cell_boxes.append(child_geo3)
+        self.cell_boxes.append(child_geo4)
+        
+        self.cell_boxes.append(child_geo5)
+        self.cell_boxes.append(child_geo6)
+        self.cell_boxes.append(child_geo7)
+        self.cell_boxes.append(child_geo8)
