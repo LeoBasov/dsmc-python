@@ -45,15 +45,36 @@ class TestOctree(unittest.TestCase):
         self.assertFalse(oc._is_inside(position2, box))
         self.assertTrue(oc._is_inside(position3, box))
         
-class TestOctreeOctree(unittest.TestCase):
-    def test_build(self):
-        particles = part.Particles()
-        tree = oc.Octree()
+    def test_sort(self):
+        box = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
+        positions1 = np.random.random((100, 3))
+        positions2 = np.random.random((200, 3)) - np.ones((200, 3))*2
+        positions_subs = np.concatenate((positions1, positions2))
+        np.random.shuffle(positions_subs)
+        positions = np.concatenate((positions2, positions_subs))
+        offset = len(positions2)
+        N = len(positions1) + len(positions2)
+        count = 0
         
-        X = ((-1.0, 1.0), (-1.0, 1.0), (-1.0, 1.0))
-        mass = 1.0e-26
-        T = 300.0
-        N = 10000
+        for position in positions1:
+            self.assertTrue(oc._is_inside(position, box))
+            
+        for position in positions2:
+            self.assertFalse(oc._is_inside(position, box))
+            
+        for position in positions:
+            if oc._is_inside(position, box):
+                count += 1
+                
+        self.assertEqual(len(positions1), count)
         
-        particles.create_particles(X, mass, T, N)
-        tree.build(particles.Pos)
+        Nnew = oc._sort(box, positions, offset, N)
+        
+        self.assertEqual(Nnew, len(positions1))
+        
+        for i in range(offset, offset + Nnew):
+            self.assertTrue(oc._is_inside(positions[i], box))
+            
+        for i in range(offset + Nnew, len(positions)):
+            #print(offset, Nnew, i)
+            self.assertFalse(oc._is_inside(positions[i], box))

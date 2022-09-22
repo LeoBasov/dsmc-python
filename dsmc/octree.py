@@ -62,12 +62,19 @@ def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : 
 
 @njit
 def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
-    a = position[0] > box[0][0] and position[0] <= box[0][1]
-    b = position[1] > box[1][0] and position[1] <= box[1][1]
-    c = position[2] > box[2][0] and position[2] <= box[2][1]
+    a : bool = position[0] > box[0][0] and position[0] <= box[0][1]
+    b : bool = position[1] > box[1][0] and position[1] <= box[1][1]
+    c : bool = position[2] > box[2][0] and position[2] <= box[2][1]
 
     return a and b and c
+
+@njit    
+def _swap(arr, pos1, pos2):
+    temp = arr[pos2]
+    arr[pos2] = arr[pos1]
+    arr[pos1] = temp
     
+@njit
 def _sort(box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> int:
     '''sort particles in cell
     
@@ -91,104 +98,9 @@ def _sort(box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> 
     runner = offset
     Nnew = 0
     for i in range(offset, offset + N):
-        if _is_inside(box, positions[i]):
-            temp = positions[runner]
-            positions[runner] = positions[i]
-            positions[i] = temp
+        if _is_inside(positions[i], box):
+            _swap(positions, i, runner)
+            runner += 1
             Nnew += 1
             
-    return N
-    
-class Leaf:
-	"""Info"""
-	def __init__(self, domain):
-		self.domain = domain
-		self.particle_ids = []
-		self.maximum_cross_section = 3.30606633873877e-19
-
-		self.parent = None
-		self.children = 8*[None]
-
-	def __iter__(self):
-		return self.children.__iter__()
-
-	def sort(self,positions, offset, N):
-		retParticles = []
-
-		for particle in particles:
-			if self.domain.check_if_inside(particle.position):
-				self.particles.append(particle)
-			else:
-				retParticles.append(particle)
-
-		return retParticles
-
-	def check_resultion_criterion(self):
-		if len(self.particles) > 1:
-			return True
-		else:
-			return False
-
-	def has_children(self):
-		return not (self.children[0] == None)
-    
-class Leafs:
-    def __init__(self):
-        self.clear()
-        
-    def clear(self):
-        self.level = []
-        self.elem_offset = []
-        self.number_elements = []
-        self.id_parent = []
-        self.id_first_child = []
-        self.number_children = []
-        self.N = 0
-        
-    def add_leaf(self, level, elem_offset, number_elements, id_parent, id_first_child, number_children):
-        self.level.append(level)
-        self.elem_offset.append(elem_offset)
-        self.number_elements.append(number_elements)
-        self.id_parent.append(id_parent)
-        self.id_first_child.append(id_first_child)
-        self.number_children.append(number_children)
-        self.N += 1
-        
-class Octree:
-    def __init__(self):
-        self.leafs = Leafs()
-        self.permutations = None
-        self.sigma_T = 3.631681e-19
-        self.max_level = 20
-        self.w = 1e+6
-        self.Nmin = 8
-        self.Nmax = 160
-        self.cell_bounding_boxes = []
-        self.cell_offsets = []
-        
-    def build(self, positions : npt.NDArray):
-        bounding_box = _find_bounding_box(positions)
-        self.permutations = np.array([i for i in range(len(positions))])
-        self._insert_first_leaf(positions, bounding_box)
-        last_leaf = 0
-        
-        for i in range(self.max_level):
-            pass
-            
-    def build_level(self):
-        pass
-        
-    def _insert_first_leaf(self, positions : npt.NDArray, box : npt.NDArray):
-        level = 0;
-        elem_offset = 0;
-        number_elements = len(positions)
-        id_parent = 0;
-        id_first_child = 0;
-        number_children = 0;
-
-        self.cell_bounding_boxes.append(box)
-        self.cell_offsets.append(0);
-        self.cell_offsets.append(1);
-        
-        self.leafs.add_leaf(level, elem_offset, number_elements, id_parent, id_first_child, number_children)
-        
+    return Nnew
