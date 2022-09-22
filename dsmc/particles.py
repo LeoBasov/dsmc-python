@@ -134,6 +134,6 @@ class Particles:
             self._positions = calc_positions(X[0], X[1], X[2], N)
             self._N  = N
         else:
-            self._velocities = np.concatenate(self._velocities, get_velocities(T, mass, N))
-            self._positions = np.concatenate(self._positions, calc_positions(X[0], X[1], X[2], N))
+            self._velocities = np.concatenate((self._velocities, get_velocities(T, mass, N)))
+            self._positions = np.concatenate((self._positions, calc_positions(X[0], X[1], X[2], N)))
             self._N  += N
