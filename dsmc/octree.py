@@ -154,10 +154,11 @@ class Octree:
         
     def _progress(self, leaf_id):
         leaf = self.leafs[leaf_id]
-        if _is_resolved(box, leaf.number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
+        if _is_resolved(self.cell_boxes[leaf_id], leaf.number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
             leaf.number_children = 8
             leaf.id_first_child = leaf_id + 1
             self.cell_offsets.append(self.cell_offsets[-1] + 8)
+            self._add_boxes(self.cell_boxes[leaf_id])
         else:
             self.cell_offsets.append(self.cell_offsets[-1])
             
@@ -167,10 +168,8 @@ class Octree:
             new_leaf = Leaf()
             new_leaf.level = leaf.level + 1
             new_leaf.id_parent = leaf_id
-            
-            # add boxes
-            
-            self.permutations, N = _sort(self.permutations, box, positions, leaf.offset, leaf.number_elements)
+
+            self.permutations, N = _sort(self.permutations, self.cell_boxes[self.cell_offsets[leaf_id] + i], positions, leaf.offset, leaf.number_elements)
             
             new_leaf.number_elements = N
             new_leaf.elem_offset = leaf.elem_offset + offset
