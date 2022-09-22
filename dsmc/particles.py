@@ -121,9 +121,8 @@ class Particles:
 
     @VelPos.setter
     def VelPos(self, vel_pos):
-        assert vel_pos[0] == vel_pos[1]
-        assert isinstance(vel_pos[0], np.array)
-        assert isinstance(vel_pos[1], np.array)
+        assert len(vel_pos[0]) == len(vel_pos[1])
+
         self._velocities = vel_pos[0]
         self._positions = vel_pos[1]
         self._N = len(self._positions)

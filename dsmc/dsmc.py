@@ -4,6 +4,10 @@ from numba import njit
 from . import particles as prt
 from . import octree as oc
 
+@njit
+def _push(velocities, positions, dt):
+    return positions + velocities*dt
+
 class DSMC:
     def __init__(self):
         self.clear()
@@ -21,6 +25,11 @@ class DSMC:
             raise Exception("no particles created")
         if self.w == None:
             raise Exception("particle weight not set")
+            
+        self.octree.build(self.particles.Pos)
+        # update velocities
+        self.particles.VelPos = (self.particles.Vel, _push(self.particles.Vel, self.particles.Pos, dt))
+        # do boundary
         
     def create_particles(self, box, mass, T, n):
         N = int(round(n / self.w))
