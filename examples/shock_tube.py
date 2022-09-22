@@ -4,7 +4,7 @@ if __name__ == '__main__':
     # general parameters
     solver = dsmc.DSMC()
     domain = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (0, 50e-3))
-    dt = 1e-7
+    dt = 1e-6
     w = 2.4134e+10
     mass = 6.6422e-26
     niter = 300
@@ -25,9 +25,15 @@ if __name__ == '__main__':
     solver.create_particles(Boxlow, mass, Tlow, nlow)
     solver.create_particles(Boxhigh, mass, Thigh, nhigh)
     
-    for it in range(niter):
-        print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
-        solver.advance(dt)
+    with open("test.csv", "w") as file:
+        for it in range(niter):
+            print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
+            solver.advance(dt)
+            
+            for pos in solver.particles.Pos:
+                file.write("{:.4e},".format(pos[2]))
+                
+            file.write("\n")
 
     print("")
     print('done')
