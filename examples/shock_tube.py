@@ -27,6 +27,7 @@ if __name__ == '__main__':
     
     for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
+        solver.advance(dt)
 
     print("")
     print('done')

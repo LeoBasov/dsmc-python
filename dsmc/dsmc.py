@@ -15,9 +15,9 @@ class DSMC:
         self.domain = None
         
     def advance(self, dt):
-        if self.domain == None:
+        if self.domain is None:
             raise Exception("simulation domain not defined")
-        if particles.N == 0:
+        if self.particles.N == 0:
             raise Exception("no particles created")
         if self.w == None:
             raise Exception("particle weight not set")
