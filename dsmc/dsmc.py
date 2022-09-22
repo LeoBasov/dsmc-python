@@ -5,8 +5,22 @@ from . import particles as prt
 from . import octree as oc
 
 @njit
-def _push(velocities, positions, dt):
+def _push(velocities, positions, dt):  
     return positions + velocities*dt
+
+@njit 
+def _boundary(velocities, positions, domain):
+    for p in range(len(positions)):
+        while not oc._is_inside(positions[p], domain):
+            for i in range(3):
+                if positions[p][i] < domain[i][0]:
+                    positions[p][i] = 2.0 * domain[i][0] - positions[p][i]
+                    velocities[p][i] *= -1.0
+                if positions[p][i] > domain[i][1]:
+                    positions[p][i] = 2.0 * domain[i][1] - positions[p][i]
+                    velocities[p][i] *= -1.0
+                    
+    return (velocities, positions)
 
 class DSMC:
     def __init__(self):
@@ -28,8 +42,8 @@ class DSMC:
             
         self.octree.build(self.particles.Pos)
         # update velocities
-        self.particles.VelPos = (self.particles.Vel, _push(self.particles.Vel, self.particles.Pos, dt))
-        # do boundary
+        positions = _push(self.particles.Vel, self.particles.Pos, dt)
+        self.particles.VelPos = _boundary(self.particles.Vel, positions, self.domain)
         
     def create_particles(self, box, mass, T, n):
         N = int(round(n / self.w))
