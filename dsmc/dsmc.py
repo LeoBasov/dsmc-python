@@ -21,6 +21,29 @@ def _boundary(velocities, positions, domain):
                     velocities[p][i] *= -1.0
                     
     return (velocities, positions)
+ 
+@njit   
+def _calc_prob(vel1 : np.ndarray, vel2 : np.ndarray, sigma_T : float, Vc : float, dt : float, w : float, N : int) -> np.single:
+    """
+    Parameters
+    ----------
+    vel1 : velocity
+    vel2 : velocity
+    sigma_T : float
+        total cross section
+    Vc : float
+        cell volume
+    w : float
+        weight
+    N : int
+        number of particles
+        
+    Returns
+    -------
+    collision proability : float
+    """
+    return np.linalg.norm(vel1 - vel2) * sigma_T * dt * w * N / Vc;
+
 
 class DSMC:
     def __init__(self):
