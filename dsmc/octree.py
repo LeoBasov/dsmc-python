@@ -110,6 +110,10 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
             Nnew += 1
             
     return new_permutations, Nnew
+
+@njit
+def get_V(box):
+    return (box[0][1] - box[0][0]) * (box[1][1] - box[1][0]) * (box[2][1] - box[2][0])
     
 class Leaf:
     def __init__(self):
