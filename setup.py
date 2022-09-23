@@ -1,7 +1,7 @@
 from setuptools import setup
 setup(
     name='dsmc',
-    version='0.3.0',
+    version='0.4.0',
     author='Leo Basov',
     python_requires='>=3.6, <4',
     packages=["dsmc"],

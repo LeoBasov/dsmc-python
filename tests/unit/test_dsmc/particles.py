@@ -63,3 +63,14 @@ class TestParticles(unittest.TestCase):
             self.assertTrue(particles.Pos[i][0] >= x[0] and particles.Pos[i][0] <= x[1])
             self.assertTrue(particles.Pos[i][1] >= y[0] and particles.Pos[i][1] <= y[1])
             self.assertTrue(particles.Pos[i][2] >= z[0] and particles.Pos[i][2] <= z[1])
+            
+        particles.create_particles(X, mass, T, N)
+
+        self.assertEqual(2*N, len(particles.Pos))
+        self.assertEqual(2*N, len(particles.Vel))
+        self.assertEqual(2*N, particles.N)
+        
+        for i in range(2*N):
+            self.assertTrue(particles.Pos[i][0] >= x[0] and particles.Pos[i][0] <= x[1])
+            self.assertTrue(particles.Pos[i][1] >= y[0] and particles.Pos[i][1] <= y[1])
+            self.assertTrue(particles.Pos[i][2] >= z[0] and particles.Pos[i][2] <= z[1])
