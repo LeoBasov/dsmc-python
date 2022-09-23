@@ -33,4 +33,9 @@ if __name__ == "__main__":
 	octree.build(positions)
 	wrt.write_buttom_leafs(octree)
 	
+	with open("particles.csv", "w") as file:
+		file.write("x, y, z\n")
+		for pos in positions:
+			file.write("{}, {}, {}\n".format(pos[0], pos[1], pos[2]))
+	
 	print("done")
