@@ -133,7 +133,7 @@ class DSMC:
         
         if u is not None:
             velocities = self.particles.Vel
-            u = np.array(box)
+            u = np.array(u)
             
             for i in range(len(velocities)):
                 velocities[i] += u
