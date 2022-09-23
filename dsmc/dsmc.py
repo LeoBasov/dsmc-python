@@ -63,6 +63,24 @@ def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : 
     rel_velocity_new[2] = rel_vel_module * sin_xi * np.sin(epsilon)
 
     return (centre_of_mass_velocity + rel_velocity_new * mass2_12 , centre_of_mass_velocity - rel_velocity_new * mass1_12)
+   
+@njit 
+def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, Vc : float, dt : float, w : float, offset : int, N : int):
+    i = 1
+    while i < N:
+        p1 = permutations[offset + i - 1]
+        p2 = permutations[offset + i]
+        P = _calc_prob(velocities[p1], velocities[p2], sigma_T, Vc, dt, w, N)
+        R = np.random.random(3)
+        
+        if R[0] < P:
+            new_vels = _calc_post_col_vels(velocities[p1], velocities[p2], mass, mass, np.linalg.norm(velocities[p1] - velocities[p2]), R[1], R[2])
+            velocities[p1] = new_vels[0]
+            velocities[p2] = new_vels[1]
+        
+        i += 2
+    
+    return velocities
 
 class DSMC:
     def __init__(self):
@@ -74,6 +92,7 @@ class DSMC:
         self.w = None
         self.domain = None
         self.sigma_T = 3.631681e-19
+        self.mass = None
         
     def advance(self, dt):
         if self.domain is None:
@@ -84,19 +103,28 @@ class DSMC:
             raise Exception("particle weight not set")
             
         self.octree.build(self.particles.Pos)
-        # update velocities
+        
+        for i in range(len(self.octree.leafs)):
+            leaf = self.octree.leafs[i]
+            if not leaf.number_children:
+                Vc = oc.get_V(self.octree.cell_boxes[i])
+                self.particles.VelPos = (_update_velocities(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, Vc, dt, self.w, leaf.elem_offset, leaf.number_elements), self.particles.Pos)
+        
         positions = _push(self.particles.Vel, self.particles.Pos, dt)
         self.particles.VelPos = _boundary(self.particles.Vel, positions, self.domain)
         
-    def create_particles(self, box, mass, T, n):
+    def create_particles(self, box, T, n):
         N = int(round(n / self.w))
         print("creating {} particles".format(N))
-        self.particles.create_particles(box, mass, T, N)
+        self.particles.create_particles(box, self.mass, T, N)
         
         print("now containing {} particles, {} total".format(N, self.particles.N))
         
     def set_domain(self, domain):
         self.domain = np.array(domain)
+        
+    def set_mass(self, mass):
+        self.mass = mass
         
     def set_weight(self, w):
         self.octree.w = w
