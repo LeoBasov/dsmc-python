@@ -7,7 +7,7 @@ class TestDiagnostics(unittest.TestCase):
         positions = np.array(([1, 2, 3], [9, 8, 7], [10, 11, 12], [4, 5, 6]))
         Nbins = 4
         
-        bins1, box = dia.sort_bin(positions, 0, Nbins)
+        bins1, box, x = dia.sort_bin(positions, 0, Nbins)
         
         self.assertEqual(Nbins, len(bins1))
         
