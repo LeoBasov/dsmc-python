@@ -3,7 +3,7 @@ import dsmc.diagnostics as dia
 import matplotlib.pyplot as plt
 
 def write2file(solver, n_file, T_file, p_file):
-    bins, box = dia.sort_bin(solver.particles.Pos, 2, Nbins)
+    bins, box, x = dia.sort_bin(solver.particles.Pos, 2, Nbins)
     N = [len(b) for b in bins]
     n = dia.calc_n(bins, box, 2, solver.w)
     T = dia.calc_T(bins, solver.particles.Vel, mass)
@@ -28,15 +28,15 @@ if __name__ == '__main__':
     niter = 300
     Nbins = 100
     
-    # low denisty particles
+    # high denisty particles
     nhigh = 2.41432e+22 
     Thigh = 300
-    Boxhigh = [(-0.0001, 0.0001), (-0.0001, 0.0001), (0.05, 0.1)]
+    Boxhigh = [(-0.0001, 0.0001), (-0.0001, 0.0001), (0.0, 0.05)]
     
-    # high denisty particles
+    # low denisty particles
     nlow = 2.41432e+21
     Tlow = 300
-    Boxlow = [(-0.0001, 0.0001), (-0.0001, 0.0001), (0.0, 0.05)]
+    Boxlow = [(-0.0001, 0.0001), (-0.0001, 0.0001), (0.05, 0.1)]
     
     # setup solver
     solver.set_domain(domain)

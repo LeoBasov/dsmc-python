@@ -8,6 +8,7 @@ def sort_bin(positions, axis, Nbin):
     b = 0
     box = oc._find_bounding_box(positions)
     dx = (box[axis][1] - box[axis][0]) / (Nbin - 1)
+    xx = [dx]
     x = dx
     sub_pos = np.array([pos[axis] for pos in positions])
     sorted_pos = np.argsort(sub_pos)
@@ -17,10 +18,11 @@ def sort_bin(positions, axis, Nbin):
         while positions[p][axis] > x:
             x += dx
             b += 1
+            xx.append(x)
             
         bins[b].append(p)
         
-    return bins, box
+    return bins, box, xx
     
 def calc_n(bins, box, axis, w):
     Nbins = len(bins)
