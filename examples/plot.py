@@ -7,6 +7,7 @@ if __name__ == '__main__':
 
     with open('test.csv') as file:
         reader = csv.reader(file, delimiter=',')
+        res = []
         
         for line in reader:
             l = [m for m in line if m]
@@ -16,27 +17,24 @@ if __name__ == '__main__':
             N = 100
             sor = np.zeros((N, ))
             x = np.zeros((N, ))
-            step = data[-1] / N
+            dx = 0.05/N
+            x[0] = dx
             q = 0
-            print(step, data.shape)
             
             for i in range(len(data)):
-                if  data[i] < step:
-                    x[q] = data[i]
-                    sor[q] += 1
-                else:
+                while data[i] > x[q]:
                     q += 1
-                    step += step
-                    sor[q] += 1
-                    x[q] = data[i]
+                    x[q] = x[q - 1] + dx
+                    
+                sor[q] += 1
                     
             
             x.resize(q)
             sor.resize(q)
             
-            plt.plot(x, sor)
+            res.append((x, sor))
+            
+    for i in range(len(res)):
+        if i%100 == 0:
+            plt.plot(res[i][0], res[i][1])
             plt.show()
-            plt.hist(data)
-            plt.show()
-            break
-
