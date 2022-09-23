@@ -57,7 +57,7 @@ def get_vel(T, mass):
 
 @njit
 def get_velocities(T, mass, N):
-    velocities = np.empty((N, 3), dtype=float)
+    velocities = np.empty((N, 3))
 
     for i in range(N):
         velocities[i] = get_vel(T, mass)
@@ -88,7 +88,7 @@ def calc_positions(x, y, z, N):
     z : tuple(2), dtype = float
         zmin, zmax
     """
-    positions = np.empty((N, 3), dtype=float)
+    positions = np.empty((N, 3))
 
     for i in range(N):
         positions[i][0] = x[0] + np.random.random() * (x[1] - x[0])
