@@ -1,11 +1,13 @@
 import dsmc
+import dsmc.diagnostics as dia
+import matplotlib.pyplot as plt
 
 if __name__ == '__main__':
     # general parameters
     solver = dsmc.DSMC()
     domain = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (0, 50e-3))
     dt = 1e-7
-    w = 2.4134e+15
+    w = 2.4134e+7
     mass = 6.6422e-26
     niter = 300
     
@@ -31,8 +33,14 @@ if __name__ == '__main__':
             print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
             solver.advance(dt)
             
-            for pos in solver.particles.Pos:
-                file.write("{:.4e},".format(pos[2]))
+            bins, box = dia.sort_bin(solver.particles.Pos, 2, 100)
+            N = [len(b) for b in bins]
+            n = dia.calc_n(bins, box, 2, solver.w)
+            
+            file.write("{}".format(it*dt))
+            
+            for ni in n:
+                file.write(",{}".format(ni))
                 
             file.write("\n")
 
