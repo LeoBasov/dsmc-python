@@ -141,6 +141,7 @@ class Octree:
         self.level = 0
         
     def build(self, positions):
+        self.clear()
         self._create_root(positions)
         self.permutations = np.array([i for i in range(len(positions))])
         
