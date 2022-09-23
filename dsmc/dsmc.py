@@ -43,7 +43,26 @@ def _calc_prob(vel1 : np.ndarray, vel2 : np.ndarray, sigma_T : float, Vc : float
     collision proability : float
     """
     return np.linalg.norm(vel1 - vel2) * sigma_T * dt * w * N / Vc;
+  
+@njit  
+def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : float, mass2 : float, rel_vel_module : float, rand_number1 : float, rand_number2 : float) -> tuple[np.ndarray, np.ndarray]:
+    mass12 = (mass1 + mass2)
+    mass1_12 = (mass1 / mass12)
+    mass2_12 = (mass2 / mass12)
 
+    cos_xi = (2.0 * rand_number1 - 1.0)
+    sin_xi = (np.sqrt(1.0 - cos_xi * cos_xi))
+    epsilon = (2.0 * np.pi * rand_number2)
+
+    centre_of_mass_velocity = (velocity1 * mass1 + velocity2 * mass2) * (1.0 / mass12)
+    
+    rel_velocity_new = np.empty((3, ))
+
+    rel_velocity_new[0] = rel_vel_module * cos_xi
+    rel_velocity_new[1] = rel_vel_module * sin_xi * np.cos(epsilon)
+    rel_velocity_new[2] = rel_vel_module * sin_xi * np.sin(epsilon)
+
+    return (centre_of_mass_velocity + rel_velocity_new * mass2_12 , centre_of_mass_velocity - rel_velocity_new * mass1_12)
 
 class DSMC:
     def __init__(self):
