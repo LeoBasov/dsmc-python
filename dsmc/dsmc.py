@@ -81,7 +81,8 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
         i += 2
     
     return velocities
-    
+ 
+@njit   
 def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
     for i in range(Nleafs):
         if not number_children[i]:
@@ -112,14 +113,18 @@ class DSMC:
             
         self.octree.build(self.particles.Pos)
         
-        for i in range(len(self.octree.leafs)):
-            leaf = self.octree.leafs[i]
-            if not leaf.number_children:
-                Vc = oc.get_V(self.octree.cell_boxes[i])
-                self.particles.VelPos = (_update_velocities(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, Vc, dt, self.w, leaf.elem_offset, leaf.number_elements), self.particles.Pos)
-        
+        self.particles.VelPos = (self._update_velocities(dt), self.particles.Pos)
         positions = _push(self.particles.Vel, self.particles.Pos, dt)
         self.particles.VelPos = _boundary(self.particles.Vel, positions, self.domain)
+        
+    def _update_velocities(self, dt):
+        Nleafs : int = len(self.octree.leafs)
+        elem_offsets : np.ndarray = np.array([leaf.elem_offset for leaf in self.octree.leafs], dtype=int)
+        number_elements : np.ndarray = np.array([leaf.number_elements for leaf in self.octree.leafs], dtype=int)
+        number_children : np.ndarray = np.array([leaf.number_children for leaf in self.octree.leafs], dtype=int)
+        cell_boxes : np.ndarray = np.array([box for box in self.octree.cell_boxes])
+        
+        return _update_vels(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, dt, self.w, elem_offsets, number_elements, number_children, cell_boxes, Nleafs)
         
     def create_particles(self, box, T, n):
         N = int(round(n / self.w))
