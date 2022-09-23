@@ -5,7 +5,7 @@ if __name__ == '__main__':
     solver = dsmc.DSMC()
     domain = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (0, 50e-3))
     dt = 1e-6
-    w = 2.4134e+10
+    w = 2.4134e+11
     mass = 6.6422e-26
     niter = 300
     
@@ -21,9 +21,10 @@ if __name__ == '__main__':
     
     solver.set_domain(domain)
     solver.set_weight(w)
+    solver.set_mass(mass)
     
-    solver.create_particles(Boxlow, mass, Tlow, nlow)
-    solver.create_particles(Boxhigh, mass, Thigh, nhigh)
+    solver.create_particles(Boxlow, Tlow, nlow)
+    solver.create_particles(Boxhigh, Thigh, nhigh)
     
     with open("test.csv", "w") as file:
         for it in range(niter):
