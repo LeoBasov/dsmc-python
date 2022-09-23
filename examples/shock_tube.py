@@ -10,6 +10,7 @@ if __name__ == '__main__':
     w = 2.4134e+7
     mass = 6.6422e-26
     niter = 300
+    Nbins = 100
     
     # low denisty particles
     nhigh = 2.5e+20
@@ -28,21 +29,29 @@ if __name__ == '__main__':
     solver.create_particles(Boxlow, Tlow, nlow)
     solver.create_particles(Boxhigh, Thigh, nhigh)
     
-    with open("test.csv", "w") as file:
-        for it in range(niter):
-            print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
-            solver.advance(dt)
+    n_file = open("n.csv", "w")
+    T_file = open("T.csv", "w")
+    p_file = open("p.csv", "w")
+    
+    for it in range(niter):
+        print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
+        solver.advance(dt)
             
-            bins, box = dia.sort_bin(solver.particles.Pos, 2, 100)
-            N = [len(b) for b in bins]
-            n = dia.calc_n(bins, box, 2, solver.w)
-            
-            file.write("{}".format(it*dt))
-            
-            for ni in n:
-                file.write(",{}".format(ni))
+        bins, box = dia.sort_bin(solver.particles.Pos, 2, Nbins)
+        N = [len(b) for b in bins]
+        n = dia.calc_n(bins, box, 2, solver.w)
+        T = dia.calc_T(bins, solver.particles.Vel, mass)
+      
+        for i in range(Nbins):
+            n_file.write("{},".format(n[i]))
+            T_file.write("{},".format(T[i]))
                 
-            file.write("\n")
+        n_file.write("\n")
+        T_file.write("\n")
 
+    n_file.close()
+    T_file.close()
+    p_file.close()        
+    
     print("")
     print('done')

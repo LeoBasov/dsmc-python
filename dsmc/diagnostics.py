@@ -37,3 +37,13 @@ def calc_n(bins, box, axis, w):
         n[i] = len(bins[i]) * w / V
         
     return n
+    
+def calc_T(bins, velocities, mass):
+    Nbins = len(bins)
+    T = np.empty((Nbins, ))
+    
+    for i in range(Nbins):
+        vels = np.array([velocities[p] for p in bins[i]])
+        T[i] = prt.calc_temperature(vels, mass)
+        
+    return T
