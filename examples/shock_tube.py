@@ -41,13 +41,16 @@ if __name__ == '__main__':
         N = [len(b) for b in bins]
         n = dia.calc_n(bins, box, 2, solver.w)
         T = dia.calc_T(bins, solver.particles.Vel, mass)
+        p = dia.calc_p(n, T)
       
         for i in range(Nbins):
             n_file.write("{},".format(n[i]))
             T_file.write("{},".format(T[i]))
+            p_file.write("{},".format(p[i]))
                 
         n_file.write("\n")
         T_file.write("\n")
+        p_file.write("\n")
 
     n_file.close()
     T_file.close()

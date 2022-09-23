@@ -47,3 +47,12 @@ def calc_T(bins, velocities, mass):
         T[i] = prt.calc_temperature(vels, mass)
         
     return T
+    
+def calc_p(n, T):
+    Nbins = len(n)
+    p = np.empty((Nbins, ))
+    
+    for i in range(Nbins):
+        p[i] = n[i]*T[i]*prt.kb
+        
+    return p
