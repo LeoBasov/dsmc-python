@@ -65,7 +65,7 @@ def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : 
     return (centre_of_mass_velocity + rel_velocity_new * mass2_12 , centre_of_mass_velocity - rel_velocity_new * mass1_12)
    
 @njit 
-def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, Vc : float, dt : float, w : float, offset : int, N : int):
+def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, Vc : float, dt : float, w : float, offset : int, N : int) -> np.ndarray:
     i = 1
     while i < N:
         p1 = permutations[offset + i - 1]
@@ -80,6 +80,14 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
         
         i += 2
     
+    return velocities
+    
+def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
+    for i in range(Nleafs):
+        if not number_children[i]:
+            Vc = oc.get_V(cell_boxes[i])
+            velocities = _update_velocities(permutations, velocities, mass, sigma_T, Vc, dt, w, elem_offsets[i], number_elements[i])
+            
     return velocities
 
 class DSMC:
