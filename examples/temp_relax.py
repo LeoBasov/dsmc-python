@@ -1,5 +1,4 @@
 import dsmc
-import dsmc.diagnostics as dia
 import dsmc.particles as prt
 import matplotlib.pyplot as plt
 import numpy as np
