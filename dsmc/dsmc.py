@@ -31,6 +31,7 @@ class DSMC:
         self.octree = oc.Octree()
         self.w = None
         self.domain = None
+        self.sigma_T = 3.631681e-19
         
     def advance(self, dt):
         if self.domain is None:
