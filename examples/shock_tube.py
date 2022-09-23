@@ -4,18 +4,18 @@ if __name__ == '__main__':
     # general parameters
     solver = dsmc.DSMC()
     domain = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (0, 50e-3))
-    dt = 1e-6
-    w = 2.4134e+11
+    dt = 1e-7
+    w = 2.4134e+15
     mass = 6.6422e-26
     niter = 300
     
     # low denisty particles
-    nhigh = 2.5e+14
+    nhigh = 2.5e+20
     Thigh = 300
     Boxhigh = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (25e-3, 50e-3))
     
     # high denisty particles
-    nlow = 2.5e+13
+    nlow = 2.5e+19
     Tlow = 300
     Boxlow = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (0, 25e-3))
     

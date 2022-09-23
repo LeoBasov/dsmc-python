@@ -34,7 +34,5 @@ if __name__ == '__main__':
             
             res.append((x, sor))
             
-    for i in range(len(res)):
-        if i%100 == 0:
-            plt.plot(res[i][0], res[i][1])
-            plt.show()
+    plt.plot(res[-1][0], res[-1][1])
+    plt.show()
