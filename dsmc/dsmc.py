@@ -127,7 +127,7 @@ class DSMC:
         return _update_vels(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, dt, self.w, elem_offsets, number_elements, number_children, cell_boxes, Nleafs)
         
     def create_particles(self, box, T, n):
-        N = int(round(n / self.w))
+        N = int(round(oc.get_V(box) * n / self.w))
         print("creating {} particles".format(N))
         self.particles.create_particles(box, self.mass, T, N)
         
