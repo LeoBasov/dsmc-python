@@ -106,11 +106,3 @@ class TestOctreeOctree(unittest.TestCase):
         octree.w = 1e+18
         
         octree.build(positions)
-        
-    def test__add_boxes(self):
-        octree = oc.Octree()
-        box = np.array([[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]])
-        
-        octree._add_boxes(box)
-        
-        self.assertEqual(8, len(octree.cell_boxes))
