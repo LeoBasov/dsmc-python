@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import numpy.typing as npt
 from numba import njit
@@ -65,9 +64,9 @@ def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : 
 
 @njit
 def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
-    a : bool = position[0] > box[0][0] and position[0] <= box[0][1]
-    b : bool = position[1] > box[1][0] and position[1] <= box[1][1]
-    c : bool = position[2] > box[2][0] and position[2] <= box[2][1]
+    a : bool = position[0] >= box[0][0] and position[0] <= box[0][1]
+    b : bool = position[1] >= box[1][0] and position[1] <= box[1][1]
+    c : bool = position[2] >= box[2][0] and position[2] <= box[2][1]
 
     return a and b and c
 
@@ -99,11 +98,10 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
         number of found positions
     '''
     new_permutations = np.copy(permutations)
-    temp = np.empty((3,))
     runner = offset
     Nnew = 0
     for i in range(offset, offset + N):
-        p = permutations[i]
+        p = new_permutations[i]
         if _is_inside(positions[p], box):
             _swap(new_permutations, i, runner)
             runner += 1
@@ -114,6 +112,22 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
 @njit
 def get_V(box):
     return (box[0][1] - box[0][0]) * (box[1][1] - box[1][0]) * (box[2][1] - box[2][0])
+
+@njit
+def _create_boxes(box):
+    half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
+    
+    child_geo1 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (half[2], box[2][1])))
+    child_geo2 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (half[2], box[2][1])))
+    child_geo3 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (half[2], box[2][1])))
+    child_geo4 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (half[2], box[2][1])))
+    
+    child_geo5 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (box[2][0], half[2])))
+    child_geo6 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (box[2][0], half[2])))
+    child_geo7 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (box[2][0], half[2])))
+    child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
+    
+    return [child_geo1, child_geo2, child_geo3, child_geo4, child_geo5, child_geo6, child_geo7, child_geo8]
     
 class Leaf:
     def __init__(self):
@@ -164,49 +178,26 @@ class Octree:
         self.cell_boxes.append(box)
         
     def _progress(self, leaf_id, positions):
-        leaf = self.leafs[leaf_id]
-        if _is_resolved(self.cell_boxes[leaf_id], leaf.number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
-            leaf.number_children = 8
-            leaf.id_first_child = leaf_id + 1
+        if _is_resolved(self.cell_boxes[leaf_id], self.leafs[leaf_id].number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
+            self.leafs[leaf_id].number_children = 8
+            self.leafs[leaf_id].id_first_child = self.cell_offsets[-1]
             self.cell_offsets[-1] += 8
-            self._add_boxes(self.cell_boxes[leaf_id])
+            self.cell_boxes += _create_boxes(self.cell_boxes[leaf_id])
         else:
             pass
-            
-        offset = 0
-            
-        for i in range(leaf.number_children):
+           
+        offset = 0 
+           
+        for i in range(self.leafs[leaf_id].number_children):
             new_leaf = Leaf()
-            new_leaf.level = leaf.level + 1
+            new_leaf.level = self.leafs[leaf_id].level + 1
             new_leaf.id_parent = leaf_id
 
-            self.permutations, N = _sort(self.permutations, self.cell_boxes[leaf_id + 1 + i], positions, leaf.elem_offset, leaf.number_elements)
+            new_leaf.elem_offset = self.leafs[leaf_id].elem_offset + offset
+            
+            self.permutations, N = _sort(self.permutations, self.cell_boxes[self.leafs[leaf_id].id_first_child + i], positions, new_leaf.elem_offset, self.leafs[leaf_id].number_elements - offset)
             
             new_leaf.number_elements = N
-            new_leaf.elem_offset = leaf.elem_offset + offset
             offset += N
 
             self.leafs.append(new_leaf)
-       
-    def _add_boxes(self, box):
-        half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
-        
-        child_geo1 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (half[2], box[2][1])))
-        child_geo2 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (half[2], box[2][1])))
-        child_geo3 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (half[2], box[2][1])))
-        child_geo4 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (half[2], box[2][1])))
-        
-        child_geo5 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (box[2][0], half[2])))
-        child_geo6 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (box[2][0], half[2])))
-        child_geo7 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (box[2][0], half[2])))
-        child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
-        
-        self.cell_boxes.append(child_geo1)
-        self.cell_boxes.append(child_geo2)
-        self.cell_boxes.append(child_geo3)
-        self.cell_boxes.append(child_geo4)
-        
-        self.cell_boxes.append(child_geo5)
-        self.cell_boxes.append(child_geo6)
-        self.cell_boxes.append(child_geo7)
-        self.cell_boxes.append(child_geo8)
