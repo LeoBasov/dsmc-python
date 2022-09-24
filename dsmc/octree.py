@@ -169,9 +169,9 @@ class Octree:
             self._add_boxes(self.cell_boxes[leaf_id])
         else:
             pass
-            
-        offset = 0
-            
+           
+        offset = 0 
+           
         for i in range(self.leafs[leaf_id].number_children):
             new_leaf = Leaf()
             new_leaf.level = self.leafs[leaf_id].level + 1
@@ -180,7 +180,7 @@ class Octree:
             self.permutations, N = _sort(self.permutations, self.cell_boxes[leaf_id + 1 + i], positions, self.leafs[leaf_id].elem_offset, self.leafs[leaf_id].number_elements)
             
             new_leaf.number_elements = N
-            new_leaf.elem_offset = self.leafs[leaf_id].elem_offset + offset # ToDo this seems to be wrong
+            new_leaf.elem_offset = self.leafs[leaf_id].elem_offset + offset
             offset += N
 
             self.leafs.append(new_leaf)
