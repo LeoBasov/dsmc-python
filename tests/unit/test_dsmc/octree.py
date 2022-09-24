@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 from dsmc import octree as oc
 from dsmc import particles as part
+import csv
 
 class TestOctree(unittest.TestCase):
     def test__find_bounding_box(self):
@@ -153,16 +154,24 @@ class TestOctree(unittest.TestCase):
             f = (pos[2] >= box[2][0])
             
             self.assertTrue(a and b and c and d and e and f)
-            
+
+
+    def load_particles(self):
+        positions = []
+        
+        with open("./test_data/particles.csv", "r", newline='') as csvfile:
+            reader = csv.reader(csvfile, delimiter=',')
+            for row in reader:
+                positions.append([float(row[i]) for i in range(3)])
+                
+        return np.array(positions)
+
     def test_sort3(self):
         box = np.array([[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]])
         boxes = [] + oc._create_boxes(box)
         N = 100
-        positions = np.empty((N, 3))
-        permutations = np.array([i for i in range(N)])
-        
-        for i in range(N):
-            positions[i] = np.random.random(3)*2.0 - np.ones(3)
+        permutations = np.array([i for i in range(N)])            
+        positions = self.load_particles()
             
         permutations , Np1 = oc._sort(permutations, boxes[0], positions, 0, N)
         permutations , Np2 = oc._sort(permutations, boxes[1], positions, Np1, N - Np1)
