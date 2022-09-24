@@ -153,9 +153,39 @@ class TestOctree(unittest.TestCase):
             f = (pos[2] >= box[2][0])
             
             self.assertTrue(a and b and c and d and e and f)
+            
+    def test_sort3(self):
+        box = np.array([[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]])
+        boxes = [] + oc._create_boxes(box)
+        N = 100
+        positions = np.empty((N, 3))
+        permutations = np.array([i for i in range(N)])
+        
+        for i in range(N):
+            positions[i] = np.random.random(3)*2.0 - np.ones(3)
+            
+        permutations , Np1 = oc._sort(permutations, boxes[0], positions, 0, N)
+        permutations , Np2 = oc._sort(permutations, boxes[1], positions, Np1, N - Np1)
+        permutations , Np3 = oc._sort(permutations, boxes[2], positions, Np2, N - Np2)
+        permutations , Np4 = oc._sort(permutations, boxes[3], positions, Np3, N - Np3)
+        
+        #permutations , Np5 = oc._sort(permutations, boxes[4], positions, Np4, N - Np4)
+        #permutations , Np6 = oc._sort(permutations, boxes[5], positions, Np5, N - Np5)
+        #permutations , Np7 = oc._sort(permutations, boxes[6], positions, Np6, N - Np6)
+        #permutations , Np8 = oc._sort(permutations, boxes[7], positions, Np7, N - Np7)
+        
+        Nnew = np.zeros(8, dtype=int)
+        
+        for i in range(Np1):
+        	p = permutations[i]
+        	pos = positions[p]
+        	if oc._is_inside(pos, boxes[0]):
+        		Nnew[0] += 1
+        		
+        self.assertEqual(Nnew[0], Np1)
 
     def test__create_boxes(self):
-        box_orig = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
+        box_orig = np.array([[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]])
         boxes = oc._create_boxes(box_orig)
         
         self.assertEqual(8, len(boxes))
