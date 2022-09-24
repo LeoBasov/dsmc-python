@@ -1,4 +1,3 @@
-import math
 import numpy as np
 import numpy.typing as npt
 from numba import njit
@@ -99,7 +98,6 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
         number of found positions
     '''
     new_permutations = np.copy(permutations)
-    temp = np.empty((3,))
     runner = offset
     Nnew = 0
     for i in range(offset, offset + N):
