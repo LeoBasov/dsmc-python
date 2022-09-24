@@ -64,9 +64,9 @@ def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : 
 
 @njit
 def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
-    a : bool = position[0] > box[0][0] and position[0] <= box[0][1]
-    b : bool = position[1] > box[1][0] and position[1] <= box[1][1]
-    c : bool = position[2] > box[2][0] and position[2] <= box[2][1]
+    a : bool = position[0] >= box[0][0] and position[0] <= box[0][1]
+    b : bool = position[1] >= box[1][0] and position[1] <= box[1][1]
+    c : bool = position[2] >= box[2][0] and position[2] <= box[2][1]
 
     return a and b and c
 
@@ -193,10 +193,11 @@ class Octree:
             new_leaf.level = self.leafs[leaf_id].level + 1
             new_leaf.id_parent = leaf_id
 
-            self.permutations, N = _sort(self.permutations, self.cell_boxes[leaf_id + 1 + i], positions, self.leafs[leaf_id].elem_offset, self.leafs[leaf_id].number_elements)
+            new_leaf.elem_offset = self.leafs[leaf_id].elem_offset + offset
+            
+            self.permutations, N = _sort(self.permutations, self.cell_boxes[self.leafs[leaf_id].id_first_child + i], positions, new_leaf.elem_offset, self.leafs[leaf_id].number_elements - offset)
             
             new_leaf.number_elements = N
-            new_leaf.elem_offset = self.leafs[leaf_id].elem_offset + offset
             offset += N
 
             self.leafs.append(new_leaf)
