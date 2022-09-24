@@ -182,7 +182,7 @@ class Octree:
             self.leafs[leaf_id].number_children = 8
             self.leafs[leaf_id].id_first_child = self.cell_offsets[-1]
             self.cell_offsets[-1] += 8
-            self._add_boxes(self.cell_boxes[leaf_id])
+            self.cell_boxes += _create_boxes(self.cell_boxes[leaf_id])
         else:
             pass
            
@@ -200,26 +200,3 @@ class Octree:
             offset += N
 
             self.leafs.append(new_leaf)
-       
-    def _add_boxes(self, box):
-        half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
-        
-        child_geo1 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (half[2], box[2][1])))
-        child_geo2 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (half[2], box[2][1])))
-        child_geo3 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (half[2], box[2][1])))
-        child_geo4 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (half[2], box[2][1])))
-        
-        child_geo5 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (box[2][0], half[2])))
-        child_geo6 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (box[2][0], half[2])))
-        child_geo7 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (box[2][0], half[2])))
-        child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
-        
-        self.cell_boxes.append(child_geo1)
-        self.cell_boxes.append(child_geo2)
-        self.cell_boxes.append(child_geo3)
-        self.cell_boxes.append(child_geo4)
-        
-        self.cell_boxes.append(child_geo5)
-        self.cell_boxes.append(child_geo6)
-        self.cell_boxes.append(child_geo7)
-        self.cell_boxes.append(child_geo8)
