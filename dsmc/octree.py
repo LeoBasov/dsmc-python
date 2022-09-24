@@ -112,6 +112,22 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
 @njit
 def get_V(box):
     return (box[0][1] - box[0][0]) * (box[1][1] - box[1][0]) * (box[2][1] - box[2][0])
+
+@njit
+def _create_boxes(box):
+    half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
+    
+    child_geo1 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (half[2], box[2][1])))
+    child_geo2 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (half[2], box[2][1])))
+    child_geo3 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (half[2], box[2][1])))
+    child_geo4 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (half[2], box[2][1])))
+    
+    child_geo5 = np.array(((half[0], box[0][1]), (half[1], box[1][1]), (box[2][0], half[2])))
+    child_geo6 = np.array(((box[0][0], half[0]), (half[1], box[1][1]), (box[2][0], half[2])))
+    child_geo7 = np.array(((box[0][0], half[0]), (box[1][0], half[1]), (box[2][0], half[2])))
+    child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
+    
+    return [child_geo1, child_geo2, child_geo3, child_geo4, child_geo5, child_geo6, child_geo7, child_geo8]
     
 class Leaf:
     def __init__(self):
