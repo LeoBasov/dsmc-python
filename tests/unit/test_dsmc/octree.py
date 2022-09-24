@@ -175,7 +175,7 @@ class TestOctree(unittest.TestCase):
             
         permutations , Np1 = oc._sort(permutations, boxes[0], positions, 0, N)
         permutations , Np2 = oc._sort(permutations, boxes[1], positions, Np1, N - Np1)
-        #permutations , Np3 = oc._sort(permutations, boxes[2], positions, Np2, N - Np2)
+        permutations , Np3 = oc._sort(permutations, boxes[2], positions, Np1 + Np2, N - Np2 - Np1)
         #permutations , Np4 = oc._sort(permutations, boxes[3], positions, Np3, N - Np3)
         
         #permutations , Np5 = oc._sort(permutations, boxes[4], positions, Np4, N - Np4)
@@ -200,6 +200,14 @@ class TestOctree(unittest.TestCase):
         		Nnew[1] += 1
         		
         self.assertEqual(Nnew[1], Np2)
+        
+        for i in range(Np1 + Np2, Np1 + Np2 + Np3):
+        	p = permutations[i]
+        	pos = positions[p]
+        	if oc._is_inside(pos, boxes[2]):
+        		Nnew[2] += 1
+        		
+        self.assertEqual(Nnew[2], Np3)
 
     def test__create_boxes(self):
         box_orig = np.array([[-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0]])
