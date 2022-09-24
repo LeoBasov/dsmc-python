@@ -85,7 +85,75 @@ class TestOctree(unittest.TestCase):
         for i in range(offset + Nnew, len(permutations)):
             p = permutations[i]
             self.assertFalse(oc._is_inside(positions[p], box))
+
+    def test_sort2(self):
+        box = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
+        N = 20
+        Nh = 10
+        Nm = 15
+        Np = 5
+        positions  = np.empty((N, 3))
+        positions1 = np.empty((Np, 3))
+        positions2 = np.empty((Np, 3))
+        positions3 = np.empty((Nh, 3))
+        permutations = np.array([i for i in range(N)])
+        
+        for i in range(Np):
+            positions1[i] = np.random.random(3) - np.ones(3)
             
+        for i in range(Np):
+            positions2[i] = np.random.random(3)
+            
+        for i in range(Nh):
+            positions3[i] = np.random.random(3) - np.ones(3)
+            
+        positions = np.concatenate((positions3, positions1, positions2))
+        permutations, Nnew = oc._sort(permutations, box, positions, Nh, Nh)
+        
+        self.assertEqual(Nnew, Np)
+        
+        for i in range(Nh):
+            p = permutations[i]
+            pos = positions[p]
+            a = not (pos[0] <= box[0][1])
+            b = not (pos[0] >= box[0][0])
+            
+            c = not (pos[1] <= box[1][1])
+            d = not (pos[1] >= box[1][0])
+            
+            e = not (pos[2] <= box[2][1])
+            f = not (pos[2] >= box[2][0])
+            
+            self.assertTrue(a or b or c or d or e or f)
+            
+        for i in range(Nm, N):
+            p = permutations[i]
+            pos = positions[p]
+            a = not (pos[0] <= box[0][1])
+            b = not (pos[0] >= box[0][0])
+            
+            c = not (pos[1] <= box[1][1])
+            d = not (pos[1] >= box[1][0])
+            
+            e = not (pos[2] <= box[2][1])
+            f = not (pos[2] >= box[2][0])
+            
+            self.assertTrue(a or b or c or d or e or f)
+            
+        for i in range(Nh, Nm):
+            p = permutations[i]
+            pos = positions[p]
+            a = (pos[0] <= box[0][1])
+            b = (pos[0] >= box[0][0])
+            
+            c = (pos[1] <= box[1][1])
+            d = (pos[1] >= box[1][0])
+            
+            e = (pos[2] <= box[2][1])
+            f = (pos[2] >= box[2][0])
+            
+            self.assertTrue(a and b and c and d and e and f)
+
     def test__create_boxes(self):
         box_orig = np.array([[0.0, 1.0], [0.0, 1.0], [0.0, 1.0]])
         boxes = oc._create_boxes(box_orig)

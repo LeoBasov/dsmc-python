@@ -101,7 +101,7 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
     runner = offset
     Nnew = 0
     for i in range(offset, offset + N):
-        p = permutations[i]
+        p = new_permutations[i]
         if _is_inside(positions[p], box):
             _swap(new_permutations, i, runner)
             runner += 1
