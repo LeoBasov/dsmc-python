@@ -22,20 +22,42 @@ def create_particles(N, radius):
 	return positions
 
 if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Process some integers.')
-	parser.add_argument('N', type=int)
+    parser = argparse.ArgumentParser(description='Process some integers.')
+    parser.add_argument('N', type=int)
 
-	args = parser.parse_args()
+    args = parser.parse_args()
     
-	radius = 1.0
-	positions = create_particles(args.N, radius)
-	octree = oc.Octree()
-	octree.build(positions)
-	wrt.write_buttom_leafs(octree)
+    radius = 1.0
+    positions = create_particles(args.N, radius)
+    octree = oc.Octree()
+    octree.build(positions)
+    wrt.write_buttom_leafs(octree)
+    
+    for i in range(len(octree.leafs)):
+        box = octree.cell_boxes[i]
+        leaf = octree.leafs[i]
+        N = 0
+        for j in range(leaf.elem_offset, leaf.elem_offset + leaf.number_elements):
+            p = octree.permutations[j]
+            pos = positions[p]
+            
+            if oc._is_inside(pos, box):
+                N += 1
+            else:
+                raise Exception(pos, box)
+                
+        if N != leaf.number_elements:
+            raise Exception(N, leaf.number_elements, box)
 	
-	with open("particles.csv", "w") as file:
-		file.write("x, y, z\n")
-		for pos in positions:
-			file.write("{}, {}, {}\n".format(pos[0], pos[1], pos[2]))
+    with open("particles.csv", "w") as file:
+        file.write("x, y, z\n")
+        
+        for i in range(len(octree.leafs)):
+            leaf = octree.leafs[i]
+            if leaf.number_children == 0 and leaf.number_elements > 0:
+                for j in range(leaf.elem_offset, leaf.elem_offset + leaf.number_elements):
+                    p = octree.permutations[j]
+                    pos = positions[p]
+                    file.write("{}, {}, {}\n".format(pos[0], pos[1], pos[2]))
 	
-	print("done")
+    print("done")
