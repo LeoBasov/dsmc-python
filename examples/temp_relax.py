@@ -17,7 +17,7 @@ if __name__ == '__main__':
     dt = 1e-5
     w = 2.4134e+7
     mass = 6.6422e-26
-    niter = 500
+    niter = 100
     Nbins = 100
     
     # particles
@@ -38,11 +38,13 @@ if __name__ == '__main__':
         solver.advance(dt)
         x = calc_x(solver.particles.Vel, solver.mass)
 
-    xm = np.linspace(0, 3500, 1000)
-    dist = [maxwell(xi, 300) for xi in xm]
+    Tnew = prt.calc_temperature(solver.particles.Vel, solver.mass)
+    xm = np.linspace(0, 30000, 1000)
+    dist = [maxwell(xi, Tnew) for xi in xm]
     
     plt.plot(xm, dist)
     plt.hist(x, Nbins, density=True)
+    plt.title("T = {:.3f}K".format(Tnew))
     plt.show()  
     
     print("")
