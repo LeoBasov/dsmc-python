@@ -26,7 +26,6 @@ def sort_bin(positions, axis, Nbin):
     
 def calc_n(bins, box, axis, w):
     Nbins = len(bins)
-    dx = (box[axis][1] - box[axis][0]) / Nbins
     V = 1
     n = np.empty((Nbins, ))
     for i in range(3):

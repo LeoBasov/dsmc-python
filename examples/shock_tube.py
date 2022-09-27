@@ -1,10 +1,8 @@
 import dsmc
 import dsmc.diagnostics as dia
-import matplotlib.pyplot as plt
 
 def write2file(solver, n_file, T_file, p_file):
     bins, box, x = dia.sort_bin(solver.particles.Pos, 2, Nbins)
-    N = [len(b) for b in bins]
     n = dia.calc_n(bins, box, 2, solver.w)
     T = dia.calc_T(bins, solver.particles.Vel, mass)
     p = dia.calc_p(n, T)
