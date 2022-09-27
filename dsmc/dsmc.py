@@ -100,7 +100,7 @@ class DSMC:
         self.sigma_T = 3.631681e-19
         self.mass = None
 
-    def advance(self, dt, collisions=True):
+    def advance(self, dt, collisions=True, octree=True):
         if self.domain is None:
             raise Exception("simulation domain not defined")
         if self.particles.N == 0:
@@ -108,9 +108,9 @@ class DSMC:
         if self.w == None:
             raise Exception("particle weight not set")
 
-        self.octree.build(self.particles.Pos)
-
-        if collisions:
+        if octree:
+            self.octree.build(self.particles.Pos)
+        if collisions and octree:
             self.particles.VelPos = (self._update_velocities(dt), self.particles.Pos)
         positions = _push(self.particles.Vel, self.particles.Pos, dt)
         self.particles.VelPos = _boundary(self.particles.Vel, positions, self.domain)
