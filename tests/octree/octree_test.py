@@ -33,6 +33,8 @@ if __name__ == "__main__":
     octree.build(positions)
     wrt.write_buttom_leafs(octree)
     
+    octree.min_aspect_ratio = 0.01
+    
     for i in range(len(octree.leafs)):
         box = octree.cell_boxes[i]
         leaf = octree.leafs[i]
