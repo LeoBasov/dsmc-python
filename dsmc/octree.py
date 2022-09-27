@@ -165,7 +165,7 @@ def _create_combined_boxes(box, min_aspect_ratio):
     q = 1
     
     for i in range(3):
-        if _get_min_aspect_ratio(box, i) < min_aspect_ratio:
+        if _get_min_aspect_ratio(box, i) > min_aspect_ratio:
             for b in range(Nold, Nold + 2**N):
                 new_boxes = _devide(boxes[b], i)
                 boxes[q] = new_boxes[0]
