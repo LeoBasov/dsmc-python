@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from numba import njit
+import numba as nb
 
 fmin = np.finfo(float).min
 fmax = np.finfo(float).max
@@ -155,21 +156,31 @@ def _devide(box, axis):
     
     return (box1, box2)
 
+@njit
 def _create_combined_boxes(box, min_aspect_ratio):
-    boxes = np.array([box])
+    boxes = np.empty((15, 3, 2))
+    boxes[0] = box
     N = 0
+    Nold = 0
+    q = 1
     
     for i in range(3):
-        if _get_min_aspect_ratio(box, i):
-            for b in range(boxes.shape[0] - (2**N), boxes.shape[0]):
-                new_boxes = np.array(_devide(boxes[b], i))
-                boxes = np.concatenate((boxes, new_boxes))
-                
+        if _get_min_aspect_ratio(box, i) < min_aspect_ratio:
+            for b in range(Nold, Nold + 2**N):
+                new_boxes = _devide(boxes[b], i)
+                boxes[q] = new_boxes[0]
+                boxes[q + 1] = new_boxes[1]
+                q += 2
+            Nold += 2**N
             N += 1
-                
-    N = 2**N
-    return boxes[-N:]
             
+    N = 2**N
+    new_boxes = np.empty((N, 3, 2))
+    
+    for b in range(N):
+        new_boxes[b] = boxes[Nold + b]
+            
+    return new_boxes
     
 class Leaf:
     def __init__(self):
