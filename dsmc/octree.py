@@ -194,6 +194,7 @@ class Leaf:
 class Octree:
     def __init__(self):
         self.clear()
+        self.min_aspect_ratio = 0.1
         
     def clear(self):
         self.cell_boxes = []
@@ -232,10 +233,17 @@ class Octree:
         
     def _progress(self, leaf_id, positions):
         if _is_resolved(self.cell_boxes[leaf_id], self.leafs[leaf_id].number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
-            self.leafs[leaf_id].number_children = 8
+            
             self.leafs[leaf_id].id_first_child = self.cell_offsets[-1]
-            self.cell_offsets[-1] += 8
-            self.cell_boxes += _create_boxes(self.cell_boxes[leaf_id])
+            
+            new_boxes = _create_combined_boxes(self.cell_boxes[leaf_id], self.min_aspect_ratio)
+            self.cell_offsets[-1] += len(new_boxes)
+            self.leafs[leaf_id].number_children = len(new_boxes)
+            
+            for box in new_boxes:
+                self.cell_boxes.append(box)
+            
+            #raise Exception()
         else:
             pass
            
