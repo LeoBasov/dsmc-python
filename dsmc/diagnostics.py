@@ -1,5 +1,4 @@
 import numpy as np
-from numba import njit
 from . import particles as prt
 from . import octree as oc
 
