@@ -1,15 +1,18 @@
 import numpy as np
 from numba import njit
+from numba import prange
 from . import particles as prt
 from . import octree as oc
 
-@njit
+@njit(parallel=True)
 def _push(velocities, positions, dt):
-    return positions + velocities*dt
+    for p in prange(len(positions)):
+        positions[p] = positions[p] + velocities[p]*dt
+    return positions
 
-@njit
+@njit(parallel=True)
 def _boundary(velocities, positions, domain):
-    for p in range(len(positions)):
+    for p in prange(len(positions)):
         while not oc._is_inside(positions[p], domain):
             for i in range(3):
                 if positions[p][i] < domain[i][0]:
