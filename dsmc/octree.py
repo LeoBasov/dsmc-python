@@ -129,6 +129,7 @@ def _create_boxes(box):
     
     return [child_geo1, child_geo2, child_geo3, child_geo4, child_geo5, child_geo6, child_geo7, child_geo8]
 
+@njit
 def _get_min_aspect_ratio(box, axis):
     half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
     
@@ -140,10 +141,14 @@ def _get_min_aspect_ratio(box, axis):
         case 2:
             return min(half[2] / half[1], half[2] / half[0]);
 
-def _check_aspect_ratios(boxes, min_aspect_ratio):
-    ret_vals = [(box, True) for box in boxes]
+@njit
+def _check_aspect_ratios(box, min_aspect_ratio):
+    checks = np.empty((3,), dtype=np.bool_)
     
-    return ret_vals # ToDO
+    for i in range(3):
+        checks[i] = (_get_min_aspect_ratio(box, i) > min_aspect_ratio)
+    
+    return checks
 
 def _combine_boxes(boxes, min_aspect_ratio):
     pass # ToDO
