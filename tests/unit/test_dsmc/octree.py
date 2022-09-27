@@ -231,15 +231,33 @@ class TestOctree(unittest.TestCase):
         self.assertEqual(0.1, oc._get_min_aspect_ratio(box, axis2))
         self.assertEqual(10.0, oc._get_min_aspect_ratio(box, axis3))
         
-    def test__check_aspect_ratios(self):
+    def test__devide(self):
         box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
-        min_aspect_ration = 0.5
-        checks = oc._check_aspect_ratios(box, min_aspect_ration)
+        box_x1, box_x2 = oc._devide(box, 0)
+        box_y1, box_y2 = oc._devide(box, 1)
+        box_z1, box_z2 = oc._devide(box, 2)
         
-        self.assertFalse(checks[0])
-        self.assertFalse(checks[1])
-        self.assertTrue(checks[2])
+        boxes = ((box_x1, box_x2), (box_y1, box_y2), (box_z1, box_z2))
+        
+        half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
+        
+        for b in range(3):
+            box_a = boxes[b][0]
+            box_b = boxes[b][1]
             
+            self.assertEqual(box_a[b][0], box[b][0])
+            self.assertEqual(box_a[b][1], half[b])
+            
+            self.assertEqual(box_b[b][0], half[b])
+            self.assertEqual(box_b[b][1], box[b][1])
+            
+            for i in range(3):
+                for j in range(2):
+                    if b != i:
+                        self.assertEqual(box_a[i][j], box[i][j])
+                        self.assertEqual(box_b[i][j], box[i][j])
+        
+        
             
 class TestOctreeOctree(unittest.TestCase):
     def test_build(self):

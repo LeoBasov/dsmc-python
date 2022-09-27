@@ -142,16 +142,29 @@ def _get_min_aspect_ratio(box, axis):
             return min(half[2] / half[1], half[2] / half[0]);
 
 @njit
-def _check_aspect_ratios(box, min_aspect_ratio):
-    checks = np.empty((3,), dtype=np.bool_)
+def _devide(box, axis):
+    half = 0.5*(box[axis][0] + box[axis][1])
+    box1 = np.copy(box)
+    box2 = np.copy(box)
+    
+    box1[axis][0] = box[axis][0]
+    box1[axis][1] = half
+    
+    box2[axis][0] = half
+    box2[axis][1] = box[axis][1]
+    
+    return (box1, box2)
+
+def _create_combined_boxes(box, min_aspect_ratio):
+    boxes = np.array([box])
     
     for i in range(3):
-        checks[i] = (_get_min_aspect_ratio(box, i) > min_aspect_ratio)
-    
-    return checks
-
-def _combine_boxes(boxes, min_aspect_ratio):
-    pass # ToDO
+        if _get_min_aspect_ratio(box, i):
+            new_boxes = np.array([_devide(b, i) for b in boxes])
+            boxes.concatenate((boxes, new_boxes))
+            
+    return boxes
+            
     
 class Leaf:
     def __init__(self):
