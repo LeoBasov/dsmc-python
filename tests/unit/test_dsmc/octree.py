@@ -304,7 +304,19 @@ class TestOctree(unittest.TestCase):
         self.assertEqual(oc.get_V(box), V)
         self.assertEqual(4, len(boxes_new))
         
+    def test__create_combined_boxes_4(self):
+        box = np.array([(-1.0, 1.0), (-10.0, 10.0), (-100.0, 100.0)])
+        min_aspect_ratio = 0.0
+        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio)
+        V = 0.0
         
+        for b in boxes_new:
+            V += oc.get_V(b)
+            
+        self.assertEqual(oc.get_V(box), V)
+        self.assertEqual(8, len(boxes_new))
+        
+        print(boxes_new)
             
 class TestOctreeOctree(unittest.TestCase):
     def test_build(self):
