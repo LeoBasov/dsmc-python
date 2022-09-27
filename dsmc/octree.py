@@ -132,7 +132,7 @@ def _create_boxes(box):
 
 @njit
 def _get_min_aspect_ratio(box, axis):
-    half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
+    half = np.array([0.5*(box[i][1] - box[i][0]) for i in range(3)])
     
     match axis:
         case 0:
