@@ -23,7 +23,7 @@ def _boundary(velocities, positions, domain):
     return (velocities, positions)
 
 @njit
-def _calc_prob(vel1 : np.ndarray, vel2 : np.ndarray, sigma_T : float, Vc : float, dt : float, w : float, N : int) -> np.single:
+def _calc_prob(rel_vel : float, sigma_T : float, Vc : float, dt : float, w : float, N : int) -> np.single:
     """
     Parameters
     ----------
@@ -42,7 +42,7 @@ def _calc_prob(vel1 : np.ndarray, vel2 : np.ndarray, sigma_T : float, Vc : float
     -------
     collision proability : float
     """
-    return np.linalg.norm(vel1 - vel2) * sigma_T * dt * w * N / Vc;
+    return rel_vel * sigma_T * dt * w * N / Vc;
 
 @njit
 def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : float, mass2 : float, rel_vel_module : float, rand_number1 : float, rand_number2 : float) -> tuple[np.ndarray, np.ndarray]:
@@ -69,11 +69,12 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
     for i in range(1, N, 2):
         p1 = permutations[offset + i - 1]
         p2 = permutations[offset + i]
-        P = _calc_prob(velocities[p1], velocities[p2], sigma_T, Vc, dt, w, N)
+        rel_vel = np.linalg.norm(velocities[p1] - velocities[p2])
+        P = _calc_prob(rel_vel, sigma_T, Vc, dt, w, N)
         R = np.random.random(3)
 
         if R[0] < P:
-            new_vels = _calc_post_col_vels(velocities[p1], velocities[p2], mass, mass, np.linalg.norm(velocities[p1] - velocities[p2]), R[1], R[2])
+            new_vels = _calc_post_col_vels(velocities[p1], velocities[p2], mass, mass, rel_vel, R[1], R[2])
             velocities[p1] = new_vels[0]
             velocities[p2] = new_vels[1]
 
