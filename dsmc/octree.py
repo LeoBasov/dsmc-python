@@ -128,6 +128,25 @@ def _create_boxes(box):
     child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
     
     return [child_geo1, child_geo2, child_geo3, child_geo4, child_geo5, child_geo6, child_geo7, child_geo8]
+
+def _get_min_aspect_ratio(box, axis):
+    half = np.array([0.5*(box[i][0] + box[i][1]) for i in range(3)])
+    
+    match axis:
+        case 0:
+            return min(half[0] / half[1], half[0] / half[2]);
+        case 1:
+            return min(half[1] / half[0], half[1] / half[2]);
+        case 2:
+            return min(half[2] / half[1], half[2] / half[0]);
+
+def _check_aspect_ratios(boxes, min_aspect_ratio):
+    ret_vals = [(box, True) for box in boxes]
+    
+    return ret_vals # ToDO
+
+def _combine_boxes(boxes, min_aspect_ratio):
+    pass # ToDO
     
 class Leaf:
     def __init__(self):

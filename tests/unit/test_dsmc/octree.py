@@ -220,6 +220,16 @@ class TestOctree(unittest.TestCase):
             V += oc.get_V(box)
             
         self.assertEqual(oc.get_V(box_orig), V)
+        
+    def test__get_min_aspect_ratio(self):
+        box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
+        axis1 = 0
+        axis2 = 1
+        axis3 = 2
+        
+        self.assertEqual(0.01, oc._get_min_aspect_ratio(box, axis1))
+        self.assertEqual(0.1, oc._get_min_aspect_ratio(box, axis2))
+        self.assertEqual(10.0, oc._get_min_aspect_ratio(box, axis3))
             
             
 class TestOctreeOctree(unittest.TestCase):
