@@ -157,13 +157,18 @@ def _devide(box, axis):
 
 def _create_combined_boxes(box, min_aspect_ratio):
     boxes = np.array([box])
+    N = 0
     
     for i in range(3):
         if _get_min_aspect_ratio(box, i):
-            new_boxes = np.array([_devide(b, i) for b in boxes])
-            boxes.concatenate((boxes, new_boxes))
-            
-    return boxes
+            for b in range(boxes.shape[0] - (2**N), boxes.shape[0]):
+                new_boxes = np.array(_devide(boxes[b], i))
+                boxes = np.concatenate((boxes, new_boxes))
+                
+            N += 1
+                
+    N = 2**N
+    return boxes[-N:]
             
     
 class Leaf:

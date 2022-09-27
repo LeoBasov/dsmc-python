@@ -256,6 +256,19 @@ class TestOctree(unittest.TestCase):
                     if b != i:
                         self.assertEqual(box_a[i][j], box[i][j])
                         self.assertEqual(box_b[i][j], box[i][j])
+                        
+    def test__create_combined_boxes_1(self):
+        box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
+        min_aspect_ratio = 1000.0
+        boxes_old = oc._create_boxes(box)
+        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio)
+        V = 0.0
+        
+        for b in boxes_new:
+            V += oc.get_V(b)
+            
+        self.assertEqual(oc.get_V(box), V)
+        self.assertEqual(len(boxes_old), len(boxes_new))
         
         
             
