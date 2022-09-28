@@ -14,7 +14,7 @@ if __name__ == '__main__':
     n = 1e18
     mass = 6.6422e-26
     T = 300
-    niter = 300
+    niter = 1000
     
     # setup solver
     solver.set_domain(domain)
