@@ -21,13 +21,13 @@ def _boundary(velocities, positions, domain, boundary_conds):
                     if boundary_conds[i][0] == 0:
                         positions[p][i] = 2.0 * domain[i][0] - positions[p][i]
                         velocities[p][i] *= -1.0
-                    elif boundary_conds[i][0] == 2:
+                    elif boundary_conds[i][0] == 1:
                         kept_parts[p] = 0
                 if positions[p][i] > domain[i][1]:
                     if boundary_conds[i][1] == 0:
                         positions[p][i] = 2.0 * domain[i][1] - positions[p][i]
                         velocities[p][i] *= -1.0
-                    elif boundary_conds[i][1] == 2:
+                    elif boundary_conds[i][1] == 1:
                         kept_parts[p] = 0
                         
     N = sum(kept_parts)
@@ -131,12 +131,10 @@ def _get_boundary(boundary):
 def _get_bc_type(bc_type):
     if bc_type == "ela":
         return 0
-    elif bc_type == "period":
-        return 1
     elif bc_type == "open":
-        return 2
+        return 1
     elif bc_type == "inflow":
-        return 3
+        return 2
 
 class DSMC:
     def __init__(self):
@@ -147,7 +145,7 @@ class DSMC:
         self.octree = oc.Octree()
         self.w = None
         self.domain = None
-        self.boundary_conds = np.array([[0, 0], [0, 0], [0, 0]], dtype=np.uint) # 0 = ela, 1 = periodic, 2 = open, 3 = inflow 
+        self.boundary_conds = np.array([[0, 0], [0, 0], [0, 0]], dtype=np.uint) # 0 = ela, 1 = open, 2 = inflow 
         self.sigma_T = 3.631681e-19
         self.mass = None
 
