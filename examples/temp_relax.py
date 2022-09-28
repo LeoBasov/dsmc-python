@@ -3,6 +3,7 @@ import dsmc.particles as prt
 import matplotlib.pyplot as plt
 import numpy as np
 import math
+import time
 
 def maxwell(x, T):
     return 2.0 * np.sqrt(x) * np.exp(-x/T) / (math.pow(T, 3.0/2.0) * np.sqrt(math.pi))
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     dt = 1e-5
     w = 2.4134e+7
     mass = 6.6422e-26
-    niter = 500
+    niter = 100
     Nbins = 100
     
     # particles
@@ -33,17 +34,24 @@ if __name__ == '__main__':
     
     solver.create_particles(Box, T, n, u)
     
+    # time
+    start_time = time.time()
+    
     for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
         solver.advance(dt)
         x = calc_x(solver.particles.Vel, solver.mass)
 
-    xm = np.linspace(0, 3500, 1000)
-    dist = [maxwell(xi, 300) for xi in xm]
+    Tnew = prt.calc_temperature(solver.particles.Vel, solver.mass)
+    xm = np.linspace(0, 30000, 1000)
+    dist = [maxwell(xi, Tnew) for xi in xm]
+    
+    print("")
+    print("--- %s seconds ---" % (time.time() - start_time))
     
     plt.plot(xm, dist)
     plt.hist(x, Nbins, density=True)
-    plt.show()  
+    plt.title("T = {:.3f}K".format(Tnew))
+    plt.show() 
     
-    print("")
     print('done')

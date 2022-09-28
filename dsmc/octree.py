@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from numba import njit
+import numba as nb
 
 fmin = np.finfo(float).min
 fmax = np.finfo(float).max
@@ -128,6 +129,58 @@ def _create_boxes(box):
     child_geo8 = np.array(((half[0], box[0][1]), (box[1][0], half[1]), (box[2][0], half[2])))
     
     return [child_geo1, child_geo2, child_geo3, child_geo4, child_geo5, child_geo6, child_geo7, child_geo8]
+
+@njit
+def _get_min_aspect_ratio(box, axis):
+    half = np.array([0.5*(box[i][1] - box[i][0]) for i in range(3)])
+    
+    match axis:
+        case 0:
+            return min(half[0] / half[1], half[0] / half[2]);
+        case 1:
+            return min(half[1] / half[0], half[1] / half[2]);
+        case 2:
+            return min(half[2] / half[1], half[2] / half[0]);
+
+@njit
+def _devide(box, axis):
+    half = 0.5*(box[axis][0] + box[axis][1])
+    box1 = np.copy(box)
+    box2 = np.copy(box)
+    
+    box1[axis][0] = box[axis][0]
+    box1[axis][1] = half
+    
+    box2[axis][0] = half
+    box2[axis][1] = box[axis][1]
+    
+    return (box1, box2)
+
+@njit
+def _create_combined_boxes(box, min_aspect_ratio):
+    boxes = np.empty((15, 3, 2))
+    boxes[0] = box
+    N = 0
+    Nold = 0
+    q = 1
+    
+    for i in range(3):
+        if _get_min_aspect_ratio(box, i) > min_aspect_ratio:
+            for b in range(Nold, Nold + 2**N):
+                new_boxes = _devide(boxes[b], i)
+                boxes[q] = new_boxes[0]
+                boxes[q + 1] = new_boxes[1]
+                q += 2
+            Nold += 2**N
+            N += 1
+            
+    N = 2**N
+    new_boxes = np.empty((N, 3, 2))
+    
+    for b in range(N):
+        new_boxes[b] = boxes[Nold + b]
+            
+    return new_boxes
     
 class Leaf:
     def __init__(self):
@@ -141,6 +194,7 @@ class Leaf:
 class Octree:
     def __init__(self):
         self.clear()
+        self.min_aspect_ratio = 2.0/3.0
         
     def clear(self):
         self.cell_boxes = []
@@ -179,10 +233,17 @@ class Octree:
         
     def _progress(self, leaf_id, positions):
         if _is_resolved(self.cell_boxes[leaf_id], self.leafs[leaf_id].number_elements, self.w, self.sigma_T, self.Nmin, self.Nmax):
-            self.leafs[leaf_id].number_children = 8
+            
             self.leafs[leaf_id].id_first_child = self.cell_offsets[-1]
-            self.cell_offsets[-1] += 8
-            self.cell_boxes += _create_boxes(self.cell_boxes[leaf_id])
+            
+            new_boxes = _create_combined_boxes(self.cell_boxes[leaf_id], self.min_aspect_ratio)
+            self.cell_offsets[-1] += len(new_boxes)
+            self.leafs[leaf_id].number_children = len(new_boxes)
+            
+            for box in new_boxes:
+                self.cell_boxes.append(box)
+            
+            #raise Exception()
         else:
             pass
            

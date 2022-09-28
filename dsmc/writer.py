@@ -1,7 +1,5 @@
-from . import octree as oc
-
-def write_buttom_leafs(octree):
-	f = open("octree.vtu", "w")
+def write_buttom_leafs(octree, file_name="octree.vtu"):
+	f = open(file_name, "w")
 	
 	_write_header(f)
 	_wrtie_body(f, octree)

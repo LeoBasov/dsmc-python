@@ -37,7 +37,7 @@ def x2velocity(x, mass):
     -------
     speed of particle : float
     """
-    return math.sqrt((2.0/3.0) * x * kb /mass)
+    return math.sqrt(2.0 * x * kb /mass)
 
 @njit
 def get_vel(T, mass):
@@ -53,7 +53,8 @@ def get_vel(T, mass):
     -------
     velocity : np.array, shape = (3, 1)
     """
-    return np.array([(-1)**(int(2*np.random.random())) * x2velocity(box_muller(T), mass) for _ in range(3)])
+    v = np.random.random(3)
+    return v * x2velocity(box_muller(T), mass) / np.linalg.norm(v)
 
 @njit
 def get_velocities(T, mass, N):

@@ -1,10 +1,8 @@
 import dsmc
 import dsmc.diagnostics as dia
-import matplotlib.pyplot as plt
 
-def write2file(solver, n_file, T_file, p_file):
+def write2file(solver, n_file, T_file, p_file, Nbins):
     bins, box, x = dia.sort_bin(solver.particles.Pos, 2, Nbins)
-    N = [len(b) for b in bins]
     n = dia.calc_n(bins, box, 2, solver.w)
     T = dia.calc_T(bins, solver.particles.Vel, mass)
     p = dia.calc_p(n, T)
@@ -54,7 +52,7 @@ if __name__ == '__main__':
     for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
         solver.advance(dt)        
-        write2file(solver, n_file, T_file, p_file)
+        write2file(solver, n_file, T_file, p_file, Nbins)
 
 	# close files
     n_file.close()
