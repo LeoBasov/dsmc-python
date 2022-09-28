@@ -315,8 +315,6 @@ class TestOctree(unittest.TestCase):
             
         self.assertEqual(oc.get_V(box), V)
         self.assertEqual(8, len(boxes_new))
-        
-        print(boxes_new)
             
 class TestOctreeOctree(unittest.TestCase):
     def test_build(self):
