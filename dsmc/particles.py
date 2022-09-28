@@ -5,6 +5,10 @@ from numba import njit
 kb = 1.380649e-23
 
 @njit
+def calc_vp(T, mass):
+    return np.sqrt(2*kb*T/mass)
+
+@njit
 def box_muller(T):
     """
     Parameters

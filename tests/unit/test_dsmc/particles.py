@@ -1,5 +1,6 @@
 import unittest
 from dsmc import particles as pa
+import numpy as np
 
 class TestParticles(unittest.TestCase):
     def test_box_muller(self):
@@ -74,3 +75,10 @@ class TestParticles(unittest.TestCase):
             self.assertTrue(particles.Pos[i][0] >= x[0] and particles.Pos[i][0] <= x[1])
             self.assertTrue(particles.Pos[i][1] >= y[0] and particles.Pos[i][1] <= y[1])
             self.assertTrue(particles.Pos[i][2] >= z[0] and particles.Pos[i][2] <= z[1])
+            
+    def test_calc_vp(self):
+        T = 300
+        mass = 1e-26
+        vp = pa.calc_vp(T, mass)
+        
+        self.assertEqual(np.sqrt(2.0*pa.kb*T/mass), vp)
