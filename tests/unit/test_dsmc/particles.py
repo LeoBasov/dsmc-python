@@ -21,7 +21,8 @@ class TestParticles(unittest.TestCase):
         T = 300
         mass = 1.0e-26
         N = 1000
-        velocities = pa.get_velocities(T, mass, N)
+        u = np.zeros(3)
+        velocities = pa.get_velocities(T, mass, N, u)
 
         self.assertEqual(N, len(velocities))
 
@@ -29,7 +30,8 @@ class TestParticles(unittest.TestCase):
         T = 300
         mass = 1.0e-26
         N = 10000
-        velocities = pa.get_velocities(T, mass, N)
+        u = np.zeros(3)
+        velocities = pa.get_velocities(T, mass, N, u)
         T_new = pa.calc_temperature(velocities, mass)
         diff = abs((T_new - T)/T)
 
@@ -52,9 +54,10 @@ class TestParticles(unittest.TestCase):
         N = 1000
         mass = 1.0e-26
         T = 300
+        u = np.zeros(3)
         particles = pa.Particles()
 
-        particles.create_particles(X, mass, T, N)
+        particles.create_particles(X, mass, T, N, u)
 
         self.assertEqual(N, len(particles.Pos))
         self.assertEqual(N, len(particles.Vel))
@@ -65,7 +68,7 @@ class TestParticles(unittest.TestCase):
             self.assertTrue(particles.Pos[i][1] >= y[0] and particles.Pos[i][1] <= y[1])
             self.assertTrue(particles.Pos[i][2] >= z[0] and particles.Pos[i][2] <= z[1])
             
-        particles.create_particles(X, mass, T, N)
+        particles.create_particles(X, mass, T, N, u)
 
         self.assertEqual(2*N, len(particles.Pos))
         self.assertEqual(2*N, len(particles.Vel))

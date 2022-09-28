@@ -21,13 +21,13 @@ def _boundary(velocities, positions, domain, boundary_conds):
                     if boundary_conds[i][0] == 0:
                         positions[p][i] = 2.0 * domain[i][0] - positions[p][i]
                         velocities[p][i] *= -1.0
-                    elif boundary_conds[i][0] == 1:
+                    elif boundary_conds[i][0] == 1 or boundary_conds[i][0] == 2:
                         kept_parts[p] = 0
                 if positions[p][i] > domain[i][1]:
                     if boundary_conds[i][1] == 0:
                         positions[p][i] = 2.0 * domain[i][1] - positions[p][i]
                         velocities[p][i] *= -1.0
-                    elif boundary_conds[i][1] == 1:
+                    elif boundary_conds[i][1] == 1 or boundary_conds[i][0] == 2:
                         kept_parts[p] = 0
                         
     N = sum(kept_parts)
@@ -135,6 +135,12 @@ def _get_bc_type(bc_type):
         return 1
     elif bc_type == "inflow":
         return 2
+    
+class Boundary:
+    def __init__(self):
+        self.T = np.ones((3, 2))*300.0
+        self.n = np.ones((3, 2))*1e+18
+        self.u = np.zeros((3, 2, 3))
 
 class DSMC:
     def __init__(self):
@@ -146,6 +152,7 @@ class DSMC:
         self.w = None
         self.domain = None
         self.boundary_conds = np.array([[0, 0], [0, 0], [0, 0]], dtype=np.uint) # 0 = ela, 1 = open, 2 = inflow 
+        self.boundary = Boundary()
         self.sigma_T = 3.631681e-19
         self.mass = None
 
@@ -156,6 +163,11 @@ class DSMC:
             raise Exception("no particles in domain")
         if self.w == None:
             raise Exception("particle weight not set")
+            
+        for i in range(3):
+            for j in range(2):
+                if self.boundary_conds[i][j] == 2:
+                    self.particles.inflow(self.mass, self.boundary.T[i][j], self.boundary.u[i][j], self.boundary.n[i][j], self.w, dt, self.domain, i, j)
 
         if octree:
             self.octree.build(self.particles.Pos)
@@ -173,20 +185,11 @@ class DSMC:
 
         return _update_vels(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, dt, self.w, elem_offsets, number_elements, number_children, cell_boxes, Nleafs)
 
-    def create_particles(self, box, T, n, u = None):
+    def create_particles(self, box, T, n, u = np.zeros(3)):
         box = np.array(box)
         N = int(round(oc.get_V(box) * n / self.w))
         print("creating {} particles".format(N))
-        self.particles.create_particles(box, self.mass, T, N)
-
-        if u is not None:
-            velocities = self.particles.Vel
-            u = np.array(u)
-
-            for i in range(len(velocities)):
-                velocities[i] += u
-
-            self.particles.VelPos = (velocities, self.particles.Pos)
+        self.particles.create_particles(box, self.mass, T, N, u)
 
         print("now containing {} particles, {} total".format(N, self.particles.N))
 
