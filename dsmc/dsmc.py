@@ -112,6 +112,32 @@ def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : floa
 
     return velocities
 
+@njit
+def _get_boundary(boundary):
+    if boundary == "xmin":
+        return (0, 0)
+    elif boundary == "xmax":
+        return (0, 1)
+    elif boundary == "ymin":
+        return (1, 0)
+    elif boundary == "ymax":
+        return (1, 1)
+    elif boundary == "zmin":
+        return (2, 0)
+    elif boundary == "zmax":
+        return (2, 1)
+    
+@njit
+def _get_bc_type(bc_type):
+    if bc_type == "ela":
+        return 0
+    elif bc_type == "period":
+        return 1
+    elif bc_type == "open":
+        return 2
+    elif bc_type == "inflow":
+        return 3
+
 class DSMC:
     def __init__(self):
         self.clear()
@@ -129,7 +155,7 @@ class DSMC:
         if self.domain is None:
             raise Exception("simulation domain not defined")
         if self.particles.N == 0:
-            raise Exception("no particles created")
+            raise Exception("no particles in domain")
         if self.w == None:
             raise Exception("particle weight not set")
 
@@ -175,3 +201,11 @@ class DSMC:
     def set_weight(self, w):
         self.octree.w = w
         self.w = w
+        
+    def set_boundary(self, boundary, bc_type):
+        bound = _get_boundary(boundary)
+        bc = _get_bc_type(bc_type)
+        
+        self.boundary_conds[bound[0]][bound[1]] = bc
+        
+        print("boundary [" + boundary + "] set to [" + bc_type + "]")
