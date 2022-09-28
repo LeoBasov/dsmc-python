@@ -194,7 +194,7 @@ class Leaf:
 class Octree:
     def __init__(self):
         self.clear()
-        self.min_aspect_ratio = 0.1
+        self.min_aspect_ratio = 2.0/3.0
         
     def clear(self):
         self.cell_boxes = []
