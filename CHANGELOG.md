@@ -6,9 +6,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.5.1] - 2022-09-24
+## [0.6.0] - 2022-09-28
 ### Added
-- fixed bugs in octree module
+- functionality for aspect ratio check in octree
+
+### Fixed
+- bug in temperature initialization
+- several bugs in octree
+
+## [0.5.1] - 2022-09-24
+### Fixed
+- bugs in octree module
 
 ## [0.5.0] - 2022-09-23
 ### Added
