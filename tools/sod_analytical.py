@@ -57,6 +57,7 @@ def write_values(x, val, name, file):
         file.write("{}, {}\n".format(x[3], val[3]))
         file.write("{}, {}\n".format(x[4], val[3]))
         file.write("{}, {}\n".format(x[4], val[4]))
+        file.write("{}, {}\n".format(x[5], val[4]))
     
 def check_args(args):
     if args.p is not None and (args.p[0] <= args.p[1]):
