@@ -58,7 +58,7 @@ def get_vel(T, mass):
     -------
     velocity : np.array, shape = (3, 1)
     """
-    v = np.random.random(3)
+    v = np.random.random(3)*2.0 - np.ones(3)
     return v * x2velocity(box_muller(T), mass) / np.linalg.norm(v)
 
 @njit
