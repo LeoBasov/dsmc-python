@@ -4,13 +4,13 @@ from numba import prange
 from . import particles as prt
 from . import octree as oc
 
-@njit(parallel=True)
+@njit
 def _push(velocities, positions, dt):
     for p in prange(len(positions)):
         positions[p] = positions[p] + velocities[p]*dt
     return positions
 
-@njit(parallel=True)
+@njit
 def _boundary(velocities, positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
@@ -36,6 +36,29 @@ def _boundary(velocities, positions, domain, boundary_conds):
     new_positions = np.empty((N, 3))
     
     for i in range(positions.shape[0]):
+        if kept_parts[i] == 1:
+            new_velocities[p] = velocities[i]
+            new_positions[p] = positions[i]
+            p += 1
+        else:
+            continue
+
+    return (new_velocities, new_positions)
+
+@njit
+def _check_positions(velocities, positions, old_positions, domain):
+    kept_parts = np.ones(positions.shape[0], dtype=np.uint)
+    
+    for i in prange(positions.shape[0]):
+        if (not oc._is_inside(positions[i], domain)) and (not oc._is_inside(old_positions[i], domain)):
+            kept_parts[i] = 0
+    
+    N = sum(kept_parts)
+    p = 0
+    new_velocities = np.empty((N, 3))
+    new_positions = np.empty((N, 3))
+    
+    for i in prange(positions.shape[0]):
         if kept_parts[i] == 1:
             new_velocities[p] = velocities[i]
             new_positions[p] = positions[i]
@@ -173,8 +196,10 @@ class DSMC:
             self.octree.build(self.particles.Pos)
         if collisions and octree:
             self.particles.VelPos = (self._update_velocities(dt), self.particles.Pos)
+        old_positions = np.copy(self.particles.Pos)
         positions = _push(self.particles.Vel, self.particles.Pos, dt)
-        self.particles.VelPos = _boundary(self.particles.Vel, positions, self.domain, self.boundary_conds)
+        self.particles.VelPos = _check_positions(self.particles.Vel, positions, old_positions, self.domain)
+        self.particles.VelPos = _boundary(self.particles.Vel, self.particles.Pos, self.domain, self.boundary_conds)
 
     def _update_velocities(self, dt):
         Nleafs : int = len(self.octree.leafs)
