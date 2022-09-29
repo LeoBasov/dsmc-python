@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 
+kb = 1.380649e-23
+
 def _calc_u3(p1, p3, rhoL, Gamma, gamma, beta):
     num = (1 - Gamma**2) * p1**(1.0/gamma)
     denum = Gamma**2 * rhoL
@@ -69,10 +71,10 @@ def check_args(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('t', type=float, help='time of results')
-    parser.add_argument('-p', type=float, help='pressure', nargs = 2, default=(1.0, 0.1))
-    parser.add_argument('-rho', type=float, help='density', nargs = 2, default=(1.0, 0.125))
-    parser.add_argument('-L', type=float, help='tube length', default=1.0)
+    parser.add_argument('-t', type=float, help='time of results', default=3.0e-5)
+    parser.add_argument('-p', type=float, help='pressure', nargs = 2, default=(100, 10.0))
+    parser.add_argument('-rho', type=float, help='density', nargs = 2, default=(0.0016036396304, 0.0016036396304*0.1))
+    parser.add_argument('-L', type=float, help='tube length', default=0.1)
     parser.add_argument('-plt', type=bool, help='plot values', const=True, nargs='?')
     parser.add_argument('-w', type=str, help='write to file')
 
@@ -87,6 +89,7 @@ if __name__ == '__main__':
     gamma = 1.67
     Gamma = (gamma - 1.0) / (gamma + 1.0)
     beta = (gamma - 1.0) / (2.0 * gamma)
+    mass = 6.6422e-26
     
     # boundary conditions
     rho = np.zeros(5)
@@ -116,12 +119,17 @@ if __name__ == '__main__':
     rho[2] = rho[0]*(p[2] / p[0])**(1.0/gamma)
     rho[3] = rho[4] * (p[3] + Gamma*p[4]) / (p[4] + Gamma*p[3])
     
+    n = [r/mass for r in rho]
+    T = [p[i] / (n[i] * kb) for i in range(5)]
+    
     # calc x
     x = np.array([0.0, args.L*0.5 - args.t*u[1], args.L*0.5, args.L*0.5 + args.t*u[3], args.L*0.5 + args.t*u[3] + args.t*u[4], args.L])
     
     if args.plt:
         plot_val(x, rho, "rho")
+        plot_val(x, n, "n")
         plot_val(x, p, "p")
+        plot_val(x, T, "T")
         
     if args.w:
         print("writing to file " + args.w + "_X.csv")
