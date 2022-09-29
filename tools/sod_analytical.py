@@ -35,13 +35,13 @@ def _calc_p3(p, rho, Gamma, gamma, beta):
     return p3
 
 def plot_val(x, val, name):
-    plt.plot((x[0], x[1]), (rho[0], rho[1]))
-    plt.plot((x[1], x[2]), (rho[1], rho[2]))
-    plt.plot((x[2], x[3]), (rho[2], rho[2]))
-    plt.plot((x[3], x[3]), (rho[2], rho[3]))
-    plt.plot((x[3], x[4]), (rho[3], rho[3]))
-    plt.plot((x[4], x[4]), (rho[3], rho[4]))
-    plt.plot((x[4], x[5]), (rho[4], rho[4]))
+    plt.plot((x[0], x[1]), (val[0], val[1]))
+    plt.plot((x[1], x[2]), (val[1], val[2]))
+    plt.plot((x[2], x[3]), (val[2], val[2]))
+    plt.plot((x[3], x[3]), (val[2], val[3]))
+    plt.plot((x[3], x[4]), (val[3], val[3]))
+    plt.plot((x[4], x[4]), (val[3], val[4]))
+    plt.plot((x[4], x[5]), (val[4], val[4]))
     
     plt.ylabel(name)
     plt.xlabel("x")
@@ -62,6 +62,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', type=float, help='pressure', nargs = 2, default=(1.0, 0.1))
     parser.add_argument('-rho', type=float, help='density', nargs = 2, default=(1.0, 0.125))
     parser.add_argument('-L', type=float, help='tube length', default=1.0)
+    parser.add_argument('-plt', type=bool, help='plot values', default=True)
 
     args = parser.parse_args()
     
@@ -89,6 +90,7 @@ if __name__ == '__main__':
     u[-1] = 0.0
     
     # calculating states
+    p[1] = p[0]
     p[2] = _calc_p3(p, rho, Gamma, gamma, beta)
     p[3] = p[2]
     
@@ -105,6 +107,8 @@ if __name__ == '__main__':
     # calc x
     x = np.array([0.0, args.L*0.5 - args.t*u[1], args.L*0.5, args.L*0.5 + args.t*u[3], args.L*0.5 + args.t*u[3] + args.t*u[4], args.L])
     
-    plot_val(x, rho, "rho")
+    if args.plt:
+        plot_val(x, rho, "rho")
+        plot_val(x, p, "p")
     
     print("done")
