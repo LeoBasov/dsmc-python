@@ -135,5 +135,7 @@ if __name__ == '__main__':
         print("writing to file " + args.w + "_X.csv")
         write_values(x, rho, "rho", args.w)
         write_values(x, p, "p", args.w)
+        write_values(x, n, "n", args.w)
+        write_values(x, T, "T", args.w)
     
     print("done")
