@@ -21,7 +21,7 @@ def _calc_p3(p, rho, Gamma, gamma, beta):
     p1 = p[0]
     p3 = p[0]
     p5 = p[4]
-    dp = 1e-5
+    dp = p1 * 1e-3
     rhoL = rho[0]
     rhoR = rho[-1]
     err = 1e+5
@@ -34,7 +34,7 @@ def _calc_p3(p, rho, Gamma, gamma, beta):
      
     return p3
 
-def plot_rho(x, rho):
+def plot_val(x, val, name):
     plt.plot((x[0], x[1]), (rho[0], rho[1]))
     plt.plot((x[1], x[2]), (rho[1], rho[2]))
     plt.plot((x[2], x[3]), (rho[2], rho[2]))
@@ -42,12 +42,30 @@ def plot_rho(x, rho):
     plt.plot((x[3], x[4]), (rho[3], rho[3]))
     plt.plot((x[4], x[4]), (rho[3], rho[4]))
     plt.plot((x[4], x[5]), (rho[4], rho[4]))
+    
+    plt.ylabel(name)
+    plt.xlabel("x")
+    
+    plt.show()
+    
+def check_args(args):
+    if args.p is not None and (args.p[0] <= args.p[1]):
+        raise Exception("p1 must be > p2")
+    elif args.rho is not None and (args.rho[0] <= args.rho[1]):
+        raise Exception("rho1 must be > rho2")
+    elif args.L is not None and (args.L <= 0.0):
+        raise Exception("L must be > 0")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('t', type=float, help='time of results')
+    parser.add_argument('-p', type=float, help='pressure', nargs = 2, default=(1.0, 0.1))
+    parser.add_argument('-rho', type=float, help='density', nargs = 2, default=(1.0, 0.125))
+    parser.add_argument('-L', type=float, help='tube length', default=1.0)
 
     args = parser.parse_args()
+    
+    check_args(args)
     
     # number points per segment
     N = 10
@@ -62,12 +80,12 @@ if __name__ == '__main__':
     p = np.zeros(5)
     u = np.zeros(5)
     
-    rho[0] = 1.0
-    p[0] = 1.0
+    rho[0] = args.rho[0]
+    p[0] = args.p[0]
     u[0] = 0.0
     
-    rho[-1] = 0.125
-    p[-1] = 0.1
+    rho[-1] = args.rho[1]
+    p[-1] = args.p[1]
     u[-1] = 0.0
     
     # calculating states
@@ -85,9 +103,8 @@ if __name__ == '__main__':
     rho[3] = rho[4] * (p[3] + Gamma*p[4]) / (p[4] + Gamma*p[3])
     
     # calc x
-    x = np.array([0.0, 0.5 - args.t*u[1], 0.5, 0.5 + args.t*u[3], 0.5 + args.t*u[3] + args.t*u[4], 1,0])
-    plot_rho(x, rho)
+    x = np.array([0.0, args.L*0.5 - args.t*u[1], args.L*0.5, args.L*0.5 + args.t*u[3], args.L*0.5 + args.t*u[3] + args.t*u[4], args.L])
     
-    plt.show()
+    plot_val(x, rho, "rho")
     
     print("done")
