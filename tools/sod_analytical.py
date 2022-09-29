@@ -34,6 +34,15 @@ def _calc_p3(p, rho, Gamma, gamma, beta):
      
     return p3
 
+def plot_rho(x, rho):
+    plt.plot((x[0], x[1]), (rho[0], rho[1]))
+    plt.plot((x[1], x[2]), (rho[1], rho[2]))
+    plt.plot((x[2], x[3]), (rho[2], rho[2]))
+    plt.plot((x[3], x[3]), (rho[2], rho[3]))
+    plt.plot((x[3], x[4]), (rho[3], rho[3]))
+    plt.plot((x[4], x[4]), (rho[3], rho[4]))
+    plt.plot((x[4], x[5]), (rho[4], rho[4]))
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('t', type=float, help='time of results')
@@ -71,25 +80,13 @@ if __name__ == '__main__':
     u[3] = (p[2] - p[4]) / np.sqrt((rho[4]/2) * ((gamma + 1) * p[2] + (gamma - 1) * p[4]))
     u[4] = np.sqrt(gamma * p[-1] / rho[-1]) # speed of pressure increase going right
     
+    rho[1] = rho[0]
     rho[2] = rho[0]*(p[2] / p[0])**(1.0/gamma)
     rho[3] = rho[4] * (p[3] + Gamma*p[4]) / (p[4] + Gamma*p[3])
     
     # calc x
-    x = np.array([0.0, 0.5 - args.t*u[1], 0.5, 0.5 + args.t*u[3], 0.5 + args.t*u[4], 1,0])
-    
-    # calc rho
-    rho1 = np.ones(N) * rho[0]
-    rho2 = np.linspace(rho[0], rho[2], N)
-    rho3 = np.ones(N) * rho[2]
-    rho4 = np.ones(N) * rho[3]
-    rho5 = np.ones(N) * rho[4]
-    
-    
-    plt.plot(np.linspace(x[0], x[1], N), rho1)
-    plt.plot(np.linspace(x[1], x[2], N), rho2)
-    plt.plot(np.linspace(x[2], x[3], N), rho3)
-    plt.plot(np.linspace(x[3], x[4], N), rho4)
-    plt.plot(np.linspace(x[4], x[5], N), rho5)
+    x = np.array([0.0, 0.5 - args.t*u[1], 0.5, 0.5 + args.t*u[3], 0.5 + args.t*u[3] + args.t*u[4], 1,0])
+    plot_rho(x, rho)
     
     plt.show()
     
