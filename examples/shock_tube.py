@@ -43,7 +43,7 @@ if __name__ == '__main__':
     Boxhigh = [(-0.0001, 0.0001), (-0.0001, 0.0001), (0.0, 0.05)]
     
     # low denisty particles
-    nlow = nhigh*0.125
+    nlow = nhigh*0.1
     Tlow = 300
     Boxlow = [(-0.0001, 0.0001), (-0.0001, 0.0001), (0.05, 0.1)]
     
