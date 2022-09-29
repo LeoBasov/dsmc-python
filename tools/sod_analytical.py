@@ -48,6 +48,16 @@ def plot_val(x, val, name):
     
     plt.show()
     
+def write_values(x, val, name, file):
+    with open(file + "_" + name + ".csv", "w") as file:
+        file.write("{}, {}\n".format(x[0], val[0]))
+        file.write("{}, {}\n".format(x[1], val[1]))
+        file.write("{}, {}\n".format(x[2], val[2]))
+        file.write("{}, {}\n".format(x[3], val[2]))
+        file.write("{}, {}\n".format(x[3], val[3]))
+        file.write("{}, {}\n".format(x[4], val[3]))
+        file.write("{}, {}\n".format(x[4], val[4]))
+    
 def check_args(args):
     if args.p is not None and (args.p[0] <= args.p[1]):
         raise Exception("p1 must be > p2")
@@ -62,7 +72,8 @@ if __name__ == '__main__':
     parser.add_argument('-p', type=float, help='pressure', nargs = 2, default=(1.0, 0.1))
     parser.add_argument('-rho', type=float, help='density', nargs = 2, default=(1.0, 0.125))
     parser.add_argument('-L', type=float, help='tube length', default=1.0)
-    parser.add_argument('-plt', type=bool, help='plot values', default=True)
+    parser.add_argument('-plt', type=bool, help='plot values', const=True, nargs='?')
+    parser.add_argument('-w', type=str, help='write to file')
 
     args = parser.parse_args()
     
@@ -110,5 +121,10 @@ if __name__ == '__main__':
     if args.plt:
         plot_val(x, rho, "rho")
         plot_val(x, p, "p")
+        
+    if args.w:
+        print("writing to file " + args.w + "_X.csv")
+        write_values(x, rho, "rho", args.w)
+        write_values(x, p, "p", args.w)
     
     print("done")
