@@ -203,10 +203,19 @@ class DSMC:
         self.octree.w = w
         self.w = w
         
-    def set_boundary(self, boundary, bc_type):
+    def set_bc_type(self, boundary, bc_type):
         bound = _get_boundary(boundary)
         bc = _get_bc_type(bc_type)
         
         self.boundary_conds[bound[0]][bound[1]] = bc
         
         print("boundary [" + boundary + "] set to [" + bc_type + "]")
+        
+    def set_bc_values(self, boundary, T, n, u):
+        i, j = _get_boundary(boundary)
+        
+        self.boundary.T[i][j] = T
+        self.boundary.n[i][j] = n
+        self.boundary.u[i][j] = u
+        
+        print("boundary [" + boundary + "] set to values T : {}, n : {}, u : {}".format(T, n, u))

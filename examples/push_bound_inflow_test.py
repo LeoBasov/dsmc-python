@@ -12,6 +12,7 @@ if __name__ == '__main__':
     dt = 1e-5
     w = 1e+16
     n = 1e18
+    u = np.array([1000.0, 0.0, 0.0])
     mass = 6.6422e-26
     T = 300
     niter = 1000
@@ -23,16 +24,16 @@ if __name__ == '__main__':
     
     solver.create_particles(domain, T, n)
     
-    solver.set_boundary("xmax", "open")
+    solver.set_bc_type("xmax", "open")
     
-    solver.set_boundary("ymax", "open")
-    solver.set_boundary("ymin", "open")
-    solver.set_boundary("zmax", "open")
-    solver.set_boundary("zmin", "open")
+    solver.set_bc_type("ymax", "open")
+    solver.set_bc_type("ymin", "open")
+    solver.set_bc_type("zmax", "open")
+    solver.set_bc_type("zmin", "open")
     
-    solver.set_boundary("xmin", "inflow")
+    solver.set_bc_type("xmin", "inflow")
     
-    solver.boundary.u[0][0] = np.array([1000, 0, 0])
+    solver.set_bc_values("xmin", T, n, u)
     
     tree.build(positions)
     

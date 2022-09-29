@@ -23,12 +23,12 @@ if __name__ == '__main__':
     
     solver.create_particles(domain, T, n)
     
-    solver.set_boundary("xmax", "open")
-    solver.set_boundary("xmin", "open")
-    solver.set_boundary("ymax", "open")
-    solver.set_boundary("ymin", "open")
-    solver.set_boundary("zmax", "open")
-    solver.set_boundary("zmin", "open")
+    solver.set_bc_type("xmax", "open")
+    solver.set_bc_type("xmin", "open")
+    solver.set_bc_type("ymax", "open")
+    solver.set_bc_type("ymin", "open")
+    solver.set_bc_type("zmax", "open")
+    solver.set_bc_type("zmin", "open")
     
     tree.build(positions)
     
