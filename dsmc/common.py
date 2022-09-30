@@ -1,5 +1,5 @@
-from numba import njit
+from numba import cfunc
 
-@njit(float([[:] [:], [:]]))
-def get_V(box):
-    return (box[0][1] - box[0][0]) * (box[1][1] - box[1][0]) * (box[2][1] - box[2][0])
+@cfunc("double(double[::3, ::2])")
+def get_V(a):
+    return (a[0][1] - a[0][0]) * (a[1][1] - a[1][0]) * (a[2][1] - a[2][0])
