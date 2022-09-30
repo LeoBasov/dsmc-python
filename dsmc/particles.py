@@ -1,7 +1,7 @@
 import math
 import numpy as np
 from numba import njit
-from . import octree as oc
+from . import common as com
 
 kb = 1.380649e-23
 
@@ -155,6 +155,6 @@ class Particles:
             box[axis][0] = box[axis][1]
             box[axis][1] = box[axis][0] + L
             
-        N = int(round(oc.get_V(box) * n / w))
+        N = int(round(com.get_V(box) * n / w))
         
         self.create_particles(box, mass, T, N, u)

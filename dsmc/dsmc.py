@@ -3,6 +3,7 @@ from numba import njit
 from numba import prange
 from . import particles as prt
 from . import octree as oc
+from . import common as com
 
 @njit
 def _push(velocities, positions, dt):
@@ -130,7 +131,7 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
 def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
     for i in range(Nleafs):
         if not number_children[i] and number_elements[i]:
-            Vc = oc.get_V(cell_boxes[i])
+            Vc = com.get_V(cell_boxes[i])
             velocities = _update_velocities(permutations, velocities, mass, sigma_T, Vc, dt, w, elem_offsets[i], number_elements[i])
 
     return velocities
@@ -212,7 +213,7 @@ class DSMC:
 
     def create_particles(self, box, T, n, u = np.zeros(3)):
         box = np.array(box)
-        N = int(round(oc.get_V(box) * n / self.w))
+        N = int(round(com.get_V(box) * n / self.w))
         print("creating {} particles".format(N))
         self.particles.create_particles(box, self.mass, T, N, u)
 
