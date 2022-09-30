@@ -1,7 +1,6 @@
 import numpy as np
 import numpy.typing as npt
 from numba import njit
-import numba as nb
 
 fmin = np.finfo(float).min
 fmax = np.finfo(float).max
