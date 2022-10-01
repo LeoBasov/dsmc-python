@@ -1,8 +1,13 @@
 import math
 import numpy as np
 from numba import njit
+from . import common as com
 
 kb = 1.380649e-23
+
+@njit
+def calc_vp(T, mass):
+    return np.sqrt(2*kb*T/mass)
 
 @njit
 def box_muller(T):
@@ -53,15 +58,15 @@ def get_vel(T, mass):
     -------
     velocity : np.array, shape = (3, 1)
     """
-    v = np.random.random(3)
+    v = np.random.random(3)*2.0 - np.ones(3)
     return v * x2velocity(box_muller(T), mass) / np.linalg.norm(v)
 
 @njit
-def get_velocities(T, mass, N):
+def get_velocities(T, mass, N, u):
     velocities = np.empty((N, 3))
 
     for i in range(N):
-        velocities[i] = get_vel(T, mass)
+        velocities[i] = get_vel(T, mass) + u
 
     return velocities
 
@@ -128,12 +133,28 @@ class Particles:
         self._positions = vel_pos[1]
         self._N = len(self._positions)
         
-    def create_particles(self, X, mass, T, N):    
+    def create_particles(self, X, mass, T, N, u = np.zeros(3)):    
         if self._N == 0:
-            self._velocities = get_velocities(T, mass, N)
+            self._velocities = get_velocities(T, mass, N, u)
             self._positions = calc_positions(X[0], X[1], X[2], N)
             self._N  = N
         else:
-            self._velocities = np.concatenate((self._velocities, get_velocities(T, mass, N)))
+            self._velocities = np.concatenate((self._velocities, get_velocities(T, mass, N, u)))
             self._positions = np.concatenate((self._positions, calc_positions(X[0], X[1], X[2], N)))
             self._N  += N
+            
+
+    def inflow(self, mass, T, u, n, w, dt, domain, axis, minmax):
+        L = max(calc_vp(T, mass) * dt * 10, np.linalg.norm(u) * dt)
+        box = np.copy(domain)
+        
+        if minmax == 0:
+            box[axis][1] = box[axis][0]
+            box[axis][0] = box[axis][1] - L
+        elif minmax == 1:
+            box[axis][0] = box[axis][1]
+            box[axis][1] = box[axis][0] + L
+            
+        N = int(round(com.get_V(box) * n / w))
+        
+        self.create_particles(box, mass, T, N, u)

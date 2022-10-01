@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from dsmc import octree as oc
-from dsmc import particles as part
+from dsmc import common as com
 import csv
 
 class TestOctree(unittest.TestCase):
@@ -217,9 +217,9 @@ class TestOctree(unittest.TestCase):
         V = 0.0
         
         for box in boxes:
-            V += oc.get_V(box)
+            V += com.get_V(box)
             
-        self.assertEqual(oc.get_V(box_orig), V)
+        self.assertEqual(com.get_V(box_orig), V)
         
     def test__get_min_aspect_ratio_1(self):
         box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
@@ -275,9 +275,9 @@ class TestOctree(unittest.TestCase):
         V = 0.0
         
         for b in boxes_new:
-            V += oc.get_V(b)
+            V += com.get_V(b)
             
-        self.assertEqual(oc.get_V(box), V)
+        self.assertEqual(com.get_V(box), V)
         self.assertEqual(len(boxes_old), len(boxes_new))
         
     def test__create_combined_boxes_2(self):
@@ -287,9 +287,9 @@ class TestOctree(unittest.TestCase):
         V = 0.0
         
         for b in boxes_new:
-            V += oc.get_V(b)
+            V += com.get_V(b)
             
-        self.assertEqual(oc.get_V(box), V)
+        self.assertEqual(com.get_V(box), V)
         self.assertEqual(4, len(boxes_new))
         
     def test__create_combined_boxes_3(self):
@@ -299,9 +299,9 @@ class TestOctree(unittest.TestCase):
         V = 0.0
         
         for b in boxes_new:
-            V += oc.get_V(b)
+            V += com.get_V(b)
             
-        self.assertEqual(oc.get_V(box), V)
+        self.assertEqual(com.get_V(box), V)
         self.assertEqual(4, len(boxes_new))
         
     def test__create_combined_boxes_4(self):
@@ -311,12 +311,10 @@ class TestOctree(unittest.TestCase):
         V = 0.0
         
         for b in boxes_new:
-            V += oc.get_V(b)
+            V += com.get_V(b)
             
-        self.assertEqual(oc.get_V(box), V)
+        self.assertEqual(com.get_V(box), V)
         self.assertEqual(8, len(boxes_new))
-        
-        print(boxes_new)
             
 class TestOctreeOctree(unittest.TestCase):
     def test_build(self):

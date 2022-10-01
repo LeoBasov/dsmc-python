@@ -3,26 +3,71 @@ from numba import njit
 from numba import prange
 from . import particles as prt
 from . import octree as oc
+from . import common as com
 
-@njit(parallel=True)
+@njit
 def _push(velocities, positions, dt):
     for p in prange(len(positions)):
         positions[p] = positions[p] + velocities[p]*dt
     return positions
 
-@njit(parallel=True)
-def _boundary(velocities, positions, domain):
+@njit
+def _boundary(velocities, positions, domain, boundary_conds):
+    kept_parts = np.ones(positions.shape[0], dtype=np.uint)
+    
     for p in prange(len(positions)):
-        while not oc._is_inside(positions[p], domain):
+        while not oc._is_inside(positions[p], domain) and kept_parts[p]:
             for i in range(3):
                 if positions[p][i] < domain[i][0]:
-                    positions[p][i] = 2.0 * domain[i][0] - positions[p][i]
-                    velocities[p][i] *= -1.0
+                    if boundary_conds[i][0] == 0:
+                        positions[p][i] = 2.0 * domain[i][0] - positions[p][i]
+                        velocities[p][i] *= -1.0
+                    elif boundary_conds[i][0] == 1 or boundary_conds[i][0] == 2:
+                        kept_parts[p] = 0
                 if positions[p][i] > domain[i][1]:
-                    positions[p][i] = 2.0 * domain[i][1] - positions[p][i]
-                    velocities[p][i] *= -1.0
+                    if boundary_conds[i][1] == 0:
+                        positions[p][i] = 2.0 * domain[i][1] - positions[p][i]
+                        velocities[p][i] *= -1.0
+                    elif boundary_conds[i][1] == 1 or boundary_conds[i][0] == 2:
+                        kept_parts[p] = 0
+                        
+    N = sum(kept_parts)
+    p = 0
+    new_velocities = np.empty((N, 3))
+    new_positions = np.empty((N, 3))
+    
+    for i in range(positions.shape[0]):
+        if kept_parts[i] == 1:
+            new_velocities[p] = velocities[i]
+            new_positions[p] = positions[i]
+            p += 1
+        else:
+            continue
 
-    return (velocities, positions)
+    return (new_velocities, new_positions)
+
+@njit
+def _check_positions(velocities, positions, old_positions, domain):
+    kept_parts = np.ones(positions.shape[0], dtype=np.uint)
+    
+    for i in prange(positions.shape[0]):
+        if (not oc._is_inside(positions[i], domain)) and (not oc._is_inside(old_positions[i], domain)):
+            kept_parts[i] = 0
+    
+    N = sum(kept_parts)
+    p = 0
+    new_velocities = np.empty((N, 3))
+    new_positions = np.empty((N, 3))
+    
+    for i in prange(positions.shape[0]):
+        if kept_parts[i] == 1:
+            new_velocities[p] = velocities[i]
+            new_positions[p] = positions[i]
+            p += 1
+        else:
+            continue
+
+    return (new_velocities, new_positions)
 
 @njit
 def _calc_prob(rel_vel : float, sigma_T : float, Vc : float, dt : float, w : float, N : int) -> np.single:
@@ -86,10 +131,40 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
 def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
     for i in range(Nleafs):
         if not number_children[i] and number_elements[i]:
-            Vc = oc.get_V(cell_boxes[i])
+            Vc = com.get_V(cell_boxes[i])
             velocities = _update_velocities(permutations, velocities, mass, sigma_T, Vc, dt, w, elem_offsets[i], number_elements[i])
 
     return velocities
+
+@njit
+def _get_boundary(boundary):
+    if boundary == "xmin":
+        return (0, 0)
+    elif boundary == "xmax":
+        return (0, 1)
+    elif boundary == "ymin":
+        return (1, 0)
+    elif boundary == "ymax":
+        return (1, 1)
+    elif boundary == "zmin":
+        return (2, 0)
+    elif boundary == "zmax":
+        return (2, 1)
+    
+@njit
+def _get_bc_type(bc_type):
+    if bc_type == "ela":
+        return 0
+    elif bc_type == "open":
+        return 1
+    elif bc_type == "inflow":
+        return 2
+    
+class Boundary:
+    def __init__(self):
+        self.T = np.ones((3, 2))*300.0
+        self.n = np.ones((3, 2))*1e+18
+        self.u = np.zeros((3, 2, 3))
 
 class DSMC:
     def __init__(self):
@@ -100,6 +175,8 @@ class DSMC:
         self.octree = oc.Octree()
         self.w = None
         self.domain = None
+        self.boundary_conds = np.array([[0, 0], [0, 0], [0, 0]], dtype=np.uint) # 0 = ela, 1 = open, 2 = inflow 
+        self.boundary = Boundary()
         self.sigma_T = 3.631681e-19
         self.mass = None
 
@@ -107,16 +184,23 @@ class DSMC:
         if self.domain is None:
             raise Exception("simulation domain not defined")
         if self.particles.N == 0:
-            raise Exception("no particles created")
+            raise Exception("no particles in domain")
         if self.w == None:
             raise Exception("particle weight not set")
+            
+        for i in range(3):
+            for j in range(2):
+                if self.boundary_conds[i][j] == 2:
+                    self.particles.inflow(self.mass, self.boundary.T[i][j], self.boundary.u[i][j], self.boundary.n[i][j], self.w, dt, self.domain, i, j)
 
         if octree:
             self.octree.build(self.particles.Pos)
         if collisions and octree:
             self.particles.VelPos = (self._update_velocities(dt), self.particles.Pos)
+        old_positions = np.copy(self.particles.Pos)
         positions = _push(self.particles.Vel, self.particles.Pos, dt)
-        self.particles.VelPos = _boundary(self.particles.Vel, positions, self.domain)
+        self.particles.VelPos = _check_positions(self.particles.Vel, positions, old_positions, self.domain)
+        self.particles.VelPos = _boundary(self.particles.Vel, self.particles.Pos, self.domain, self.boundary_conds)
 
     def _update_velocities(self, dt):
         Nleafs : int = len(self.octree.leafs)
@@ -127,20 +211,11 @@ class DSMC:
 
         return _update_vels(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, dt, self.w, elem_offsets, number_elements, number_children, cell_boxes, Nleafs)
 
-    def create_particles(self, box, T, n, u = None):
+    def create_particles(self, box, T, n, u = np.zeros(3)):
         box = np.array(box)
-        N = int(round(oc.get_V(box) * n / self.w))
+        N = int(round(com.get_V(box) * n / self.w))
         print("creating {} particles".format(N))
-        self.particles.create_particles(box, self.mass, T, N)
-
-        if u is not None:
-            velocities = self.particles.Vel
-            u = np.array(u)
-
-            for i in range(len(velocities)):
-                velocities[i] += u
-
-            self.particles.VelPos = (velocities, self.particles.Pos)
+        self.particles.create_particles(box, self.mass, T, N, u)
 
         print("now containing {} particles, {} total".format(N, self.particles.N))
 
@@ -153,3 +228,20 @@ class DSMC:
     def set_weight(self, w):
         self.octree.w = w
         self.w = w
+        
+    def set_bc_type(self, boundary, bc_type):
+        bound = _get_boundary(boundary)
+        bc = _get_bc_type(bc_type)
+        
+        self.boundary_conds[bound[0]][bound[1]] = bc
+        
+        print("boundary [" + boundary + "] set to [" + bc_type + "]")
+        
+    def set_bc_values(self, boundary, T, n, u):
+        i, j = _get_boundary(boundary)
+        
+        self.boundary.T[i][j] = T
+        self.boundary.n[i][j] = n
+        self.boundary.u[i][j] = u
+        
+        print("boundary [" + boundary + "] set to values T : {}, n : {}, u : {}".format(T, n, u))

@@ -19,8 +19,9 @@ def _wrtie_body(f, octree):
 	f.write("<UnstructuredGrid>\n")
 	f.write("<Piece NumberOfPoints=\"{}\" NumberOfCells=\"{}\">\n".format(len(leaf_ids) * 8, len(leaf_ids)))
 
-	_write_points(f, octree, leaf_ids);
-	_write_cells(f, octree, leaf_ids);
+	_write_points(f, octree, leaf_ids)
+	_write_cells(f, octree, leaf_ids)
+	_write_cell_data(f, octree, leaf_ids)
 
 	f.write("</Piece>\n")
 	f.write("</UnstructuredGrid>\n")
@@ -93,6 +94,16 @@ def _write_cells(f, octree, leaf_ids):
 
 	f.write("</DataArray>\n")
 	f.write("</Cells>\n")
+    
+def _write_cell_data(f, octree, leaf_ids):
+    f.write("<CellData Scalars=\"number_density\">\n")
+    f.write("<DataArray type=\"Float32\" Name=\"particle_numbers\" format=\"ascii\">\n")
+    
+    for i in leaf_ids:
+        f.write("{} ".format(octree.leafs[i].number_elements))
+        
+    f.write("</DataArray>\n")
+    f.write("</CellData>\n")
 	
 def _write_footer(f):
 	f.write("</VTKFile>\n")
