@@ -79,7 +79,7 @@ def _check_created_particles(velocities, positions, obj):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
     for i in prange(positions.shape[0]):
-        if (not oc._is_inside(positions[i], obj)):
+        if oc._is_inside(positions[i], obj):
             kept_parts[i] = 0
     
     N = sum(kept_parts)
