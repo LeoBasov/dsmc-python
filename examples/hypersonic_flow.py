@@ -1,4 +1,5 @@
 import dsmc
+import dsmc.writer as wrt
 import time
 import numpy as np
 
@@ -8,7 +9,7 @@ if __name__ == '__main__':
     domain = [(-3.0, 3.0), (-1.5, 1.5), (-0.025, 0.025)]
     obj = [(-0.25, 0.25), (-0.25, 0.25), (-0.5, 0.5)]
     dt = 1e-6
-    w = 2.3e+13
+    w = 2.3e+14
     mass = 6.6422e-26
     T =  273.0
     n = 2.6e+19
@@ -43,6 +44,7 @@ if __name__ == '__main__':
     for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
         solver.advance(dt)
+        wrt.write_buttom_leafs(solver.octree)
         
     print("")
     print("--- %s seconds ---" % (time.time() - start_time))
