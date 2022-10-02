@@ -1,6 +1,32 @@
+from numba import njit
 import numpy as np
 from . import particles as prt
 from . import octree as oc
+
+@njit
+def sort_flat(positions, box, Nx, Ny):
+    vals = np.zeros((Nx, Ny))
+    dx = (box[0][1] - box[0][0]) / Nx
+    dy = (box[1][1] - box[1][0]) / Ny
+    
+    for p in range(positions.shape[0]):
+        pos = positions[p]
+        X = box[0][0]
+        Y = box[1][0]
+        
+        for x in range(Nx):
+            for y in range(Ny):
+                a = (pos[0] < (X + dx)) and (pos[0] >= X)
+                b = (pos[1] < (Y + dy)) and (pos[1] >= Y)
+                
+                if a and b:
+                    
+                    vals[x][y] += 1
+                
+                Y += dy
+            X += dx
+    
+    return vals.astype(np.int_)
 
 def sort_bin(positions, axis, Nbin):
     bins = [[] for _ in range(Nbin)]
