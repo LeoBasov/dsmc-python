@@ -14,18 +14,21 @@ def _push(velocities, positions, dt):
 @njit
 def _boundary(velocities, positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
+    old_positions = np.copy(positions)
     
     for p in prange(len(positions)):
         while not oc._is_inside(positions[p], domain) and kept_parts[p]:
             for i in range(3):
                 if positions[p][i] < domain[i][0]:
                     if boundary_conds[i][0] == 0:
+                        old_positions[p][i] = positions[p][i]
                         positions[p][i] = 2.0 * domain[i][0] - positions[p][i]
                         velocities[p][i] *= -1.0
                     elif boundary_conds[i][0] == 1 or boundary_conds[i][0] == 2:
                         kept_parts[p] = 0
                 if positions[p][i] > domain[i][1]:
                     if boundary_conds[i][1] == 0:
+                        old_positions[p][i] = positions[p][i]
                         positions[p][i] = 2.0 * domain[i][1] - positions[p][i]
                         velocities[p][i] *= -1.0
                     elif boundary_conds[i][1] == 1 or boundary_conds[i][0] == 2:
@@ -35,16 +38,18 @@ def _boundary(velocities, positions, domain, boundary_conds):
     p = 0
     new_velocities = np.empty((N, 3))
     new_positions = np.empty((N, 3))
+    new_old_positions = np.empty((N, 3))
     
     for i in range(positions.shape[0]):
         if kept_parts[i] == 1:
             new_velocities[p] = velocities[i]
             new_positions[p] = positions[i]
+            new_old_positions[p] = old_positions[p]
             p += 1
         else:
             continue
 
-    return (new_velocities, new_positions)
+    return (new_velocities, new_positions, new_old_positions)
 
 @njit
 def _check_positions(velocities, positions, old_positions, domain):
@@ -68,6 +73,46 @@ def _check_positions(velocities, positions, old_positions, domain):
             continue
 
     return (new_velocities, new_positions)
+
+@njit
+def _check_created_particles(velocities, positions, obj):
+    kept_parts = np.ones(positions.shape[0], dtype=np.uint)
+    
+    for i in prange(positions.shape[0]):
+        if (not oc._is_inside(positions[i], obj)):
+            kept_parts[i] = 0
+    
+    N = sum(kept_parts)
+    p = 0
+    new_velocities = np.empty((N, 3))
+    new_positions = np.empty((N, 3))
+    
+    for i in prange(positions.shape[0]):
+        if kept_parts[i] == 1:
+            new_velocities[p] = velocities[i]
+            new_positions[p] = positions[i]
+            p += 1
+        else:
+            continue
+
+    return (new_velocities, new_positions)
+
+@njit
+def _object(velocities, positions, old_positions, coll_obj):
+    for p in range(positions.shape[0]):
+        if oc._is_inside(positions[p], coll_obj):
+            for i in range(3):
+                if (old_positions[p][i] < coll_obj[i][0]):
+                    old_positions[p][i] = positions[p][i]
+                    positions[p][i] = 2.0 * coll_obj[i][0] - positions[p][i]
+                    velocities[p][i] *= -1.0
+                
+                if (old_positions[p][i] > coll_obj[i][1]):
+                    old_positions[p][i] = positions[p][i]
+                    positions[p][i] = 2.0 * coll_obj[i][1] - positions[p][i]
+                    velocities[p][i] *= -1.0
+                    
+    return (velocities, positions, old_positions)
 
 @njit
 def _calc_prob(rel_vel : float, sigma_T : float, Vc : float, dt : float, w : float, N : int) -> np.single:
@@ -179,6 +224,7 @@ class DSMC:
         self.boundary = Boundary()
         self.sigma_T = 3.631681e-19
         self.mass = None
+        self.objects = []
 
     def advance(self, dt, collisions=True, octree=True):
         if self.domain is None:
@@ -200,7 +246,12 @@ class DSMC:
         old_positions = np.copy(self.particles.Pos)
         positions = _push(self.particles.Vel, self.particles.Pos, dt)
         self.particles.VelPos = _check_positions(self.particles.Vel, positions, old_positions, self.domain)
-        self.particles.VelPos = _boundary(self.particles.Vel, self.particles.Pos, self.domain, self.boundary_conds)
+        velocities, positions, old_positions = _boundary(self.particles.Vel, self.particles.Pos, self.domain, self.boundary_conds)
+        
+        for obj in self.objects:
+            velocities, positions, old_positions  = _object(velocities, positions, old_positions, obj)
+             
+        self.particles.VelPos = (velocities, positions)
 
     def _update_velocities(self, dt):
         Nleafs : int = len(self.octree.leafs)
@@ -216,6 +267,9 @@ class DSMC:
         N = int(round(com.get_V(box) * n / self.w))
         print("creating {} particles".format(N))
         self.particles.create_particles(box, self.mass, T, N, u)
+        
+        for obj in self.objects:
+            self.particles.VelPos = _check_created_particles(self.particles.Vel, self.particles.Pos, obj)
 
         print("now containing {} particles, {} total".format(N, self.particles.N))
 
@@ -245,3 +299,6 @@ class DSMC:
         self.boundary.u[i][j] = u
         
         print("boundary [" + boundary + "] set to values T : {}, n : {}, u : {}".format(T, n, u))
+
+    def add_object(self, coll_object):
+        self.objects.append(np.array(coll_object))

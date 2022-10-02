@@ -34,6 +34,9 @@ if __name__ == '__main__':
     # set object
     solver.add_object(obj)
     
+    # create particles
+    solver.create_particles(domain, T, n)
+    
     # start timing
     start_time = time.time()
     
