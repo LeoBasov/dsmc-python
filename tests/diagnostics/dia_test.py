@@ -34,7 +34,6 @@ if __name__ == "__main__":
     y1 = 1.5
     
     start_time = time.time()
-    sorted_vals = dia._sort_2d(positions, x0, x1, y0, y1, Nx, Ny)
-    print("--- %s seconds ---" % (time.time() - start_time))
-    
+    permutations, leafs, boxes = dia._sort_2d(positions, x0, x1, y0, y1, Nx, Ny)
+    print("--- %s seconds ---" % (time.time() - start_time))   
     print("done")
