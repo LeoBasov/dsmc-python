@@ -4,7 +4,7 @@ setup(
     version='0.7.0',
     author='Leo Basov',
     python_requires='>=3.10, <4',
-    packages=["dsmc"],
+    packages=["dsmc", "dsmc.writer"],
     install_requires=[
         'numpy',
         'llvmlite',
