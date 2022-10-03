@@ -2,6 +2,35 @@ import numpy as np
 from . import particles as prt
 from . import octree as oc
 
+def _sort_2d(positions, x0, x1, y0, y1, Nx, Ny):
+    dx = (x1 - x0) / Nx
+    dy = (y1 - y0) / Ny
+    sorted_vals = np.zeros((Nx, Ny))
+    
+    for pos in positions:
+        x = x0
+        y = y0
+        brk = False
+        
+        for i in range(Nx):
+            if brk:
+                break
+            y = y0
+            
+            for j in range(Ny):
+                print(x, y)
+                a = pos[0] >= x and pos[0] <= (x + dx)
+                b = pos[1] >= y and pos[1] <= (y + dy)
+                if a and b:
+                    sorted_vals[i][j] += 1
+                    brk = True
+                    break
+                y += dy
+            x += dx
+
+    return sorted_vals
+                    
+
 def sort_bin(positions, axis, Nbin):
     bins = [[] for _ in range(Nbin)]
     b = 0
