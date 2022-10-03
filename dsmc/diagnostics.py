@@ -5,9 +5,10 @@ from . import octree as oc
 def _sort_2d(positions, x0, x1, y0, y1, Nx, Ny):
     dx = (x1 - x0) / Nx
     dy = (y1 - y0) / Ny
-    sorted_vals = np.zeros((Nx, Ny))
+    sorted_vals = [[[] for _ in range(Ny)] for _ in range(Nx)]
     
-    for pos in positions:
+    for p in range(len(positions)):
+        pos = positions[p]
         x = x0
         y = y0
         brk = False
@@ -18,11 +19,10 @@ def _sort_2d(positions, x0, x1, y0, y1, Nx, Ny):
             y = y0
             
             for j in range(Ny):
-                print(x, y)
                 a = pos[0] >= x and pos[0] <= (x + dx)
                 b = pos[1] >= y and pos[1] <= (y + dy)
                 if a and b:
-                    sorted_vals[i][j] += 1
+                    sorted_vals[i][j].append(p)
                     brk = True
                     break
                 y += dy

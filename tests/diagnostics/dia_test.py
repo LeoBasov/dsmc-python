@@ -1,5 +1,6 @@
 import numpy as np
 import dsmc.diagnostics as dia
+import time
 
 def create_particles(N, radius):
 	positions = np.empty((N + 1, 3))
@@ -20,7 +21,7 @@ def create_particles(N, radius):
 	return positions
 
 if __name__ == "__main__":
-    N = 1000
+    N = 100000
     radius = 1.0
     positions = create_particles(N, radius)
     
@@ -32,8 +33,8 @@ if __name__ == "__main__":
     y0 = -1.5
     y1 = 1.5
     
+    start_time = time.time()
     sorted_vals = dia._sort_2d(positions, x0, x1, y0, y1, Nx, Ny)
-    
-    print(sorted_vals)
+    print("--- %s seconds ---" % (time.time() - start_time))
     
     print("done")
