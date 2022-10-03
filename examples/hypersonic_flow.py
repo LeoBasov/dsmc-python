@@ -1,5 +1,6 @@
 import dsmc
 import dsmc.writer as wrt
+import dsmc.diagnostics as dia
 import time
 import numpy as np
 
@@ -15,6 +16,14 @@ if __name__ == '__main__':
     n = 2.6e+19
     u = np.array([0.0, -3043.0, 0.0])
     niter = 1
+    
+    # set up diagnostics values
+    x0 = domain[0][0]
+    x1 = domain[0][1]
+    y0 = domain[1][0]
+    y1 = domain[1][1]
+    Nx = 100
+    Ny = 50
     
     # setup solver
     solver.set_domain(domain)
@@ -44,7 +53,8 @@ if __name__ == '__main__':
     for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
         solver.advance(dt)
-        wrt.write_buttom_leafs(solver.octree)
+        boxes, values = dia.analyse_2d(solver.particles.Pos, x0, x1, y0, y1, Nx, Ny)
+        wrt.write_planar(boxes, values, "hypersonic_{}.vtu".format(it))
         
     print("")
     print("--- %s seconds ---" % (time.time() - start_time))
