@@ -1,5 +1,6 @@
 import numpy as np
 import dsmc.diagnostics as dia
+import dsmc.writer as wrt
 import time
 
 def create_particles(N, radius):
@@ -21,7 +22,7 @@ def create_particles(N, radius):
 	return positions
 
 if __name__ == "__main__":
-    N = 100000
+    N = 1000
     radius = 1.0
     positions = create_particles(N, radius)
     
@@ -36,4 +37,8 @@ if __name__ == "__main__":
     start_time = time.time()
     permutations, leafs, boxes = dia._sort_2d(positions, x0, x1, y0, y1, Nx, Ny)
     print("--- %s seconds ---" % (time.time() - start_time))   
+    
+    print("writing to file")
+    wrt.write_planar(boxes, N)
+    
     print("done")
