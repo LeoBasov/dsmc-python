@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from numba import njit
+from . import common as com
 
 fmin = np.finfo(float).min
 fmax = np.finfo(float).max
@@ -69,12 +70,6 @@ def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
     c : bool = position[2] >= box[2][0] and position[2] <= box[2][1]
 
     return a and b and c
-
-@njit    
-def _swap(arr, pos1, pos2):
-    temp = arr[pos2]
-    arr[pos2] = arr[pos1]
-    arr[pos1] = temp
     
 @njit
 def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> tuple[npt.NDArray, int]:
@@ -103,7 +98,7 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
     for i in range(offset, offset + N):
         p = new_permutations[i]
         if _is_inside(positions[p], box):
-            _swap(new_permutations, i, runner)
+            com.swap(new_permutations, i, runner)
             runner += 1
             Nnew += 1
             
