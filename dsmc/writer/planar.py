@@ -52,22 +52,22 @@ def _write_cells(f, boxes):
 	f.write("<Cells>\n")
 	f.write("<DataArray type=\"Int32\" Name=\"connectivity\" format=\"ascii\">\n")
 
-	for i in range(len(leaf_ids)):
-		for _ in range(8):
+	for i in range(len(boxes)):
+		for _ in range(4):
 			f.write("{} ".format(k))
 			k += 1
 
 	f.write("</DataArray>\n")
 	f.write("<DataArray type=\"Int32\" Name=\"offsets\" format=\"ascii\">\n")
 
-	for i in range(len(leaf_ids)):
-		f.write("{} ".format((i + 1) * 8))
+	for i in range(len(boxes)):
+		f.write("{} ".format((i + 1) * 4))
 
 	f.write("</DataArray>\n")
 	f.write("<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n")
 
-	for _ in range(len(leaf_ids)):
-		f.write("12 ")
+	for _ in range(len(boxes)):
+		f.write("9 ")
 
 	f.write("</DataArray>\n")
 	f.write("</Cells>\n")
