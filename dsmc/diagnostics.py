@@ -48,6 +48,19 @@ def _sort_2d(positions, x0, x1, y0, y1, Nx, Ny):
                 leafs[i][1] += 1
 
     return (permutations, leafs, boxes)
+
+class Values:
+    def __init__(self):
+        self.number_elements = 0
+
+def analyse_2d(positions, x0, x1, y0, y1, Nx, Ny):
+    permutations, leafs, boxes = _sort_2d(positions, x0, x1, y0, y1, Nx, Ny)
+    values = [Values() for _ in range(len(leafs))]
+    
+    for i in range(len(leafs)):
+        values[i].number_elements = leafs[i][1]
+        
+    return (boxes, values)
                     
 
 def sort_bin(positions, axis, Nbin):

@@ -21,10 +21,6 @@ def create_particles(N, radius):
 	
 	return positions
 
-class Values:
-    def __init__(self):
-        self.number_elements = 0
-
 if __name__ == "__main__":
     N = 10000
     radius = 1.0
@@ -39,14 +35,10 @@ if __name__ == "__main__":
     y1 = 1.5
     
     start_time = time.time()
-    permutations, leafs, boxes = dia._sort_2d(positions, x0, x1, y0, y1, Nx, Ny)
+    boxes, values = dia.analyse_2d(positions, x0, x1, y0, y1, Nx, Ny)
     print("--- %s seconds ---" % (time.time() - start_time))   
     
     print("writing to file")
-    values = [Values() for _ in range(len(leafs))]
-    
-    for i in range(len(leafs)):
-        values[i].number_elements = leafs[i][1]
     
     wrt.write_planar(boxes, values)
     
