@@ -21,14 +21,18 @@ def create_particles(N, radius):
 	
 	return positions
 
+class Values:
+    def __init__(self):
+        self.number_elements = 0
+
 if __name__ == "__main__":
-    N = 1000
+    N = 10000
     radius = 1.0
     positions = create_particles(N, radius)
     
     # set up sort
-    Nx = 10
-    Ny = 10
+    Nx = 100
+    Ny = 100
     x0 = -1.5
     x1 = 1.5
     y0 = -1.5
@@ -39,6 +43,11 @@ if __name__ == "__main__":
     print("--- %s seconds ---" % (time.time() - start_time))   
     
     print("writing to file")
-    wrt.write_planar(boxes, N)
+    values = [Values() for _ in range(len(leafs))]
+    
+    for i in range(len(leafs)):
+        values[i].number_elements = leafs[i][1]
+    
+    wrt.write_planar(boxes, values)
     
     print("done")

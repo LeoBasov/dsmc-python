@@ -16,7 +16,7 @@ def _wrtie_body(f, boxes, values):
 
 	_write_points(f, boxes)
 	_write_cells(f, boxes)
-	#_write_cell_data(f, boxes)
+	_write_cell_data(f, boxes, values)
 
 	f.write("</Piece>\n")
 	f.write("</UnstructuredGrid>\n")
@@ -72,12 +72,12 @@ def _write_cells(f, boxes):
 	f.write("</DataArray>\n")
 	f.write("</Cells>\n")
     
-def _write_cell_data(f, octree, leaf_ids):
-    f.write("<CellData Scalars=\"number_density\">\n")
+def _write_cell_data(f, boxes, values):
+    f.write("<CellData Scalars=\"particle_numbers\">\n")
     f.write("<DataArray type=\"Float32\" Name=\"particle_numbers\" format=\"ascii\">\n")
     
-    for i in leaf_ids:
-        f.write("{} ".format(octree.leafs[i].number_elements))
+    for vals in values:
+        f.write("{} ".format(vals.number_elements))
         
     f.write("</DataArray>\n")
     f.write("</CellData>\n")
