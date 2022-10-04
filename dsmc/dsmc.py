@@ -34,7 +34,7 @@ def _boundary(velocities, positions, old_positions, domain, boundary_conds):
                     elif boundary_conds[i][1] == 1 or boundary_conds[i][0] == 2:
                         kept_parts[p] = 0
                         
-    N = sum(kept_parts)
+    N = int(sum(kept_parts))
     p = 0
     new_velocities = np.empty((N, 3))
     new_positions = np.empty((N, 3))
