@@ -1,5 +1,6 @@
 import dsmc.mesh.mesh2d as msh
 import unittest
+import numpy as np
 
 class TestMesh2(unittest.TestCase):
     def test_constructor(self):
@@ -48,3 +49,35 @@ class TestMesh2(unittest.TestCase):
         
         self.assertEqual(0, res1[1])
         self.assertEqual(11, res2[1])
+        
+    def test_get_cell_id(self):
+        mesh = msh.Mesh2d()
+        
+        mesh.n_cells1 = 10
+        mesh.n_cells2 = 10
+        mesh.min1 = -0.5
+        mesh.min2 = -0.5
+        mesh.cell_size = 0.1
+        
+        pos = np.array([-0.45, -0.35, -0.25])
+        
+        # XY
+        mesh.plane = msh.Plane.XY
+        res = mesh.get_cell_id(pos)
+        
+        self.assertTrue(res[0])
+        self.assertEqual(10, res[1])
+        
+        # YZ
+        mesh.plane = msh.Plane.YZ
+        res = mesh.get_cell_id(pos)
+        
+        self.assertTrue(res[0])
+        self.assertEqual(21, res[1])
+        
+        # XZ
+        mesh.plane = msh.Plane.XZ
+        res = mesh.get_cell_id(pos)
+        
+        self.assertTrue(res[0])
+        self.assertEqual(20, res[1])
