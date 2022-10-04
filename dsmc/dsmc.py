@@ -7,14 +7,14 @@ from . import common as com
 
 @njit
 def _push(velocities, positions, dt):
+    old_positions = np.copy(positions)
     for p in prange(len(positions)):
         positions[p] = positions[p] + velocities[p]*dt
-    return positions
+    return (velocities, positions, old_positions)
 
 @njit
-def _boundary(velocities, positions, domain, boundary_conds):
+def _boundary(velocities, positions, old_positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
-    old_positions = np.copy(positions)
     
     for p in prange(len(positions)):
         while not oc._is_inside(positions[p], domain) and kept_parts[p]:
@@ -63,16 +63,18 @@ def _check_positions(velocities, positions, old_positions, domain):
     p = 0
     new_velocities = np.empty((N, 3))
     new_positions = np.empty((N, 3))
+    new_old_positions = np.empty((N, 3))
     
     for i in prange(positions.shape[0]):
         if kept_parts[i] == 1:
             new_velocities[p] = velocities[i]
             new_positions[p] = positions[i]
+            new_old_positions[p] = old_positions[i]
             p += 1
         else:
             continue
 
-    return (new_velocities, new_positions)
+    return (new_velocities, new_positions, new_old_positions)
 
 @njit
 def _check_created_particles(velocities, positions, obj):
@@ -243,10 +245,9 @@ class DSMC:
             self.octree.build(self.particles.Pos)
         if collisions and octree:
             self.particles.VelPos = (self._update_velocities(dt), self.particles.Pos)
-        old_positions = np.copy(self.particles.Pos)
-        positions = _push(self.particles.Vel, self.particles.Pos, dt)
-        self.particles.VelPos = _check_positions(self.particles.Vel, positions, old_positions, self.domain)
-        velocities, positions, old_positions = _boundary(self.particles.Vel, self.particles.Pos, self.domain, self.boundary_conds)
+        velocities, positions, old_positions = _push(self.particles.Vel, self.particles.Pos, dt)
+        velocities, positions, old_positions = _check_positions(velocities, positions, old_positions, self.domain)
+        velocities, positions, old_positions = _boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
         
         for obj in self.objects:
             velocities, positions, old_positions  = _object(velocities, positions, old_positions, obj)
