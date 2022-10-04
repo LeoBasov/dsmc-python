@@ -1,4 +1,6 @@
 import dsmc
+import dsmc.octree as oc
+import dsmc.writer as wrt
 import time
 import numpy as np
 
@@ -45,7 +47,17 @@ if __name__ == '__main__':
     mass = 6.6422e-26
     T =  273.0
     n = 2.6e+19
-    niter = 100
+    niter = 1
+    
+    # trees
+    tree_inner = oc.Octree()
+    tree_outer = oc.Octree()
+    
+    inner_pos = np.array([[-0.5, -0.5, -0.5], [0.5, 0.5, 0.5]])
+    outer_pos = np.array([[-1.0, -1.0, -1.0], [1.0, 1.0, 1.0]])
+    
+    tree_inner.build(inner_pos)
+    tree_outer.build(outer_pos)
     
     # setup solver
     solver.set_domain(domain)
@@ -65,6 +77,9 @@ if __name__ == '__main__':
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
         solver.advance(dt)
         write_partices(solver.particles.Pos, it)
+        
+    wrt.write_buttom_leafs(tree_inner, "inner_box.vtu")
+    wrt.write_buttom_leafs(tree_outer, "outer_box.vtu")
 
     print("")
     print("--- %s seconds ---" % (time.time() - start_time))
