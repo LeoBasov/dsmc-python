@@ -31,9 +31,9 @@ class Mesh2d:
         self.clear()
         
     def clear(self):
-        cell_size = 1.0
-        min1 = 0.0
-        min2 = 0.0
-        n_cells1 = 1
-        n_cells2 = 1
-        plane = Plane.XY
+        self.cell_size = 1.0
+        self.min1 = 0.0
+        self.min2 = 0.0
+        self.n_cells1 = 1
+        self.n_cells2 = 1
+        self.plane = Plane.XY
