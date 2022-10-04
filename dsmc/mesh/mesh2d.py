@@ -1,6 +1,7 @@
 from enum import Enum
 import math
 from numba import njit
+import numpy as np
 
 @njit
 def _get_cell_id(val1, val2, n_cells1, n_cells2, min1, min2, cell_size):
@@ -19,6 +20,16 @@ def _get_cell_id(val1, val2, n_cells1, n_cells2, min1, min2, cell_size):
         cell_id2 = math.floor((val2 - min2) / cell_size)
 
     return (True, cell_id2 * n_cells1 + cell_id1)
+
+@njit
+def _sort(values1, values2, n_cells1, n_cells2, min1, min2, cell_size):
+    inside = np.empty((len(values1)), np.bool_)
+    ids = np.empty((len(values1)), np.int_)
+    
+    for i in range(len(values1)):
+        inside[i], ids[i] = _get_cell_id(values1[i], values2[i], n_cells1, n_cells2, min1, min2, cell_size)
+        
+    return (inside, ids)
 
 
 class Plane(Enum):

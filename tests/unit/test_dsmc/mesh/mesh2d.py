@@ -81,3 +81,27 @@ class TestMesh2(unittest.TestCase):
         
         self.assertTrue(res[0])
         self.assertEqual(20, res[1])
+        
+    def test__sort(self):
+        mesh = msh.Mesh2d()
+        
+        mesh.n_cells1 = 10
+        mesh.n_cells2 = 10
+        mesh.min1 = -0.5
+        mesh.min2 = -0.5
+        mesh.cell_size = 0.1
+        
+        pos1 = np.array([-0.45, -0.35, 0.0])
+        pos2 = np.array([-0.45, -3.50, 0.0])
+        positions = np.array([pos1, pos2])
+        
+        values1 = np.array([positions[i][0] for i in range(len(positions))])
+        values2 = np.array([positions[i][1] for i in range(len(positions))])
+        
+        inside, ids = msh._sort(values1, values2, mesh.n_cells1, mesh.n_cells2, mesh.min1, mesh.min2, mesh.cell_size)
+        
+        self.assertTrue(inside[0])
+        self.assertFalse(inside[1])
+        
+        self.assertEqual(10, ids[0])
+        self.assertEqual(0, ids[1])
