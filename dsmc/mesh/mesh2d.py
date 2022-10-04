@@ -1,5 +1,5 @@
 from enum import Enum
-import numpy as np
+import math
 
 def _get_cell_id(val1, val2, n_cells1, n_cells2, min1, min2, cell_size):
     if (val1 < min1):
@@ -7,14 +7,14 @@ def _get_cell_id(val1, val2, n_cells1, n_cells2, min1, min2, cell_size):
     elif (val1 > (min1 + n_cells1 * cell_size)):
         return (False, 0)
     else:
-        cell_id1 = np.floor((val1 - min1) / cell_size)
+        cell_id1 = math.floor((val1 - min1) / cell_size)
 
     if (val2 < min2):
         return (False, 0)
     elif (val2 > (min2 + n_cells2 * cell_size)):
         return (False, 0)
     else:
-        cell_id2 = np.floor((val2 - min2) / cell_size)
+        cell_id2 = math.floor((val2 - min2) / cell_size)
 
     return (True, cell_id2 * n_cells1 + cell_id1)
 

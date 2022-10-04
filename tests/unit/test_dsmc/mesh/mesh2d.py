@@ -30,3 +30,21 @@ class TestMesh2(unittest.TestCase):
         self.assertFalse(res1_f[0])
         self.assertFalse(res2_f[0])
         self.assertTrue(res3_t[0])
+        
+    def test__get_cell_id2(self):
+        val1 = (-0.45, -0.5)
+        val2 = (-0.35, -0.35)
+        n_cells1 = 10
+        n_cells2 = 10
+        min1 = -0.5
+        min2 = -0.5
+        cell_size = 0.1
+        
+        res1 = msh._get_cell_id(val1[0], val1[1], n_cells1, n_cells2, min1, min2, cell_size)
+        res2 = msh._get_cell_id(val2[0], val2[1], n_cells1, n_cells2, min1, min2, cell_size)
+        
+        self.assertTrue(res1[0])
+        self.assertTrue(res2[0])
+        
+        self.assertEqual(0, res1[1])
+        self.assertEqual(11, res2[1])
