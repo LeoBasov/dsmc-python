@@ -2,8 +2,6 @@ from enum import Enum
 import numpy as np
 
 def _get_cell_id(val1, val2, n_cells1, n_cells2, min1, min2, cell_size):
-    #uint cell_id1, cell_id2;
-
     if (val1 < min1):
         return (False, 0)
     elif (val1 > (min1 + n_cells1 * cell_size)):
