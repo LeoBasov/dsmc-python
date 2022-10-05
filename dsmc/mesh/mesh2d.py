@@ -49,6 +49,28 @@ class Mesh2d:
         self.n_cells1 = 1
         self.n_cells2 = 1
         self.plane = Plane.XY
+        self.cells = None # this holds an 2d array, cells[] : cells, cells[][] position ids in cell
+        
+    def sort(self, position):
+        self.cells = [[] for _ in range(self.n_cells1 * self.n_cells2)]
+        
+        match self.plane:
+            case Plane.XY:
+                positions1 = np.array([position[i][0] for i in range(len(position))])
+                positions2 = np.array([position[i][1] for i in range(len(position))])
+            case Plane.YZ:
+                positions1 = np.array([position[i][1] for i in range(len(position))])
+                positions2 = np.array([position[i][2] for i in range(len(position))])
+            case Plane.XZ:
+                positions1 = np.array([position[i][0] for i in range(len(position))])
+                positions2 = np.array([position[i][2] for i in range(len(position))])
+            
+        inside, cell_ids =  _sort(positions1, positions2, self.n_cells1, self.n_cells2, self.min1, self.min2, self.cell_size1, self.cell_size2)
+        sorted_ids = np.argsort(cell_ids)
+        
+        for idx in sorted_ids:
+            if inside[idx]:
+                self.cells[cell_ids[idx]].append(idx)
         
     def get_cell_id(self, position):
         match self.plane:
