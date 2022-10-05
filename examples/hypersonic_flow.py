@@ -1,6 +1,7 @@
 import dsmc
 import dsmc.writer as wrt
 import dsmc.diagnostics as dia
+import dsmc.mesh.mesh2d as msh2d
 import time
 import numpy as np
 
@@ -15,16 +16,20 @@ if __name__ == '__main__':
     T =  273.0
     n = 2.6e+19
     u = np.array([0.0, -3043.0, 0.0])
-    niter = 2001
+    niter = 1#2001
     niter_sample = 10
     
-    # set up diagnostics values
-    x0 = domain[0][0]
-    x1 = domain[0][1]
-    y0 = domain[1][0]
-    y1 = domain[1][1]
-    Nx = 100
-    Ny = 50
+    # set up mesh2
+    mesh = msh2d.Mesh2d()
+    
+    mesh.n_cells1 = 100
+    mesh.n_cells2 = 50
+    mesh.min1 = domain[0][0]
+    mesh.min2 = domain[1][0]
+    mesh.cell_size1 = 0.06
+    mesh.cell_size2 = 0.06
+    
+    h = domain[2][1] - domain[2][0]
     
     # setup solver
     solver.set_domain(domain)
@@ -51,14 +56,15 @@ if __name__ == '__main__':
     # start timing
     start_time = time.time()
     
-    for it in range(niter):
+    """for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
-        solver.advance(dt)
+        solver.advance(dt)"""
             
     for it in range(niter_sample):
-        print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
+        print("iteration {:4}/{}".format(it + 1, niter_sample), end="\r", flush=True)
         solver.advance(dt)
-        boxes, values = dia.analyse_2d(solver.particles.Pos, x0, x1, y0, y1, Nx, Ny)
+        mesh.sort(solver.particles.Pos)
+        boxes, values = dia.analyse_2d(solver.particles.Pos, solver.particles.Vel, mesh, h)
         wrt.write_planar(boxes, values, "hypersonic_{}.vtu".format(it))
         
     wrt.write_buttom_leafs(solver.octree)
