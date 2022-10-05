@@ -16,8 +16,8 @@ if __name__ == '__main__':
     T =  273.0
     n = 2.6e+19
     u = np.array([0.0, -3043.0, 0.0])
-    niter = 1#2001
-    niter_sample = 10
+    niter = 10000
+    niter_sample = 100
     
     # set up mesh2
     mesh = msh2d.Mesh2d()
@@ -56,16 +56,18 @@ if __name__ == '__main__':
     # start timing
     start_time = time.time()
     
-    """for it in range(niter):
+    for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
-        solver.advance(dt)"""
+        solver.advance(dt)
             
     for it in range(niter_sample):
         print("iteration {:4}/{}".format(it + 1, niter_sample), end="\r", flush=True)
         solver.advance(dt)
-        mesh.sort(solver.particles.Pos)
-        boxes, values = dia.analyse_2d(solver.particles.Pos, solver.particles.Vel, mesh, h)
-        wrt.write_planar(boxes, values, "hypersonic_{}.vtu".format(it))
+        
+        if (it + 1)%10 == 0:
+            mesh.sort(solver.particles.Pos)
+            boxes, values = dia.analyse_2d(solver.particles.Pos, solver.particles.Vel, mesh, h)
+            wrt.write_planar(boxes, values, "hypersonic_{}.vtu".format(it))
         
     wrt.write_buttom_leafs(solver.octree)
         
