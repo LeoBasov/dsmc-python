@@ -6,7 +6,8 @@ class TestMesh2(unittest.TestCase):
     def test_constructor(self):
         mesh = msh.Mesh2d()
         
-        self.assertEqual(1.0, mesh.cell_size)
+        self.assertEqual(1.0, mesh.cell_size1)
+        self.assertEqual(1.0, mesh.cell_size2)
         self.assertEqual(0.0, mesh.min1)
         self.assertEqual(0.0, mesh.min2)
         self.assertEqual(1, mesh.n_cells1)
@@ -22,11 +23,12 @@ class TestMesh2(unittest.TestCase):
         n_cells2 = 10
         min1 = -0.5
         min2 = -0.5
-        cell_size = 0.1
+        cell_size1 = 0.1
+        cell_size2 = 0.1
         
-        res1_f = msh._get_cell_id(val1_t, val2_f, n_cells1, n_cells2, min1, min2, cell_size)
-        res2_f = msh._get_cell_id(val1_f, val2_t, n_cells1, n_cells2, min1, min2, cell_size)
-        res3_t = msh._get_cell_id(val1_t, val2_t, n_cells1, n_cells2, min1, min2, cell_size)
+        res1_f = msh._get_cell_id(val1_t, val2_f, n_cells1, n_cells2, min1, min2, cell_size1, cell_size2)
+        res2_f = msh._get_cell_id(val1_f, val2_t, n_cells1, n_cells2, min1, min2, cell_size1, cell_size2)
+        res3_t = msh._get_cell_id(val1_t, val2_t, n_cells1, n_cells2, min1, min2, cell_size1, cell_size2)
         
         self.assertFalse(res1_f[0])
         self.assertFalse(res2_f[0])
@@ -39,10 +41,11 @@ class TestMesh2(unittest.TestCase):
         n_cells2 = 10
         min1 = -0.5
         min2 = -0.5
-        cell_size = 0.1
+        cell_size1 = 0.1
+        cell_size2 = 0.1
         
-        res1 = msh._get_cell_id(val1[0], val1[1], n_cells1, n_cells2, min1, min2, cell_size)
-        res2 = msh._get_cell_id(val2[0], val2[1], n_cells1, n_cells2, min1, min2, cell_size)
+        res1 = msh._get_cell_id(val1[0], val1[1], n_cells1, n_cells2, min1, min2, cell_size1, cell_size2)
+        res2 = msh._get_cell_id(val2[0], val2[1], n_cells1, n_cells2, min1, min2, cell_size1, cell_size2)
         
         self.assertTrue(res1[0])
         self.assertTrue(res2[0])
@@ -57,7 +60,8 @@ class TestMesh2(unittest.TestCase):
         mesh.n_cells2 = 10
         mesh.min1 = -0.5
         mesh.min2 = -0.5
-        mesh.cell_size = 0.1
+        mesh.cell_size1 = 0.1
+        mesh.cell_size2 = 0.1
         
         pos = np.array([-0.45, -0.35, -0.25])
         
@@ -89,7 +93,8 @@ class TestMesh2(unittest.TestCase):
         mesh.n_cells2 = 10
         mesh.min1 = -0.5
         mesh.min2 = -0.5
-        mesh.cell_size = 0.1
+        mesh.cell_size1 = 0.1
+        mesh.cell_size2 = 0.1
         
         pos1 = np.array([-0.45, -0.35, 0.0])
         pos2 = np.array([-0.45, -3.50, 0.0])
@@ -98,7 +103,7 @@ class TestMesh2(unittest.TestCase):
         values1 = np.array([positions[i][0] for i in range(len(positions))])
         values2 = np.array([positions[i][1] for i in range(len(positions))])
         
-        inside, ids = msh._sort(values1, values2, mesh.n_cells1, mesh.n_cells2, mesh.min1, mesh.min2, mesh.cell_size)
+        inside, ids = msh._sort(values1, values2, mesh.n_cells1, mesh.n_cells2, mesh.min1, mesh.min2, mesh.cell_size1, mesh.cell_size2)
         
         self.assertTrue(inside[0])
         self.assertFalse(inside[1])
