@@ -232,7 +232,7 @@ class DSMC:
         if self.domain is None:
             raise Exception("simulation domain not defined")
         if self.particles.N == 0:
-            raise Exception("no particles in domain")
+            print("warning: no particles in domain")
         if self.w == None:
             raise Exception("particle weight not set")
             
