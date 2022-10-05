@@ -241,27 +241,28 @@ class DSMC:
                 if self.boundary_conds[i][j] == 2:
                     self.particles.inflow(self.mass, self.boundary.T[i][j], self.boundary.u[i][j], self.boundary.n[i][j], self.w, dt, self.domain, i, j)
 
-        if octree:
-            self.octree.build(self.particles.Pos)
-        if collisions and octree:
-            self.particles.VelPos = (self._update_velocities(dt), self.particles.Pos)
         velocities, positions, old_positions = _push(self.particles.Vel, self.particles.Pos, dt)
         velocities, positions, old_positions = _check_positions(velocities, positions, old_positions, self.domain)
         velocities, positions, old_positions = _boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
         
         for obj in self.objects:
             velocities, positions, old_positions  = _object(velocities, positions, old_positions, obj)
+            
+        if octree:
+            self.octree.build(positions)
+        if collisions and octree:
+            velocities = self._update_velocities(dt, velocities)
              
         self.particles.VelPos = (velocities, positions)
 
-    def _update_velocities(self, dt):
+    def _update_velocities(self, dt, velocities):
         Nleafs : int = len(self.octree.leafs)
         elem_offsets : np.ndarray = np.array([leaf.elem_offset for leaf in self.octree.leafs], dtype=int)
         number_elements : np.ndarray = np.array([leaf.number_elements for leaf in self.octree.leafs], dtype=int)
         number_children : np.ndarray = np.array([leaf.number_children for leaf in self.octree.leafs], dtype=int)
         cell_boxes : np.ndarray = np.array([box for box in self.octree.cell_boxes])
 
-        return _update_vels(self.octree.permutations, self.particles.Vel, self.mass, self.sigma_T, dt, self.w, elem_offsets, number_elements, number_children, cell_boxes, Nleafs)
+        return _update_vels(self.octree.permutations, velocities, self.mass, self.sigma_T, dt, self.w, elem_offsets, number_elements, number_children, cell_boxes, Nleafs)
 
     def create_particles(self, box, T, n, u = np.zeros(3)):
         box = np.array(box)

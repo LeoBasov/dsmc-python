@@ -16,7 +16,7 @@ if __name__ == '__main__':
     T =  273.0
     n = 2.6e+19
     u = np.array([0.0, -3043.0, 0.0])
-    niter = 10000
+    niter = 1000
     niter_sample = 100
     
     # set up mesh2
