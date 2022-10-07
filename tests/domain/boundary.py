@@ -13,7 +13,7 @@ if __name__ == '__main__':
     particles = prt.Particles()
     domain = np.array([(-1.0, 1.0), (-1.0, 1.0), (-1.0, 1.0)])
     dt = 0.0001
-    w = 2.3e+18
+    w = 2.3e+16
     mass = 6.6422e-26
     T =  273.0
     n = 2.6e+19
@@ -34,9 +34,8 @@ if __name__ == '__main__':
     
     velocities, positions = particles.VelPos
     
-    """for vel in velocities:
-        vel[0] = 0
-        vel[1] = 0"""
+    #velocities = np.array([[150.0, 150.0, 0.0]])
+    #positions = np.array([[0.0, 0.0, 0.0]])
         
     particles.VelPos = velocities, positions
     
@@ -46,7 +45,7 @@ if __name__ == '__main__':
     wrt.write_positions(particles, "pos_{}.csv".format(0))
     
     for it in range(niter):
-        print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
+        print("iteration {:4}/{}, N particles {}/{}".format(it + 1, niter, particles.N, N), end="\r", flush=True)
         velocities, positions, old_positions = ds._push(particles.Vel, particles.Pos, dt)
         velocities, positions, old_positions = boundary.boundary(velocities, positions, old_positions)
         
