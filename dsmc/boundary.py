@@ -37,7 +37,7 @@ def _calc_nr(n_l, n_p):
 def _reflect(vel, pos, pos_old, p0, p1, p2):
     intersected, n_l, n_p, t = _intersect(pos_old, pos, p0, p1, p2)
     
-    if intersected:
+    if intersected and t < 1:
         pos_old = pos_old + n_l*t
         n_r = _calc_nr(n_l, n_p)
         pos = pos_old  + (1.0 - t)*n_r
@@ -48,17 +48,32 @@ def _reflect(vel, pos, pos_old, p0, p1, p2):
 @njit
 def _get_plane(domain, i, j):
     if i == 0:
-        p0 = np.array([domain[i][j], domain[1][0], domain[2][0]])
-        p1 = np.array([domain[i][j], domain[1][1], domain[2][0]])
-        p2 = np.array([domain[i][j], domain[1][0], domain[2][1]])
+        if j == 0:
+            p0 = np.array([domain[i][j], domain[1][0], domain[2][0]])
+            p1 = np.array([domain[i][j], domain[1][1], domain[2][0]])
+            p2 = np.array([domain[i][j], domain[1][0], domain[2][1]])
+        elif j == 1:
+            p0 = np.array([domain[i][j], domain[1][0], domain[2][0]])
+            p1 = np.array([domain[i][j], domain[1][0], domain[2][1]])
+            p2 = np.array([domain[i][j], domain[1][1], domain[2][0]])
     elif i == 1:
-        p0 = np.array([domain[0][0], domain[i][j], domain[2][0]])
-        p1 = np.array([domain[0][1], domain[i][j], domain[2][0]])
-        p2 = np.array([domain[0][0], domain[i][j], domain[2][1]])
+        if j == 0:
+            p0 = np.array([domain[0][0], domain[i][j], domain[2][0]])
+            p1 = np.array([domain[0][0], domain[i][j], domain[2][1]])
+            p2 = np.array([domain[0][1], domain[i][j], domain[2][0]])
+        if j == 1:
+            p0 = np.array([domain[0][0], domain[i][j], domain[2][0]])
+            p1 = np.array([domain[0][1], domain[i][j], domain[2][0]])
+            p2 = np.array([domain[0][0], domain[i][j], domain[2][1]])
     elif i == 2:
-        p0 = np.array([domain[0][0], domain[1][0], domain[i][j]])
-        p1 = np.array([domain[0][1], domain[1][0], domain[i][j]])
-        p2 = np.array([domain[0][0], domain[1][1], domain[i][j]])
+        if j == 0:
+            p0 = np.array([domain[0][0], domain[1][0], domain[i][j]])
+            p1 = np.array([domain[0][1], domain[1][0], domain[i][j]])
+            p2 = np.array([domain[0][0], domain[1][1], domain[i][j]])
+        if j == 1:
+            p0 = np.array([domain[0][0], domain[1][0], domain[i][j]])
+            p1 = np.array([domain[0][0], domain[1][1], domain[i][j]])
+            p2 = np.array([domain[0][1], domain[1][0], domain[i][j]])
         
     return (p0, p1, p2)
 
@@ -126,4 +141,4 @@ class Boundary:
         self.domain = None
         
     def boundary(self, velocities, positions, old_positions):
-        return self._boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
+        return _boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
