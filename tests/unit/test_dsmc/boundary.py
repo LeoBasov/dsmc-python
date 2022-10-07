@@ -21,7 +21,7 @@ class TestCommon(unittest.TestCase):
         p1 = np.array([0.0, -1.0, 1.0])
         p2 = np.array([0.0, 1.0, 1.0])
         
-        intersected, n_l, n_r, t = bo._intersect(l0, l1, p0, p1, p2)
+        intersected, n_l, n_p, t = bo._intersect(l0, l1, p0, p1, p2)
         
         self.assertTrue(intersected)
         
@@ -29,8 +29,23 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(2.0, n_l[1])
         self.assertEqual(0.0, n_l[2])
         
-        self.assertEqual(-4.0, n_r[0])
-        self.assertEqual(0.0, n_r[1])
-        self.assertEqual(0.0, n_r[2])
+        self.assertEqual(-4.0, n_p[0])
+        self.assertEqual(0.0, n_p[1])
+        self.assertEqual(0.0, n_p[2])
         
         self.assertEqual(0.5, t)
+        
+    def test__calc_nr(self):
+        l0 = np.array([-1.0, -1.0, 0.0])
+        l1 = np.array([1.0, 1.0, 0.0])
+        
+        p0 = np.array([0.0, -1.0, -1.0])
+        p1 = np.array([0.0, -1.0, 1.0])
+        p2 = np.array([0.0, 1.0, 1.0])
+        
+        intersected, n_l, n_p, t = bo._intersect(l0, l1, p0, p1, p2)
+        n_r = bo._calc_nr(n_l, n_p)
+        
+        self.assertEqual(-2.0, n_r[0])
+        self.assertEqual(2.0, n_r[1])
+        self.assertEqual(0.0, n_r[2])
