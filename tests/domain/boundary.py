@@ -7,6 +7,33 @@ import dsmc.common as co
 import time
 import numpy as np
 
+def create_pos_and_vels():
+    positions = np.zeros((6, 3))
+    velocitiies = np.zeros((6, 3))
+    
+    # x
+    positions[0][0] = -0.75
+    velocitiies[0][0] = 100.0
+    
+    positions[1][0] = 0.75
+    velocitiies[1][0] = -100.0
+    
+    # y
+    positions[2][1] = -0.75
+    velocitiies[2][1] = 100.0
+    
+    positions[3][1] = 0.75
+    velocitiies[3][1] = -100.0
+    
+    # z
+    positions[4][2] = -0.75
+    velocitiies[4][2] = 100.0
+    
+    positions[5][2] = 0.75
+    velocitiies[5][2] = -100.0
+    
+    return (velocitiies, positions)
+
 if __name__ == '__main__':
     # general parameters
     boundary = bo.Boundary()
@@ -33,11 +60,8 @@ if __name__ == '__main__':
     particles.create_particles(domain, mass, T, N)
     
     velocities, positions = particles.VelPos
-    
-    #velocities = np.array([[150.0, 150.0, 0.0]])
-    #positions = np.array([[0.0, 0.0, 0.0]])
         
-    particles.VelPos = velocities, positions
+    particles.VelPos = create_pos_and_vels()
     
     # start timing
     start_time = time.time()
