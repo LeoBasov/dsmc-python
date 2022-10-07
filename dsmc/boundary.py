@@ -62,6 +62,7 @@ def _get_plane(domain, i, j):
         
     return (p0, p1, p2)
 
+@njit
 def _boundary(velocities, positions, old_positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
@@ -123,3 +124,6 @@ class Boundary:
         self.u = np.zeros((3, 2, 3))
         self.boundary_conds = np.array([[0, 0], [0, 0], [0, 0]], dtype=np.uint) # 0 = ela, 1 = open, 2 = inflow 
         self.domain = None
+        
+    def boundary(self, velocities, positions, old_positions):
+        return self._boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
