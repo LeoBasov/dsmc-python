@@ -32,7 +32,8 @@ def _intersect(l0, l1, p0, p1, p2):
 @njit    
 def _calc_nr(n_l, n_p):
     return n_l - 2.0 * (n_p.dot(n_l) / n_p.dot(n_p))*n_p
-    
+
+@njit     
 def _reflect(vel, pos, pos_old, p0, p1, p2):
     intersected, n_l, n_p, t = _intersect(pos_old, pos, p0, p1, p2)
     
