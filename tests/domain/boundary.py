@@ -51,7 +51,7 @@ if __name__ == '__main__':
     tree_outer = oc.Octree()
     outer_pos = np.array([[-1.0, -1.0, -1.0], [1.0, 1.0, 1.0]])
     tree_outer.build(outer_pos)
-    wrt.write_buttom_leafs(tree_outer, "outer_box.vtu")
+    #wrt.write_buttom_leafs(tree_outer, "outer_box.vtu")
     
     # setup solver
     boundary.domain = domain
@@ -61,20 +61,31 @@ if __name__ == '__main__':
     
     velocities, positions = particles.VelPos
         
-    particles.VelPos = create_pos_and_vels()
+    #particles.VelPos = create_pos_and_vels()
     
     # start timing
     start_time = time.time()
     
     wrt.write_positions(particles, "pos_{}.csv".format(0))
     
+    E0 = 0.0
+    
+    for vel in particles.Vel:
+        E0 += vel.dot(vel)
+    
     for it in range(niter):
-        print("iteration {:4}/{}, N particles {}/{}".format(it + 1, niter, particles.N, N), end="\r", flush=True)
+        E = 0.0
+        
         velocities, positions, old_positions = ds._push(particles.Vel, particles.Pos, dt)
         velocities, positions, old_positions = boundary.boundary(velocities, positions, old_positions)
         
         particles.VelPos = (velocities, positions)
         wrt.write_positions(particles, "pos_{}.csv".format(it + 1))
+        
+        for vel in particles.Vel:
+            E += vel.dot(vel)
+        
+        print("iteration {:4}/{}, N particles {}/{}, Efrac {}".format(it + 1, niter, particles.N, N, E/E0), end="\r", flush=True)
     
 
     print("")
