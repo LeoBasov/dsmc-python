@@ -159,5 +159,22 @@ class Boundary:
         self.boundary_conds = np.array([[0, 0], [0, 0], [0, 0]], dtype=np.uint) # 0 = ela, 1 = open, 2 = inflow 
         self.domain = None
         
-    def boundary(self, velocities, positions, old_positions):
+    def boundary(self, velocities, positions, old_positions):        
         return _boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
+    
+    def set_bc_type(self, boundary, bc_type):
+        bound = _get_boundary(boundary)
+        bc = _get_bc_type(bc_type)
+        
+        self.boundary_conds[bound[0]][bound[1]] = bc
+        
+        print("boundary [" + boundary + "] set to [" + bc_type + "]")
+        
+    def set_bc_values(self, boundary, T, n, u):
+        i, j = _get_boundary(boundary)
+        
+        self.T[i][j] = T
+        self.n[i][j] = n
+        self.u[i][j] = u
+        
+        print("boundary [" + boundary + "] set to values T : {}, n : {}, u : {}".format(T, n, u))
