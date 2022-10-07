@@ -1,5 +1,6 @@
 import numpy as np
 from numba import njit
+from . import common as co
 
 @njit
 def _check_if_parallel(v1, v2, diff=1e-6):
@@ -40,11 +41,16 @@ def _calc_nr(n_l, n_p):
     return n_l - 2.0 * (n_p.dot(n_l) / n_p.dot(n_p))*n_p
 
 @njit     
-def _reflect(vel, pos, pos_old, p0, p1, p2):
+def _reflect(vel, pos, pos_old, p0, p1, p2, domain):
     intersected, n_l, n_p, t = _intersect(pos_old, pos, p0, p1, p2)
     
-    if intersected and t < 1 and t > 0:
-        pos_old = pos_old + n_l*t
+    if intersected and t < 1.0 and t > 0.0:
+        k = 1.0
+        p = pos_old + n_l*(t*k)
+        while not co.is_inside(p, domain):
+            k *= 0.9
+            p = pos_old + n_l*(t*k)
+        pos_old = p
         n_r = _calc_nr(n_l, n_p)
         pos = pos_old  + (1.0 - t)*n_r
         vel = pos_old  + (np.linalg.norm(vel) / np.linalg.norm(n_r))*n_r
@@ -88,14 +94,21 @@ def _boundary(velocities, positions, old_positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
     for p in range(len(positions)):
-        for i in range(3):
-            for j in range(2):
-                p0, p1, p2 = _get_plane(domain, i, j)
-                if boundary_conds[i][j] == 0:
-                    velocities[p], positions[p], old_positions[p] = _reflect(velocities[p], positions[p], old_positions[p], p0, p1, p2)
-                elif boundary_conds[i][j] == 1 or boundary_conds[i][j] == 2:
-                    if _intersect(old_positions[p], positions[p], p0, p1, p2)[0]:
-                        kept_parts[p] = 0
+        counter = 0
+        while not co.is_inside(positions[p], domain) and kept_parts[p]:
+            if counter > 10:
+                kept_parts[p] = 0
+                break
+            
+            for i in range(3):
+                for j in range(2):
+                    p0, p1, p2 = _get_plane(domain, i, j)
+                    if boundary_conds[i][j] == 0:
+                        velocities[p], positions[p], old_positions[p] = _reflect(velocities[p], positions[p], old_positions[p], p0, p1, p2, domain)
+                        counter += 1
+                    elif boundary_conds[i][j] == 1 or boundary_conds[i][j] == 2:
+                        if _intersect(old_positions[p], positions[p], p0, p1, p2)[0]:
+                            kept_parts[p] = 0
                         
     N = int(sum(kept_parts))
     p = 0
