@@ -53,7 +53,7 @@ def _reflect(vel, pos, pos_old, p0, p1, p2, domain):
         pos_old = p
         n_r = _calc_nr(n_l, n_p)
         pos = pos_old  + (1.0 - t)*n_r
-        vel = pos_old  + (np.linalg.norm(vel) / np.linalg.norm(n_r))*n_r
+        vel = (np.linalg.norm(vel) / np.linalg.norm(n_r))*n_r
 
     return (vel, pos, pos_old)
 
