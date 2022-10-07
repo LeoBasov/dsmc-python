@@ -2,6 +2,7 @@ import dsmc
 import dsmc.writer as wrt
 import dsmc.diagnostics as dia
 import dsmc.mesh.mesh2d as msh2d
+import dsmc.octree as oc
 import time
 import numpy as np
 
@@ -52,6 +53,19 @@ if __name__ == '__main__':
     
     # create particles
     solver.create_particles(domain, T, n, u)
+    
+    # trees
+    tree_inner = oc.Octree()
+    tree_outer = oc.Octree()
+ 
+    inner_pos = np.array([[-0.25, -0.25, -0.025], [0.25, 0.25, 0.025]])
+    outer_pos = np.array([[-3.0, -1.5, -0.025], [3.0, 1.5, 0.025]])
+    
+    tree_inner.build(inner_pos)
+    tree_outer.build(outer_pos)
+  
+    wrt.write_buttom_leafs(tree_inner, "innter.vtu")
+    wrt.write_buttom_leafs(tree_outer, "outer.vtu")
     
     # start timing
     start_time = time.time()
