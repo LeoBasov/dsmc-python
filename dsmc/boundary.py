@@ -3,8 +3,14 @@ from numba import njit
 
 @njit
 def _check_if_parallel(v1, v2, diff=1e-6):
-    V1 = np.copy(v1) / np.linalg.norm(v1)
-    V2 = np.copy(v2) / np.linalg.norm(v2)
+    n1 = np.linalg.norm(v1)
+    n2 = np.linalg.norm(v2)
+    
+    if n1 < 1.0e-13 or n2 < 1.0e-13:
+        return False
+    
+    V1 = np.copy(v1) / n1
+    V2 = np.copy(v2) / n2
     
     return V1.dot(V2) > diff
 
@@ -25,9 +31,9 @@ def _intersect(l0, l1, p0, p1, p2):
     n_p = np.cross((p1 - p0), (p2 - p1))
     
     if _check_if_parallel(n_l, n_p):
-        return (False, n_l, n_p, 0.0)
-    else:
         return (True, n_l, n_p, - ((l0 - p0).dot(n_p) / n_p.dot(n_l)))
+    else:
+        return (False, n_l, n_p, 0.0)
 
 @njit    
 def _calc_nr(n_l, n_p):
@@ -37,7 +43,7 @@ def _calc_nr(n_l, n_p):
 def _reflect(vel, pos, pos_old, p0, p1, p2):
     intersected, n_l, n_p, t = _intersect(pos_old, pos, p0, p1, p2)
     
-    if intersected and t < 1:
+    if intersected and t < 1 and t > 0:
         pos_old = pos_old + n_l*t
         n_r = _calc_nr(n_l, n_p)
         pos = pos_old  + (1.0 - t)*n_r
@@ -50,30 +56,30 @@ def _get_plane(domain, i, j):
     if i == 0:
         if j == 0:
             p0 = np.array([domain[i][j], domain[1][0], domain[2][0]])
-            p1 = np.array([domain[i][j], domain[1][1], domain[2][0]])
-            p2 = np.array([domain[i][j], domain[1][0], domain[2][1]])
-        elif j == 1:
-            p0 = np.array([domain[i][j], domain[1][0], domain[2][0]])
             p1 = np.array([domain[i][j], domain[1][0], domain[2][1]])
             p2 = np.array([domain[i][j], domain[1][1], domain[2][0]])
+        elif j == 1:
+            p0 = np.array([domain[i][j], domain[1][0], domain[2][0]])
+            p1 = np.array([domain[i][j], domain[1][1], domain[2][0]])
+            p2 = np.array([domain[i][j], domain[1][0], domain[2][1]])
     elif i == 1:
         if j == 0:
             p0 = np.array([domain[0][0], domain[i][j], domain[2][0]])
-            p1 = np.array([domain[0][0], domain[i][j], domain[2][1]])
-            p2 = np.array([domain[0][1], domain[i][j], domain[2][0]])
-        if j == 1:
-            p0 = np.array([domain[0][0], domain[i][j], domain[2][0]])
             p1 = np.array([domain[0][1], domain[i][j], domain[2][0]])
             p2 = np.array([domain[0][0], domain[i][j], domain[2][1]])
+        if j == 1:
+            p0 = np.array([domain[0][0], domain[i][j], domain[2][0]])
+            p1 = np.array([domain[0][0], domain[i][j], domain[2][1]])
+            p2 = np.array([domain[0][1], domain[i][j], domain[2][0]])
     elif i == 2:
         if j == 0:
             p0 = np.array([domain[0][0], domain[1][0], domain[i][j]])
-            p1 = np.array([domain[0][1], domain[1][0], domain[i][j]])
-            p2 = np.array([domain[0][0], domain[1][1], domain[i][j]])
-        if j == 1:
-            p0 = np.array([domain[0][0], domain[1][0], domain[i][j]])
             p1 = np.array([domain[0][0], domain[1][1], domain[i][j]])
             p2 = np.array([domain[0][1], domain[1][0], domain[i][j]])
+        if j == 1:
+            p0 = np.array([domain[0][0], domain[1][0], domain[i][j]])
+            p1 = np.array([domain[0][1], domain[1][0], domain[i][j]])
+            p2 = np.array([domain[0][0], domain[1][1], domain[i][j]])
         
     return (p0, p1, p2)
 

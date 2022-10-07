@@ -32,6 +32,14 @@ if __name__ == '__main__':
     # create particles
     particles.create_particles(domain, mass, T, N)
     
+    velocities, positions = particles.VelPos
+    
+    """for vel in velocities:
+        vel[0] = 0
+        vel[1] = 0"""
+        
+    particles.VelPos = velocities, positions
+    
     # start timing
     start_time = time.time()
     
