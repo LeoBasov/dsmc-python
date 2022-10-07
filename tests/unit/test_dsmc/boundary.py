@@ -18,8 +18,8 @@ class TestCommon(unittest.TestCase):
         l1 = np.array([1.0, 1.0, 0.0])
         
         p0 = np.array([0.0, -1.0, -1.0])
-        p1 = np.array([0.0, -1.0, 1.0])
-        p2 = np.array([0.0, 1.0, 1.0])
+        p1 = np.array([0.0, 1.0, -1.0])
+        p2 = np.array([0.0, -1.0, 1.0])
         
         intersected, n_l, n_p, t = bo._intersect(l0, l1, p0, p1, p2)
         
@@ -29,7 +29,7 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(2.0, n_l[1])
         self.assertEqual(0.0, n_l[2])
         
-        self.assertEqual(-4.0, n_p[0])
+        self.assertEqual(4.0, n_p[0])
         self.assertEqual(0.0, n_p[1])
         self.assertEqual(0.0, n_p[2])
         
@@ -55,11 +55,11 @@ class TestCommon(unittest.TestCase):
         pos_old = np.array([-1.0, -1.0, 0.0])
         pos = np.array([1.0, 1.0, 0.0])
         
-        p0 = np.array([0.0, -1.0, -1.0])
-        p1 = np.array([0.0, -1.0, 1.0])
-        p2 = np.array([0.0, 1.0, 1.0])
+        domain = np.array([(-2.0, 0.0), (-1.0, 1.0), (-1.0, 1.0)])
         
-        new_vel, new_pos, new_pos_old = bo._reflect(vel, pos, pos_old, p0, p1, p2)
+        p0, p1, p2 = bo._get_plane(domain, 0, 1)
+        
+        new_vel, new_pos, new_pos_old = bo._reflect(vel, pos, pos_old, p0, p1, p2, domain)
         
         self.assertEqual(-123.0, new_vel[0])
         self.assertEqual(123.0, new_vel[1])
@@ -88,12 +88,12 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(4.0, p0[2])
         
         self.assertEqual(0.0, p1[0])
-        self.assertEqual(4.0, p1[1])
-        self.assertEqual(4.0, p1[2])
+        self.assertEqual(2.0, p1[1])
+        self.assertEqual(7.0, p1[2])
         
         self.assertEqual(0.0, p2[0])
-        self.assertEqual(2.0, p2[1])
-        self.assertEqual(7.0, p2[2])
+        self.assertEqual(4.0, p2[1])
+        self.assertEqual(4.0, p2[2])
         
         p0, p1, p2 = bo._get_plane(domain, axis, 1)
         
@@ -106,12 +106,12 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(4.0, p0[2])
         
         self.assertEqual(1.0, p1[0])
-        self.assertEqual(2.0, p1[1])
-        self.assertEqual(7.0, p1[2])
+        self.assertEqual(4.0, p1[1])
+        self.assertEqual(4.0, p1[2])
         
         self.assertEqual(1.0, p2[0])
-        self.assertEqual(4.0, p2[1])
-        self.assertEqual(4.0, p2[2])
+        self.assertEqual(2.0, p2[1])
+        self.assertEqual(7.0, p2[2])
         
     def test__get_plane2(self):
         domain = np.array([(0, 1), (2, 4), (4, 7)])
@@ -127,13 +127,13 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(2.0, p0[1])
         self.assertEqual(4.0, p0[2])
         
-        self.assertEqual(0.0, p1[0])
+        self.assertEqual(1.0, p1[0])
         self.assertEqual(2.0, p1[1])
-        self.assertEqual(7.0, p1[2])
+        self.assertEqual(4.0, p1[2])
         
-        self.assertEqual(1.0, p2[0])
+        self.assertEqual(0.0, p2[0])
         self.assertEqual(2.0, p2[1])
-        self.assertEqual(4.0, p2[2])
+        self.assertEqual(7.0, p2[2])
         
         p0, p1, p2 = bo._get_plane(domain, axis, 1)
         
@@ -145,13 +145,13 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(4.0, p0[1])
         self.assertEqual(4.0, p0[2])
         
-        self.assertEqual(1.0, p1[0])
+        self.assertEqual(0.0, p1[0])
         self.assertEqual(4.0, p1[1])
-        self.assertEqual(4.0, p1[2])
+        self.assertEqual(7.0, p1[2])
         
-        self.assertEqual(0.0, p2[0])
+        self.assertEqual(1.0, p2[0])
         self.assertEqual(4.0, p2[1])
-        self.assertEqual(7.0, p2[2])
+        self.assertEqual(4.0, p2[2])
         
     def test__get_plane3(self):
         domain = np.array([(0, 1), (2, 4), (4, 7)])
@@ -167,12 +167,12 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(2.0, p0[1])
         self.assertEqual(4.0, p0[2])
         
-        self.assertEqual(1.0, p1[0])
-        self.assertEqual(2.0, p1[1])
+        self.assertEqual(0.0, p1[0])
+        self.assertEqual(4.0, p1[1])
         self.assertEqual(4.0, p1[2])
         
-        self.assertEqual(0.0, p2[0])
-        self.assertEqual(4.0, p2[1])
+        self.assertEqual(1.0, p2[0])
+        self.assertEqual(2.0, p2[1])
         self.assertEqual(4.0, p2[2])
         
         p0, p1, p2 = bo._get_plane(domain, axis, 1)
@@ -185,11 +185,11 @@ class TestCommon(unittest.TestCase):
         self.assertEqual(2.0, p0[1])
         self.assertEqual(7.0, p0[2])
         
-        self.assertEqual(0.0, p1[0])
-        self.assertEqual(4.0, p1[1])
+        self.assertEqual(1.0, p1[0])
+        self.assertEqual(2.0, p1[1])
         self.assertEqual(7.0, p1[2])
         
-        self.assertEqual(1.0, p2[0])
-        self.assertEqual(2.0, p2[1])
+        self.assertEqual(0.0, p2[0])
+        self.assertEqual(4.0, p2[1])
         self.assertEqual(7.0, p2[2])
         
