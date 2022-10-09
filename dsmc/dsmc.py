@@ -243,10 +243,12 @@ class DSMC:
 
         velocities, positions, old_positions = _push(self.particles.Vel, self.particles.Pos, dt)
         velocities, positions, old_positions = _check_positions(velocities, positions, old_positions, self.domain)
-        velocities, positions, old_positions = _boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
+        
         
         for obj in self.objects:
             velocities, positions, old_positions  = _object(velocities, positions, old_positions, obj)
+            
+        velocities, positions, old_positions = _boundary(velocities, positions, old_positions, self.domain, self.boundary_conds)
             
         if octree:
             self.octree.build(positions)
