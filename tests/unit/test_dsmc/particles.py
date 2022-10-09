@@ -41,8 +41,9 @@ class TestParticles(unittest.TestCase):
         x = (-1.0, 1.0)
         y = (2.0, 3.0)
         z = (-2.0, -1.0)
+        X = np.array([x, y, z])
         N = 1000
-        positions = pa.calc_positions(x, y, z, N)
+        positions = pa.calc_positions(X, N)
 
         self.assertEqual(N, len(positions))
 

@@ -83,7 +83,7 @@ def calc_temperature(velocities, mass):
     return tot_e / ((3.0/2.0) * len(velocities) * kb)
 
 @njit
-def calc_positions(x, y, z, N):
+def calc_positions(X, N):
     """
     Parameters
     ----------
@@ -97,9 +97,8 @@ def calc_positions(x, y, z, N):
     positions = np.empty((N, 3))
 
     for i in range(N):
-        positions[i][0] = x[0] + np.random.random() * (x[1] - x[0])
-        positions[i][1] = y[0] + np.random.random() * (y[1] - y[0])
-        positions[i][2] = z[0] + np.random.random() * (z[1] - z[0])
+        for j in range(3):
+            positions[i][j] = X[j][0] + np.random.random() * (X[j][1] - X[j][0])
 
     return positions
 
@@ -136,11 +135,11 @@ class Particles:
     def create_particles(self, X, mass, T, N, u = np.zeros(3)):    
         if self._N == 0:
             self._velocities = get_velocities(T, mass, N, u)
-            self._positions = calc_positions(X[0], X[1], X[2], N)
+            self._positions = calc_positions(X, N)
             self._N  = N
         else:
             self._velocities = np.concatenate((self._velocities, get_velocities(T, mass, N, u)))
-            self._positions = np.concatenate((self._positions, calc_positions(X[0], X[1], X[2], N)))
+            self._positions = np.concatenate((self._positions, calc_positions(X, N)))
             self._N  += N
             
 
