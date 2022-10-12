@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.10.0] - 2022-10-12
+## Added
+- possibility to have centre of mass as division point for the octree
+
 ## [0.9.0] - 2022-10-09
 ## Added
 - mesh2d as for diagnostic purposes

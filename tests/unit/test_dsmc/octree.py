@@ -223,29 +223,32 @@ class TestOctree(unittest.TestCase):
         
     def test__get_min_aspect_ratio_1(self):
         box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
         axis1 = 0
         axis2 = 1
         axis3 = 2
         
-        self.assertEqual(0.01, oc._get_min_aspect_ratio(box, axis1))
-        self.assertEqual(0.1, oc._get_min_aspect_ratio(box, axis2))
-        self.assertEqual(10.0, oc._get_min_aspect_ratio(box, axis3))
+        self.assertEqual(0.01, oc._get_min_aspect_ratio(box, axis1, half))
+        self.assertEqual(0.1, oc._get_min_aspect_ratio(box, axis2, half))
+        self.assertEqual(10.0, oc._get_min_aspect_ratio(box, axis3, half))
         
     def test__get_min_aspect_ratio_2(self):
         box = np.array([(-1.0, 1.0), (-10.0, 10.0), (-100.0, 100.0)])
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
         axis1 = 0
         axis2 = 1
         axis3 = 2
             
-        self.assertEqual(0.01, oc._get_min_aspect_ratio(box, axis1))
-        self.assertEqual(0.1, oc._get_min_aspect_ratio(box, axis2))
-        self.assertEqual(10.0, oc._get_min_aspect_ratio(box, axis3))
+        self.assertEqual(0.01, oc._get_min_aspect_ratio(box, axis1, half))
+        self.assertEqual(0.1, oc._get_min_aspect_ratio(box, axis2, half))
+        self.assertEqual(10.0, oc._get_min_aspect_ratio(box, axis3, half))
         
     def test__devide(self):
         box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
-        box_x1, box_x2 = oc._devide(box, 0)
-        box_y1, box_y2 = oc._devide(box, 1)
-        box_z1, box_z2 = oc._devide(box, 2)
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
+        box_x1, box_x2 = oc._devide(box, 0, half)
+        box_y1, box_y2 = oc._devide(box, 1, half)
+        box_z1, box_z2 = oc._devide(box, 2, half)
         
         boxes = ((box_x1, box_x2), (box_y1, box_y2), (box_z1, box_z2))
         
@@ -269,9 +272,10 @@ class TestOctree(unittest.TestCase):
                         
     def test__create_combined_boxes_1(self):
         box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
         min_aspect_ratio = 0.0
         boxes_old = oc._create_boxes(box)
-        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio)
+        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio, half)
         V = 0.0
         
         for b in boxes_new:
@@ -282,8 +286,9 @@ class TestOctree(unittest.TestCase):
         
     def test__create_combined_boxes_2(self):
         box = np.array([(0.0, 1.0), (0.0, 10.0), (0.0, 100.0)])
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
         min_aspect_ratio = 0.05
-        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio)
+        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio, half)
         V = 0.0
         
         for b in boxes_new:
@@ -294,8 +299,9 @@ class TestOctree(unittest.TestCase):
         
     def test__create_combined_boxes_3(self):
         box = np.array([(-1.0, 1.0), (-10.0, 10.0), (-100.0, 100.0)])
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
         min_aspect_ratio = 0.05
-        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio)
+        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio, half)
         V = 0.0
         
         for b in boxes_new:
@@ -306,8 +312,9 @@ class TestOctree(unittest.TestCase):
         
     def test__create_combined_boxes_4(self):
         box = np.array([(-1.0, 1.0), (-10.0, 10.0), (-100.0, 100.0)])
+        half = 0.5 * np.array([box[i][1] + box[i][0] for i in range(3)])
         min_aspect_ratio = 0.0
-        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio)
+        boxes_new = oc._create_combined_boxes(box, min_aspect_ratio, half)
         V = 0.0
         
         for b in boxes_new:
@@ -315,6 +322,19 @@ class TestOctree(unittest.TestCase):
             
         self.assertEqual(com.get_V(box), V)
         self.assertEqual(8, len(boxes_new))
+
+            
+    def test__get_centre_of_mass(self):
+        permutations = np.array([i for i in range(4)])
+        positions = np.array([[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]])
+        offset = 0
+        n_elements = 4
+        
+        centre_of_mass = oc._get_centre_of_mass(permutations, positions, offset, n_elements)
+        
+        self.assertEqual(0.0, centre_of_mass[0])
+        self.assertEqual(0.0, centre_of_mass[1])
+        self.assertEqual(0.0, centre_of_mass[2])
             
 class TestOctreeOctree(unittest.TestCase):
     def test_build(self):

@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from numba import njit
+from enum import Enum
 from . import common as com
 
 fmin = np.finfo(float).min
@@ -121,33 +122,32 @@ def _create_boxes(box):
     return [child_geo1, child_geo2, child_geo3, child_geo4, child_geo5, child_geo6, child_geo7, child_geo8]
 
 @njit
-def _get_min_aspect_ratio(box, axis):
-    half = np.array([0.5*(box[i][1] - box[i][0]) for i in range(3)])
+def _get_min_aspect_ratio(box, axis, half):
+    half_loc = np.array([0.5*(half[i] - box[i][0]) for i in range(3)])
     
     match axis:
         case 0:
-            return min(half[0] / half[1], half[0] / half[2]);
+            return min(half_loc[0] / half_loc[1], half_loc[0] / half_loc[2]);
         case 1:
-            return min(half[1] / half[0], half[1] / half[2]);
+            return min(half_loc[1] / half_loc[0], half_loc[1] / half_loc[2]);
         case 2:
-            return min(half[2] / half[1], half[2] / half[0]);
+            return min(half_loc[2] / half_loc[1], half_loc[2] / half_loc[0]);
 
 @njit
-def _devide(box, axis):
-    half = 0.5*(box[axis][0] + box[axis][1])
+def _devide(box, axis, half):
     box1 = np.copy(box)
     box2 = np.copy(box)
     
     box1[axis][0] = box[axis][0]
-    box1[axis][1] = half
+    box1[axis][1] = half[axis]
     
-    box2[axis][0] = half
+    box2[axis][0] = half[axis]
     box2[axis][1] = box[axis][1]
     
     return (box1, box2)
 
 @njit
-def _create_combined_boxes(box, min_aspect_ratio):
+def _create_combined_boxes(box, min_aspect_ratio, half):
     boxes = np.empty((15, 3, 2))
     boxes[0] = box
     N = 0
@@ -155,9 +155,9 @@ def _create_combined_boxes(box, min_aspect_ratio):
     q = 1
     
     for i in range(3):
-        if _get_min_aspect_ratio(box, i) > min_aspect_ratio:
+        if _get_min_aspect_ratio(box, i, half) > min_aspect_ratio:
             for b in range(Nold, Nold + 2**N):
-                new_boxes = _devide(boxes[b], i)
+                new_boxes = _devide(boxes[b], i, half)
                 boxes[q] = new_boxes[0]
                 boxes[q + 1] = new_boxes[1]
                 q += 2
@@ -171,6 +171,20 @@ def _create_combined_boxes(box, min_aspect_ratio):
         new_boxes[b] = boxes[Nold + b]
             
     return new_boxes
+
+@njit
+def _get_centre_of_mass(permutations, positions, offset, n_elements):
+    com = np.zeros(3)
+    
+    for i in range(offset, offset + n_elements):
+        p = permutations[i]
+        com += positions[p]
+    
+    return com / float(n_elements)
+
+class Type(Enum):
+    COV = 0
+    COM = 1
     
 class Leaf:
     def __init__(self):
@@ -185,6 +199,7 @@ class Octree:
     def __init__(self):
         self.clear()
         self.min_aspect_ratio = 2.0/3.0
+        self.type = Type.COV
         
     def clear(self):
         self.cell_boxes = []
@@ -226,14 +241,18 @@ class Octree:
             
             self.leafs[leaf_id].id_first_child = self.cell_offsets[-1]
             
-            new_boxes = _create_combined_boxes(self.cell_boxes[leaf_id], self.min_aspect_ratio)
+            if self.type == Type.COV:
+                half = 0.5 * np.array([self.cell_boxes[leaf_id][i][1] + self.cell_boxes[leaf_id][i][0] for i in range(3)])
+            elif self.type == Type.COM:
+                half = _get_centre_of_mass(self.permutations, positions, self.leafs[leaf_id].elem_offset, self.leafs[leaf_id].number_elements)
+            
+            new_boxes = _create_combined_boxes(self.cell_boxes[leaf_id], self.min_aspect_ratio, half)
             self.cell_offsets[-1] += len(new_boxes)
             self.leafs[leaf_id].number_children = len(new_boxes)
             
             for box in new_boxes:
                 self.cell_boxes.append(box)
-            
-            #raise Exception()
+        
         else:
             pass
            
