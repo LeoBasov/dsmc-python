@@ -1,7 +1,7 @@
 # Octree based DSMC
-ToDo: link to cicle CI
+[![LeoBasov](https://circleci.com/gh/LeoBasov/dsmc-python/tree/clean_up.svg?style=svg)](https://app.circleci.com/pipelines/github/LeoBasov/dsmc-python/tree/clean_up/)
 
-ToDo: pictures
+![shock Tubbe](./examples/shock_tube/shock_tube.png)
 
 # Table of Contents
 1. Introduction
