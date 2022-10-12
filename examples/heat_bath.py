@@ -51,6 +51,8 @@ if __name__ == '__main__':
     
     plt.plot(xm, dist)
     plt.hist(x, Nbins, density=True)
+    plt.ylabel("probabilty density")
+    plt.xlabel("m v^2 / (2 kb)")
     plt.title("T = {:.3f}K".format(Tnew))
     plt.show() 
     
