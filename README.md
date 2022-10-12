@@ -1,4 +1,4 @@
-# Octree based DSMC
+# Octree based DSMC - Python implementation
 [![LeoBasov](https://circleci.com/gh/LeoBasov/dsmc-python/tree/clean_up.svg?style=svg)](https://app.circleci.com/pipelines/github/LeoBasov/dsmc-python/tree/clean_up/)
 
 ![shock Tubbe](./examples/shock_tube/shock_tube.png)
