@@ -199,7 +199,7 @@ class Octree:
     def __init__(self):
         self.clear()
         self.min_aspect_ratio = 2.0/3.0
-        self.type = Type.COM
+        self.type = Type.COV
         
     def clear(self):
         self.cell_boxes = []
