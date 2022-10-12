@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import csv
 import numpy as np
-import argparse
 
 def read_data(file_name):
     with open(file_name) as file:
