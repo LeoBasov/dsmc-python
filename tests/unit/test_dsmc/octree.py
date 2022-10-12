@@ -324,6 +324,18 @@ class TestOctree(unittest.TestCase):
         self.assertEqual(8, len(boxes_new))
 
             
+    def test__get_centre_of_mass(self):
+        permutations = np.array([i for i in range(4)])
+        positions = np.array([[-1.0, -1.0, 0.0], [1.0, -1.0, 0.0], [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0]])
+        offset = 0
+        n_elements = 4
+        
+        centre_of_mass = oc._get_centre_of_mass(permutations, positions, offset, n_elements)
+        
+        self.assertEqual(0.0, centre_of_mass[0])
+        self.assertEqual(0.0, centre_of_mass[1])
+        self.assertEqual(0.0, centre_of_mass[2])
+            
 class TestOctreeOctree(unittest.TestCase):
     def test_build(self):
         positions = np.random.random((1000, 3))*2.0 - np.ones((1000, 3))
