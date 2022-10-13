@@ -20,16 +20,21 @@ ToDo
 
 # 4. Test Cases
 
-## Hypersonic flow around cube
+## 4.1 Heat Bath
 ToDo
 
-![shock Tubbe](./examples/hypersonic_flow/hypersonic_flow.png)
+![Heat Bath](./examples/heat_bath/heat_bath.png)
 
-![shock Tubbe](./examples/hypersonic_flow/hypersonic_flow_grid.png)
+## 4.2 Hypersonic flow around cube
+ToDo
 
-![shock Tubbe](./examples/hypersonic_flow/hypersonic_flow_grid_nrho.png)
+![hypersonic_flow](./examples/hypersonic_flow/hypersonic_flow.png)
 
-## Shock Tube
+![hypersonic_flow_grid](./examples/hypersonic_flow/hypersonic_flow_grid.png)
+
+![hypersonic_flow_grid_nrho](./examples/hypersonic_flow/hypersonic_flow_grid_nrho.png)
+
+## 4.3 Shock Tube
 
 ToDo
-![shock Tubbe](./examples/shock_tube/shock_tube.png)
+![shock Tube](./examples/shock_tube/shock_tube.png)
