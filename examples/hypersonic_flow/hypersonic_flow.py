@@ -12,23 +12,23 @@ if __name__ == '__main__':
     domain = [(-3.0, 3.0), (-1.5, 1.5), (-0.025, 0.025)]
     obj = [(-0.25, 0.25), (-0.25, 0.25), (-0.5, 0.5)]
     dt = 1e-6
-    w = 0.2 * 2.3e+15
+    w = 0.25e+15
     mass = 6.6422e-26
     T =  273.0
     n = 2.6e+19
     u = np.array([0.0, -3043.0, 0.0])
-    niter = 1000
-    niter_sample = 100
+    niter = 2500
+    niter_sample = 5000
     
     # set up mesh2
     mesh = msh2d.Mesh2d()
     
-    mesh.n_cells1 = 100
-    mesh.n_cells2 = 50
+    mesh.n_cells1 = 200
+    mesh.n_cells2 = 100
     mesh.min1 = domain[0][0]
     mesh.min2 = domain[1][0]
-    mesh.cell_size1 = 0.06
-    mesh.cell_size2 = 0.06
+    mesh.cell_size1 = 0.03
+    mesh.cell_size2 = 0.03
     
     h = domain[2][1] - domain[2][0]
     
@@ -78,10 +78,9 @@ if __name__ == '__main__':
         print("iteration {:4}/{}".format(it + 1, niter_sample), end="\r", flush=True)
         solver.advance(dt)
         
-        if (it + 1)%10 == 0:
-            mesh.sort(solver.particles.Pos)
-            boxes, values = dia.analyse_2d(solver.particles.Pos, solver.particles.Vel, mesh, h)
-            wrt.write_planar(boxes, values, "hypersonic_{}.vtu".format(it))
+        mesh.sort(solver.particles.Pos)
+        boxes, values = dia.analyse_2d(solver.particles.Pos, solver.particles.Vel, mesh, h)
+        wrt.write_planar(boxes, values, "hypersonic_{}.vtu".format(it))
         
     wrt.write_buttom_leafs(solver.octree)
         
