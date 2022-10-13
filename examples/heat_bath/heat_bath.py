@@ -14,17 +14,16 @@ def calc_x(velocities, mass):
 if __name__ == '__main__':
     # general parameters
     solver = dsmc.DSMC()
-    domain = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (0, 50e-3))
+    domain = ((-1.0e-3, 1.0e-3), (-1.0e-3, 1.0e-3), (-1.0e-3, 1.0e-3))
     dt = 1e-5
-    w = 2.4134e+7
+    w = 0.5e+8
     mass = 6.6422e-26
     niter = 100
-    Nbins = 100
+    Nbins = 200
     
     # particles
-    n = 2.5e+20
+    n = 1.0e+20
     T = 300
-    Box = ((-0.1e-3, 0.1e-3), (-0.1e-3, 0.1e-3), (25e-3, 50e-3))
     u = np.array((1000.0, 0.0, 0.0))
     
     
@@ -32,28 +31,46 @@ if __name__ == '__main__':
     solver.set_weight(w)
     solver.set_mass(mass)
     
-    solver.create_particles(Box, T, n, u)
+    solver.create_particles(domain, T, n, u)
     
     # time
     start_time = time.time()
+    
+    # set up plot
+    xmax = 15000
+    
+    Tnew = prt.calc_temperature(solver.particles.Vel, solver.mass)
+    xm = np.linspace(0, xmax, 1000)
+    dist = [maxwell(xi, Tnew) for xi in xm]
+    x = calc_x(solver.particles.Vel, solver.mass)
+    
+    fig, (ax0, ax1) = plt.subplots(nrows=1, ncols=2, figsize=(16, 6))
+    
+    ax0.plot(xm, dist)
+    ax0.hist(x, Nbins, density=True)
+    ax0.set_ylabel("probabilty density")
+    ax0.set_xlabel("m v^2 / (2 kb)")
+    ax0.set_title("initial condition")
+    ax0.set_xlim([0, xmax])
+    ax0.set_ylim([0, 0.00040])
     
     for it in range(niter):
         print("iteration {:4}/{}".format(it + 1, niter), end="\r", flush=True)
         solver.advance(dt)
         x = calc_x(solver.particles.Vel, solver.mass)
-
-    Tnew = prt.calc_temperature(solver.particles.Vel, solver.mass)
-    xm = np.linspace(0, 30000, 1000)
-    dist = [maxwell(xi, Tnew) for xi in xm]
     
     print("")
     print("--- %s seconds ---" % (time.time() - start_time))
     
-    plt.plot(xm, dist)
-    plt.hist(x, Nbins, density=True)
-    plt.ylabel("probabilty density")
-    plt.xlabel("m v^2 / (2 kb)")
-    plt.title("T = {:.3f}K".format(Tnew))
+    ax1.plot(xm, dist)
+    ax1.hist(x, Nbins, density=True)
+    ax1.set_ylabel("probabilty density")
+    ax1.set_xlabel("m v^2 / (2 kb)")
+    ax1.set_title("final condition")
+    ax1.set_xlim([0, xmax])
+    ax1.set_ylim([0, 0.00040])
+    
+    fig.suptitle("T = {:.3f}K".format(Tnew))
     plt.show() 
     
     print('done')
