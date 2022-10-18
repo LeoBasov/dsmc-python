@@ -47,7 +47,7 @@ The simulation results can be seen below.
 
 ## 4.2 Hypersonic flow around cube
 Hypersonic flow around a cuboid.
-The inpflow conditions are as follows
+The inflow conditions are as follows
 
 | $T / K$ | $n / m^{-3}$ | $v_{x, z} / (m s^{-1})$ | $v_y / (m s^{-1})$ |
 |:-------:|:------------:|:-----------------------:|:------------------:|
