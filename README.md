@@ -1,5 +1,6 @@
 # Octree based DSMC - Python implementation
-[![LeoBasov](https://circleci.com/gh/LeoBasov/dsmc-python/tree/clean_up.svg?style=svg)](https://app.circleci.com/pipelines/github/LeoBasov/dsmc-python/tree/clean_up/)
+[![LeoBasov](https://circleci.com/gh/LeoBasov/dsmc-python.svg?style=svg)](https://app.circleci.com/pipelines/github/LeoBasov/dsmc-python/)
+
 
 # Table of Contents
 1. Introduction
