@@ -8,7 +8,7 @@
 4. Test Cases
 
 # 1. Introduction
-DSMC implementation using an octree as a variable mesh.
+DSMC implementation using an octree as a variable mesh based on https://doi.org/10.1016/j.jcp.2008.04.038.
 Implementation in done in python 3.10.
 
 # 2. Requirements
