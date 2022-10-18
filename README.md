@@ -98,7 +98,7 @@ The simulation parameters
 |:--------------:|:----:|
 | 1e-7           | 1e-8 |
 
-The simulation domain is a rectegular tube with a square cross section with the side length $2 \cdot 10^{-4} m$ and a length of $0.1 m$.
+The simulation domain is a rectangular tube with a square cross section with the side length $2 \cdot 10^{-4} m$ and a length of $0.1 m$.
 Results can be seen below.
 
 ![shock Tube](./examples/shock_tube/shock_tube.png)
