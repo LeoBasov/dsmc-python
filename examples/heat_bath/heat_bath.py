@@ -70,7 +70,7 @@ if __name__ == '__main__':
     ax1.set_xlim([0, xmax])
     ax1.set_ylim([0, 0.00040])
     
-    fig.suptitle("T = {:.3f}K".format(Tnew))
+    fig.suptitle("Argon Heat Bath")
     plt.show() 
     
     print('done')
