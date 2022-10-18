@@ -26,7 +26,12 @@ ToDo
 ![Heat Bath](./examples/heat_bath/heat_bath.png)
 
 ## 4.2 Hypersonic flow around cube
-ToDo
+Hypersonic flow around a cuboid.
+The inpflow conditions are as follows
+
+| $T / K$ | $n / m^{-3}$ | $u_{x, z} / (m s^{-1})$ | $u_y / (m s^{-1})$ |
+|:-------:|:------------:|:-----------------------:|:------------------:|
+| 273.0   | 2.6e+19      | 0                       | -3043.0            |
 
 ![hypersonic_flow](./examples/hypersonic_flow/hypersonic_flow.png)
 
