@@ -36,9 +36,9 @@ The simulation domain is cube with a side length of $2 \cdot 10^{-3} m$.
 The simulation properties are as follows
 
 
-| $\Delta t / s$ | $w$    | $T / K$   | $n / m^{-3}$   | $u / (m/s)$ |
-|:----------:|:------:|:-----:|:-----:|:-----------:|
-| 1e-5       | 0.5e-8 | 300   | 1e+20 | 1000.0      |
+| $\Delta t / s$ | $w$    | $T / K$ | $n / m^{-3}$ | $u / (m/s)$ |
+|:--------------:|:------:|:-------:|:------------:|:-----------:|
+| 1e-5           | 0.5e-8 | 300     | 1e+20        | 1000.0      |
 
 where $\Delta t$ is the time step, $w$ is the particle weight, $T$  the temperature, $n$ the number density and $u$ the velocity in x direction.
 The simulation results can be seen below.
@@ -61,5 +61,44 @@ The inflow conditions are as follows
 
 ## 4.3 Shock Tube
 
-ToDo
+This test case is Sod's shock tube problem.
+Initial conditions for the left hand side $C_L$ and the right hand side $C_R$ are found below
+
+$$
+C_L = 
+\begin{pmatrix}
+n_L \\
+u_L \\
+T_L \\
+\end{pmatrix} =
+\begin{pmatrix}
+2.41432e22 \\
+0 \\
+300 \\
+\end{pmatrix}
+$$
+
+$$
+C_R = 
+\begin{pmatrix}
+n_R \\
+u_R \\
+p_L \\
+\end{pmatrix}=
+\begin{pmatrix}
+2.41432e21 \\
+0 \\
+300 \\
+\end{pmatrix}
+$$
+
+The simulation parameters
+
+| $\Delta t / s$ | $w$  |
+|:--------------:|:----:|
+| 1e-7           | 1e-8 |
+
+The simulation domain is a rectegular tube with a square cross section with the side length $2 \cdot 10^{-4} m$ and a length of $0.1 m$.
+Results can be seen below.
+
 ![shock Tube](./examples/shock_tube/shock_tube.png)
