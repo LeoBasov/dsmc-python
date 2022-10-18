@@ -13,10 +13,14 @@ Implementation in done in python 3.10.
 
 # 2. Requirements
 - python 3.10.
-- pip
+- pip3
 
 # 3. Installation
-ToDo
+The module can be installed using pip3 from the repository root as
+
+``
+pip3 install .
+``
 
 # 4. Test Cases
 All test cases were performed using Argon.
