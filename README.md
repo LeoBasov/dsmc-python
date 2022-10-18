@@ -19,9 +19,15 @@ Implementation in done in python 3.10.
 ToDo
 
 # 4. Test Cases
+All test cases were performed using Argon.
+The gass properties are as follows:
+
+| gas | $\sigma_T / m^2$ | $m / kg$   | 
+|:---:|:----------------:|:----------:|
+| Ar  | 3.631681e-19     | 6.6422e-26 |
 
 ## 4.1 Heat Bath
-ToDo
+Simulation of temperature relaxation of Argon in closed domain.
 
 ![Heat Bath](./examples/heat_bath/heat_bath.png)
 
