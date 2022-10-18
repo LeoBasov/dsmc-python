@@ -28,6 +28,16 @@ The gass properties are as follows:
 
 ## 4.1 Heat Bath
 Simulation of temperature relaxation of Argon in closed domain.
+The simulation domain is cube with a side length of $2 \cdot 10^{-3} m$.
+The simulation properties are as follows
+
+
+| $\Delta t / s$ | $w$    | $T / K$   | $n / m^{-3}$   | $u / (m/s)$ |
+|:----------:|:------:|:-----:|:-----:|:-----------:|
+| 1e-5       | 0.5e-8 | 300   | 1e+20 | 1000.0      |
+
+where $\Delta t$ is the time step, $w$ is the particle weight, $T$  the temperature, $n$ the number density and $u$ the velocity in x direction.
+The simulation results can be seen below.
 
 ![Heat Bath](./examples/heat_bath/heat_bath.png)
 
@@ -35,7 +45,7 @@ Simulation of temperature relaxation of Argon in closed domain.
 Hypersonic flow around a cuboid.
 The inpflow conditions are as follows
 
-| $T / K$ | $n / m^{-3}$ | $u_{x, z} / (m s^{-1})$ | $u_y / (m s^{-1})$ |
+| $T / K$ | $n / m^{-3}$ | $v_{x, z} / (m s^{-1})$ | $v_y / (m s^{-1})$ |
 |:-------:|:------------:|:-----------------------:|:------------------:|
 | 273.0   | 2.6e+19      | 0                       | -3043.0            |
 
