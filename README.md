@@ -28,7 +28,7 @@ pip3 install .
 
 # 4. Test Cases
 All test cases were performed using Argon.
-The gass properties are as follows:
+The gas properties are as follows:
 
 | gas | $\sigma_T / m^2$ | $m / kg$   | 
 |:---:|:----------------:|:----------:|
