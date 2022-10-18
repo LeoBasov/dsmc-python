@@ -14,6 +14,10 @@ Implementation in done in python 3.10.
 # 2. Requirements
 - python 3.10.
 - pip3
+- numpy
+- llvmlite
+- scipy
+- numba
 
 # 3. Installation
 The module can be installed using pip3 from the repository root as
