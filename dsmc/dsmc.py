@@ -1,6 +1,7 @@
 import numpy as np
 from numba import njit
 from numba import prange
+import numba
 from . import particles as prt
 from . import octree as oc
 from . import common as com
@@ -138,7 +139,7 @@ def _calc_prob(rel_vel : float, sigma_T : float, Vc : float, dt : float, w : flo
     """
     return rel_vel * sigma_T * dt * w * N / Vc;
 
-@njit(cache=True)
+@njit(numba.types.Tuple((numba.float64[:], numba.float64[:]))(numba.float64[:], numba.float64[:], numba.float64, numba.float64, numba.float64, numba.float64, numba.float64))
 def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : float, mass2 : float, rel_vel_module : float, rand_number1 : float, rand_number2 : float) -> tuple[np.ndarray, np.ndarray]:
     mass12 = (mass1 + mass2)
     mass1_12 = (mass1 / mass12)
@@ -158,7 +159,7 @@ def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : 
 
     return (centre_of_mass_velocity + rel_velocity_new * mass2_12 , centre_of_mass_velocity - rel_velocity_new * mass1_12)
 
-@njit(cache=True)
+@njit(numba.float64[:, :](numba.int64[:], numba.float64[:, :], numba.float64, numba.float64, numba.float64, numba.float64, numba.float64, numba.int64, numba.int64))
 def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, Vc : float, dt : float, w : float, offset : int, N : int) -> np.ndarray:
     for i in range(1, N, 2):
         p1 = permutations[offset + i - 1]
@@ -174,7 +175,7 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
 
     return velocities
 
-@njit
+@njit(numba.float64[:, :](numba.int64[:], numba.float64[:, :], numba.float64, numba.float64, numba.float64, numba.float64, numba.int64[:], numba.int64[:], numba.int64[:], numba.float64[:, : , :], numba.int64))
 def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
     for i in range(Nleafs):
         if not number_children[i] and number_elements[i]:
