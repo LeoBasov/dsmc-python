@@ -1,15 +1,16 @@
 import math
 import numpy as np
 from numba import njit
+import numba
 from . import common as com
 
 kb = 1.380649e-23
 
-@njit
+@njit(numba.float64(numba.float64, numba.float64))
 def calc_vp(T, mass):
     return np.sqrt(2*kb*T/mass)
 
-@njit
+@njit(numba.float64(numba.float64))
 def box_muller(T):
     """
     Parameters
@@ -28,7 +29,7 @@ def box_muller(T):
 
     return T*(-np.log(r1) - np.log(r2) * math.pow(np.cos((np.pi/2.0)*r3), 2))
 
-@njit
+@njit(numba.float64(numba.float64, numba.float64))
 def x2velocity(x, mass):
     """
     Parameters
@@ -44,7 +45,7 @@ def x2velocity(x, mass):
     """
     return math.sqrt(2.0 * x * kb /mass)
 
-@njit
+@njit(numba.float64[:](numba.float64, numba.float64))
 def get_vel(T, mass):
     """
     Parameters
@@ -61,7 +62,7 @@ def get_vel(T, mass):
     v = np.random.random(3)*2.0 - np.ones(3)
     return v * x2velocity(box_muller(T), mass) / np.linalg.norm(v)
 
-@njit
+@njit(numba.float64[:, :](numba.float64, numba.float64, numba.int64, numba.float64[:]))
 def get_velocities(T, mass, N, u):
     velocities = np.empty((N, 3))
 
@@ -82,7 +83,7 @@ def calc_temperature(velocities, mass):
 
     return tot_e / ((3.0/2.0) * len(velocities) * kb)
 
-@njit
+@njit(numba.float64[:, :](numba.float64[:, :], numba.int64))
 def calc_positions(X, N):
     """
     Parameters
