@@ -174,7 +174,7 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
 
     return velocities
 
-@njit(cache=True)
+@njit
 def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
     for i in range(Nleafs):
         if not number_children[i] and number_elements[i]:
