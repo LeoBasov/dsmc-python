@@ -2,12 +2,15 @@ import dsmc
 import dsmc.particles as prt
 import matplotlib.pyplot as plt
 import numpy as np
+import numba
 import math
 import time
 
+@numba.njit(numba.float64(numba.float64, numba.float64))
 def maxwell(x, T):
     return 2.0 * np.sqrt(x) * np.exp(-x/T) / (math.pow(T, 3.0/2.0) * np.sqrt(math.pi))
     
+@numba.njit(numba.float64[:](numba.float64[:, :], numba.float64))
 def calc_x(velocities, mass):
     return np.array([mass*vel.dot(vel)/(2.0*prt.kb) for vel in velocities])
 
