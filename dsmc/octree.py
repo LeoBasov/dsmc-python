@@ -1,6 +1,7 @@
 import numpy as np
 import numpy.typing as npt
 from numba import njit
+import numba
 from enum import Enum
 from . import common as com
 
@@ -54,7 +55,7 @@ def _calc_n(box : npt.NDArray, N : float, w : float) -> float:
     """
     return np.prod(np.array([box[i][1] - box[i][0] for i in range(3)])) * N / w
 
-@njit  
+@njit(numba.boolean(numba.float64[:, :], numba.int32, numba.float64, numba.float64, numba.int32, numba.int32))
 def _is_resolved(box : npt.NDArray, N : int, w : float, sigma_T : float, Nmin : int, Nmax : int) -> bool:
     if N == 0:
         return False
@@ -72,7 +73,7 @@ def _is_inside(position : npt.NDArray, box : npt.NDArray) -> bool:
 
     return a and b and c
     
-@njit
+@njit(numba.types.Tuple((numba.int64[:], numba.int64))(numba.int64[:], numba.float64[:, :], numba.float64[:, :], numba.int64, numba.int64), parallel=False)
 def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray, offset : int, N : int) -> tuple[npt.NDArray, int]:
     '''sort particles in cell
     
@@ -96,7 +97,7 @@ def _sort(permutations : npt.NDArray, box : npt.NDArray, positions : npt.NDArray
     new_permutations = np.copy(permutations)
     runner = offset
     Nnew = 0
-    for i in range(offset, offset + N):
+    for i in numba.prange(offset, offset + N):
         p = new_permutations[i]
         if _is_inside(positions[p], box):
             com.swap(new_permutations, i, runner)
