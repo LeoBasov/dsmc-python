@@ -5,14 +5,14 @@ from . import particles as prt
 from . import octree as oc
 from . import common as com
 
-@njit
+@njit(cache=True)
 def _push(velocities, positions, dt):
     old_positions = np.copy(positions)
     for p in prange(len(positions)):
         positions[p] = positions[p] + velocities[p]*dt
     return (velocities, positions, old_positions)
 
-@njit
+@njit(cache=True)
 def _boundary(velocities, positions, old_positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
@@ -51,7 +51,7 @@ def _boundary(velocities, positions, old_positions, domain, boundary_conds):
 
     return (new_velocities, new_positions, new_old_positions)
 
-@njit
+@njit(cache=True)
 def _check_positions(velocities, positions, old_positions, domain):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
@@ -76,7 +76,7 @@ def _check_positions(velocities, positions, old_positions, domain):
 
     return (new_velocities, new_positions, new_old_positions)
 
-@njit
+@njit(cache=True)
 def _check_created_particles(velocities, positions, obj):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
@@ -99,7 +99,7 @@ def _check_created_particles(velocities, positions, obj):
 
     return (new_velocities, new_positions)
 
-@njit
+@njit(cache=True)
 def _object(velocities, positions, old_positions, coll_obj):
     for p in range(positions.shape[0]):
         if oc._is_inside(positions[p], coll_obj):
@@ -116,7 +116,7 @@ def _object(velocities, positions, old_positions, coll_obj):
                     
     return (velocities, positions, old_positions)
 
-@njit
+@njit(cache=True)
 def _calc_prob(rel_vel : float, sigma_T : float, Vc : float, dt : float, w : float, N : int) -> np.single:
     """
     Parameters
@@ -138,7 +138,7 @@ def _calc_prob(rel_vel : float, sigma_T : float, Vc : float, dt : float, w : flo
     """
     return rel_vel * sigma_T * dt * w * N / Vc;
 
-@njit
+@njit(cache=True)
 def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : float, mass2 : float, rel_vel_module : float, rand_number1 : float, rand_number2 : float) -> tuple[np.ndarray, np.ndarray]:
     mass12 = (mass1 + mass2)
     mass1_12 = (mass1 / mass12)
@@ -158,7 +158,7 @@ def _calc_post_col_vels(velocity1 : np.ndarray, velocity2 : np.ndarray, mass1 : 
 
     return (centre_of_mass_velocity + rel_velocity_new * mass2_12 , centre_of_mass_velocity - rel_velocity_new * mass1_12)
 
-@njit
+@njit(cache=True)
 def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, Vc : float, dt : float, w : float, offset : int, N : int) -> np.ndarray:
     for i in range(1, N, 2):
         p1 = permutations[offset + i - 1]
@@ -174,7 +174,7 @@ def _update_velocities(permutations : np.ndarray, velocities : np.ndarray, mass 
 
     return velocities
 
-@njit
+@njit(cache=True)
 def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : float, sigma_T : float, dt : float, w : float, elem_offsets : np.ndarray, number_elements : np.ndarray, number_children : np.ndarray, cell_boxes : np.ndarray, Nleafs : int) -> np.ndarray:
     for i in range(Nleafs):
         if not number_children[i] and number_elements[i]:
@@ -183,7 +183,7 @@ def _update_vels(permutations : np.ndarray, velocities : np.ndarray, mass : floa
 
     return velocities
 
-@njit
+@njit(cache=True)
 def _get_boundary(boundary):
     if boundary == "xmin":
         return (0, 0)
@@ -198,7 +198,7 @@ def _get_boundary(boundary):
     elif boundary == "zmax":
         return (2, 1)
     
-@njit
+@njit(cache=True)
 def _get_bc_type(bc_type):
     if bc_type == "ela":
         return 0
