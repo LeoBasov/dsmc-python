@@ -2,7 +2,7 @@ import numpy as np
 from numba import njit
 from . import common as co
 
-@njit
+@njit(cache=True)
 def _check_if_parallel(v1, v2, diff=1e-6):
     n1 = np.linalg.norm(v1)
     n2 = np.linalg.norm(v2)
@@ -15,7 +15,7 @@ def _check_if_parallel(v1, v2, diff=1e-6):
     
     return V1.dot(V2) > diff
 
-@njit
+@njit(cache=True)
 def _intersect(l0, l1, p0, p1, p2):
     """
     Args:
@@ -36,11 +36,11 @@ def _intersect(l0, l1, p0, p1, p2):
     else:
         return (False, n_l, n_p, 0.0)
 
-@njit    
+@njit(cache=True)
 def _calc_nr(n_l, n_p):
     return n_l - 2.0 * (n_p.dot(n_l) / n_p.dot(n_p))*n_p
 
-@njit     
+@njit(cache=True)
 def _reflect(vel, pos, pos_old, p0, p1, p2, domain):
     intersected, n_l, n_p, t = _intersect(pos_old, pos, p0, p1, p2)
     
@@ -57,7 +57,7 @@ def _reflect(vel, pos, pos_old, p0, p1, p2, domain):
 
     return (vel, pos, pos_old)
 
-@njit
+@njit(cache=True)
 def _get_plane(domain, i, j):
     if i == 0:
         if j == 0:
@@ -89,7 +89,7 @@ def _get_plane(domain, i, j):
         
     return (p0, p1, p2)
 
-@njit
+@njit(cache=True)
 def _boundary(velocities, positions, old_positions, domain, boundary_conds):
     kept_parts = np.ones(positions.shape[0], dtype=np.uint)
     
@@ -127,7 +127,7 @@ def _boundary(velocities, positions, old_positions, domain, boundary_conds):
 
     return (new_velocities, new_positions, new_old_positions)
 
-@njit
+@njit(cache=True)
 def _get_boundary(boundary):
     if boundary == "xmin":
         return (0, 0)
@@ -142,7 +142,7 @@ def _get_boundary(boundary):
     elif boundary == "zmax":
         return (2, 1)
     
-@njit
+@njit(cache=True)
 def _get_bc_type(bc_type):
     if bc_type == "ela":
         return 0

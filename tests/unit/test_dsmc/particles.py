@@ -51,7 +51,7 @@ class TestParticles(unittest.TestCase):
         x = (-1.0, 1.0)
         y = (2.0, 3.0)
         z = (-2.0, -1.0)
-        X = (x, y, z)
+        X = np.array((x, y, z))
         N = 1000
         mass = 1.0e-26
         T = 300
